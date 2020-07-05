@@ -182,8 +182,7 @@ def model1(x_train,y_train, x_test,y_test):
     model.add(keras.layers.LSTM({{choice([1, 2, 3,4,5,6,7,8,9,10,11,12])}},return_sequences =True ) )
     model.add(keras.layers.LSTM({{choice([1, 2, 3,4,5,6,7,8,9,10,11,12])}},return_sequences =True ) )
     model.add(keras.layers.LSTM({{choice([1, 2, 3,4,5,6,7,8,9,10,11,12])}},return_sequences =True ) )
-    model.add(keras.layers.LSTM({{choice([1, 2, 3,4,5,6,7,8,9,10,11,12])}},return_sequences =True ) )
-    model.add(keras.layers.LSTM({{choice([1, 2, 3,4,5,6,7,8,9,10,11,12])}},return_sequences =True ) )
+
 
 
 
