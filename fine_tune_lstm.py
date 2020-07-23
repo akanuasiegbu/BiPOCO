@@ -21,6 +21,9 @@ from hyperas.distributions import choice, uniform
 from hyperopt import Trials, STATUS_OK, tpe
 from keras.utils import normalize
 
+from tensorflow_addons.utils.ensure_tf_install import _check_tf_version
+from tensorflow_addons import losses
+
 
 def data():
 
@@ -161,57 +164,68 @@ def model1(x_train,y_train, x_test,y_test):
         xB = kb.min((x[:,2:3],y[:,2:3]), axis=0,keepdims=True)
         yB = kb.min((x[:,3:4],y[:,3:4]), axis=0,keepdims=True)
 
-        interArea1 = kb.max((kb.zeros_like(xB), (xB-xA +1) ), axis=0, keepdims=True)
-        interArea2 = kb.max((kb.zeros_like(xB), (yB-yA +1) ), axis=0, keepdims=True)
+        interArea1 = kb.max((kb.zeros_like(xB), (xB-xA) ), axis=0, keepdims=True)
+        interArea2 = kb.max((kb.zeros_like(xB), (yB-yA) ), axis=0, keepdims=True)
         interArea = interArea1*interArea2
-        boxAArea = (x[:,2:3] - x[:,0:1] + 1) * (x[:,3:4] - x[:,1:2] + 1)
-        boxBArea = (y[:,2:3] - y[:,0:1] + 1) * (y[:,3:4] - y[:,1:2] + 1)
+        boxAArea = (x[:,2:3] - x[:,0:1] ) * (x[:,3:4] - x[:,1:2] )
+        boxBArea = (y[:,2:3] - y[:,0:1] ) * (y[:,3:4] - y[:,1:2] )
 
         iou = interArea / (boxAArea + boxBArea - interArea)
         iou_mean = -kb.mean(iou)
         return iou_mean
 
-    model = keras.models.Sequential()
-    model.add(keras.layers.InputLayer(input_shape=x_train.shape[-2:]))
+    with tf.device('/GPU:0'):
 
-    model.add(keras.layers.LSTM({{choice([1, 2, 3,4,5,6,7,8,9,10,11,12])}},return_sequences =True ) )
-    model.add(keras.layers.LSTM({{choice([1, 2, 3,4,5,6,7,8,9,10,11,12])}},return_sequences =True ) )
-    model.add(keras.layers.LSTM({{choice([1, 2, 3,4,5,6,7,8,9,10,11,12])}},return_sequences =True ) )
-    model.add(keras.layers.LSTM({{choice([1, 2, 3,4,5,6,7,8,9,10,11,12])}},return_sequences =True ) )
-    model.add(keras.layers.LSTM({{choice([1, 2, 3,4,5,6,7,8,9,10,11,12])}},return_sequences =True ) )
-    model.add(keras.layers.LSTM({{choice([1, 2, 3,4,5,6,7,8,9,10,11,12])}},return_sequences =True ) )
-    model.add(keras.layers.LSTM({{choice([1, 2, 3,4,5,6,7,8,9,10,11,12])}},return_sequences =True ) )
-    model.add(keras.layers.LSTM({{choice([1, 2, 3,4,5,6,7,8,9,10,11,12])}},return_sequences =True ) )
+        model = keras.models.Sequential()
+        model.add(keras.layers.InputLayer(input_shape=x_train.shape[-2:]))
 
+        model.add(keras.layers.LSTM({{choice([2,4,8,16,32,64,128,256])}},return_sequences =True ) )
+        model.add(keras.layers.LSTM({{choice([2,4,8,16,32,64,128,256])}},return_sequences =True ) )
+        model.add(keras.layers.LSTM({{choice([2,4,8,16,32,64,128,256])}},return_sequences =True ) )
+        model.add(keras.layers.LSTM({{choice([2,4,8,16,32,64,128,256])}},return_sequences =True ) )
+        model.add(keras.layers.LSTM({{choice([2,4,8,16,32,64,128,256])}},return_sequences =True ) )
 
 
+        model.add(keras.layers.LSTM(4) )
+        model.add(keras.layers.Dense(4) )
 
-    model.add(keras.layers.LSTM(4) )
-    model.add(keras.layers.Dense(4) )
+        opt = tf.keras.optimizers.Adam(learning_rate={{uniform(1e-7,1e-5)}})
+        model.compile(loss=losses.GIoULoss(), optimizer=opt)
+        early_stopping = tf.keras.callbacks.EarlyStopping(monitor='val_loss', min_delta=0.0005, patience=5)
+        result = model.fit(x_train,y_train,
+                          batch_size= 32,
+                          epochs = 100,
+                          validation_split=0.1,
+                          callbacks =[early_stopping])
 
-    opt = tf.keras.optimizers.Adam(learning_rate={{uniform(1e-7,1e-5)}})
-    model.compile(loss=bb_intersection_over_union, optimizer=opt)
-    early_stopping = tf.keras.callbacks.EarlyStopping(monitor='val_loss', min_delta=0.005, patience=5)
-    result = model.fit(x_train,y_train,
-                      batch_size= 32,
-                      epochs = 100,
-                      validation_split=0.1,
-                      callbacks =[early_stopping])
-
-    validat_iou = np.amax(result.history['val_loss'])
-    print('Best validation iou of epoch:', validat_iou)
+        validat_iou = np.amax(result.history['val_loss'])
+        print('Best validation iou of epoch:', validat_iou)
     return {'loss': validat_iou, 'status': STATUS_OK, 'model': model}
 
 
+if __name__ == '__main__':
+    gpus = tf.config.experimental.list_physical_devices('GPU')
+    if gpus:
+      # Restrict TensorFlow to only allocate 1GB of memory on the first GPU
+      try:
+        tf.config.experimental.set_virtual_device_configuration(
+            gpus[0],
+            [tf.config.experimental.VirtualDeviceConfiguration(memory_limit=7000)])
+        logical_gpus = tf.config.experimental.list_logical_devices('GPU')
+        print(len(gpus), "Physical GPUs,", len(logical_gpus), "Logical GPUs")
+      except RuntimeError as e:
+        # Virtual devices must be set before GPUs have been initialized
+        print(e)
 
-best_run, best_model = optim.minimize(model=model1,
-                                      data=data,
-                                      algo=tpe.suggest,
-                                      max_evals=5,
-                                      trials=Trials(),
-				                      eval_space = True	)
-X_train, Y_train, X_test, Y_test = data()
-print("Evalutation of best performing model:")
-print(best_model.evaluate(X_test, Y_test))
-print("Best performing model chosen hyper-parameters:")
-print(best_run)
+    # with tf.device('/GPU:1'):
+    best_run, best_model = optim.minimize(model=model1,
+                                          data=data,
+                                          algo=tpe.suggest,
+                                          max_evals=5,
+                                          trials=Trials(),
+    				                      eval_space = True	)
+    X_train, Y_train, X_test, Y_test = data()
+    print("Evalutation of best performing model:")
+    print(best_model.evaluate(X_test, Y_test))
+    print("Best performing model chosen hyper-parameters:")
+    print(best_run)
