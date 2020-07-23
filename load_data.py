@@ -24,7 +24,7 @@ def Files_Load(train_file,test_file):
 
 
 
-def Boxes(loc_files, txt_names, time_steps, pad ='pre'):
+def Boxes(loc_files, txt_names, time_steps, pad ='pre', to_xywh = False):
     """
     loc_files: List that contains that has text files save
     txt_names: Txt file names. For visualization process
@@ -58,6 +58,13 @@ def Boxes(loc_files, txt_names, time_steps, pad ='pre'):
         max_person = data['Person_ID'].max()
         for num in range(1,max_person+1):
             temp_box = data[data['Person_ID'] == num ]['BB_tl_0	BB_tl_1	BB_br_0	BB_br_1'.split()].values
+            if to_xywh:
+                temp_box = temp_box.astype(float)
+                temp_box[:,2] = np.abs(temp_box[:,2] - temp_box[:,0] )
+                temp_box[:,3] = np.abs(temp_box[:,3] - temp_box[:,1])
+
+                temp_box[:,0] = temp_box[:,0] + temp_box[:,2]/2
+                temp_box[:,1] = temp_box[:,1] + temp_box[:,3]/2
             person_seq_len = len(temp_box)
             temp_frame_id = data[data['Person_ID'] == num ]['Frame_Number Person_ID'.split()].values
             abnormal_frame_ped = data[data['Person_ID'] == num]['anomaly'].values
