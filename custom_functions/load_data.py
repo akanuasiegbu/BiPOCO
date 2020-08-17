@@ -4,7 +4,7 @@ from keras.preprocessing.sequence import pad_sequences
 import os
 # from collections import OrderedDict
 # from tensorflow.python.ops import math_ops
-
+# does change show
 
 def Files_Load(train_file,test_file):
 
@@ -87,22 +87,24 @@ def Boxes(loc_files, txt_names, time_steps, pad ='pre', to_xywh = False):
             elif person_seq_len == 1:
                 # want it to skip loop
                 continue
+            # This would add noise to data
             elif person_seq_len <= time_steps:
-                temp_person_box_unpad = temp_box
-                temp_fr_person_id_unpad = temp_frame_id
-                temp_person_box = pad_sequences(temp_person_box_unpad.T, maxlen = time_steps+1, padding = pad).T
-                temp_fr_person_id = pad_sequences(temp_fr_person_id_unpad.T,  maxlen = time_steps+1, padding = pad).T
-
-                assert temp_person_box.shape == (time_steps+1,4)
-                assert temp_fr_person_id.shape  == (time_steps+1,2)
-
-                x_ppl_box.append(temp_person_box[0:time_steps,:])
-                y_ppl_box.append(temp_person_box[time_steps,:])
-
-                frame_ppl_id.append(temp_fr_person_id[0:time_steps+1,:])
-
-                video_file.append(txt_name)
-                abnormal.append(abnormal_frame_ped[-1]) #Finds if predicted frame is abnormal
+                continue
+            #     temp_person_box_unpad = temp_box
+            #     temp_fr_person_id_unpad = temp_frame_id
+            #     temp_person_box = pad_sequences(temp_person_box_unpad.T, maxlen = time_steps+1, padding = pad).T
+            #     temp_fr_person_id = pad_sequences(temp_fr_person_id_unpad.T,  maxlen = time_steps+1, padding = pad).T
+            #
+            #     assert temp_person_box.shape == (time_steps+1,4)
+            #     assert temp_fr_person_id.shape  == (time_steps+1,2)
+            #
+            #     x_ppl_box.append(temp_person_box[0:time_steps,:])
+            #     y_ppl_box.append(temp_person_box[time_steps,:])
+            #
+            #     frame_ppl_id.append(temp_fr_person_id[0:time_steps+1,:])
+            #
+            #     video_file.append(txt_name)
+            #     abnormal.append(abnormal_frame_ped[-1]) #Finds if predicted frame is abnormal
 
             else:
                 print('error')

@@ -1,0 +1,11 @@
+# ReadME
+
+Naming convention of saved models
+
+model: lstm
+type: xywh, tlbr
+dataset: ped1,ped2,st, avenue
+seq: size of sequence, 20, 5 etc int of sequence
+
+model_type_dataset_seq.h5
+example: lstm_xywh_ped1_20.h5

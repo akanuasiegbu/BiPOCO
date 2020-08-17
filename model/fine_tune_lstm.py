@@ -179,17 +179,16 @@ def model1(x_train,y_train, x_test,y_test):
         model = keras.models.Sequential()
         model.add(keras.layers.InputLayer(input_shape=x_train.shape[-2:]))
 
-        model.add(keras.layers.LSTM({{choice([2,4,8,16,32,64,128,256])}},return_sequences =True ) )
-        model.add(keras.layers.LSTM({{choice([2,4,8,16,32,64,128,256])}},return_sequences =True ) )
-        model.add(keras.layers.LSTM({{choice([2,4,8,16,32,64,128,256])}},return_sequences =True ) )
-        model.add(keras.layers.LSTM({{choice([2,4,8,16,32,64,128,256])}},return_sequences =True ) )
-        model.add(keras.layers.LSTM({{choice([2,4,8,16,32,64,128,256])}},return_sequences =True ) )
-
+        model.add(keras.layers.LSTM({{choice([1,2,3,4,5,6,7,8])}},return_sequences =True ) )
+        model.add(keras.layers.LSTM({{choice([1,2,3,4,5,6,7,8])}},return_sequences =True ) )
+        model.add(keras.layers.LSTM({{choice([1,2,3,4,5,6,7,8])}},return_sequences =True ) )
+        model.add(keras.layers.LSTM({{choice([1,2,3,4,5,6,7,8])}},return_sequences =True ) )
+        model.add(keras.layers.LSTM({{choice([1,2,3,4,5,6,7,8])}},return_sequences =True ) )
 
         model.add(keras.layers.LSTM(4) )
         model.add(keras.layers.Dense(4) )
 
-        opt = tf.keras.optimizers.Adam(learning_rate={{uniform(1e-7,1e-5)}})
+        opt = tf.keras.optimizers.Adam(learning_rate={{uniform(1e-6,1e-4)}})
         model.compile(loss=losses.GIoULoss(), optimizer=opt)
         early_stopping = tf.keras.callbacks.EarlyStopping(monitor='val_loss', min_delta=0.0005, patience=5)
         result = model.fit(x_train,y_train,
