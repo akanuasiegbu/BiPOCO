@@ -141,6 +141,21 @@ def test_split_norm_abnorm(testdict):
 
 def norm_train_max_min(data_dict = None,data=None, max1=None, min1=None, undo_norm=False):
 
+    """
+    data_dict: data input in the form of a dict. input is of same structure as
+                output of  Boxes function above
+
+    data: data that is not in dictornary format that needs to be unnormailized
+    max1 : normalizing parameter
+    min1: normalizing parameter
+    undo_norm: unnormailize data boolean
+
+    return: depends on undo_norm boolean:
+            if undo_norm is true return unnormailized data
+            if undo_norm is false normailize
+    """
+
+
     if undo_norm:
         data = data*(max1-min1) + min1
         return data
