@@ -1,4 +1,4 @@
-
+ 
 from load_data import norm_train_max_min
 import numpy as np
 import cv2
@@ -14,10 +14,20 @@ def visual_ouput(model=None,max1 = None,min1=None, vid=None,pic_loc =None, outpu
     xx,yy = norm_train_max_min(data_dict = output_dict, max1 = max1,min1 =min1)
     size = len(output_dict['frame_ppl_id'])
 
+
+    ###########################################################################
+    #This part here can probably basically be a function that's called open
+    # This function is easier because its only one index so if you sort
+    # index your good
+
+    # For a more general case I need sort by video_file and then by
+    # frame
     #sort index by frames
     frame = []
     for i in range(0,size):
         #sort index by frames
+        # I go to last element because I Combined
+        # the x and y frame and person id into one matrix
         frame.append(output_dict['frame_ppl_id'][i,-1,0])
 
     frame = np.array(frame)
@@ -27,16 +37,18 @@ def visual_ouput(model=None,max1 = None,min1=None, vid=None,pic_loc =None, outpu
     vid_file = output_dict['video_file'][sort_index] # not really needed if using one video
     frame_ppl = output_dict['frame_ppl_id'][sort_index]
     y_true = output_dict['y_ppl_box'][sort_index] # not normailized
+    ###########################################################################
 
     # Note that predicted outout is already sorted
     y_pred_scal = model.predict(xx_scal)
     y_pred = norm_train_max_min(data=y_pred_scal, max1 = max1,min1 =min1,undo_norm=True)
 
 
-    stop = frame[sort_index][-1] + 1
-    next_frame_index,j = 0,0
+    last_frame = frame[sort_index][-1]
+    next_frame_index , j = 0 , 0
 
     #  Start Video
+    ### Should change this so that location of video is variable
     loc_videos ="/home/akanu/Dataset/Anomaly/Avenue_Dataset/testing_videos/{:02}.avi".format(vid)
     video_capture = cv2.VideoCapture(loc_videos)
 
@@ -49,7 +61,7 @@ def visual_ouput(model=None,max1 = None,min1=None, vid=None,pic_loc =None, outpu
         y_true[:,1] = y_true[:,1] - y_true[:,3]/2 # Now we are at tlwh
         y_true[:,2:] = y_true[:,:2] + y_true[:,2:]
 
-    for i in range(0,stop):
+    for i in range(0,last_frame+1):
         ret, frame = video_capture.read()
         if i == frame_ppl[j,-1,0]: #finds the frame
             while i == frame_ppl[j,-1,0]:

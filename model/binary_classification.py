@@ -4,7 +4,9 @@ import os
 
 
 def Dense_5_Drop_2 (train_bm =None,val_bm=None, model_loc=None, nc=None,
-                        weighted_binary=None, output_bias = None, epochs=None):
+                        weighted_binary=None, output_bias = None,
+                         epochs=None, save_model=True, patience = 10,
+                         early_stop=True):
     """
     train_bm: train_data_tensor
     val_bm: validation_data tensor
@@ -20,7 +22,7 @@ def Dense_5_Drop_2 (train_bm =None,val_bm=None, model_loc=None, nc=None,
     output_bias: if not set output bias is set to 0 later in function
         """
 
-
+    # gpu = '/device:GPU:'+gpu
     with tf.device('/device:GPU:0'):
         # create model
 
@@ -37,7 +39,7 @@ def Dense_5_Drop_2 (train_bm =None,val_bm=None, model_loc=None, nc=None,
         model.add(keras.layers.Dense(neurons, input_dim=1, activation='relu'))
         model.add(keras.layers.Dense(neurons, input_dim=1, activation='relu')) # coment
         model.add(keras.layers.Dropout(dropout_ratio)) #comment
-        model.add(keras.layers.Dense(1, bias_initializer=output_bias))
+        model.add(keras.layers.Dense(1, bias_initializer=output_bias, activation='sigmoid'))
         if output_bias is None:
             model.layers[-1].bias.assign([0.0])
 
@@ -51,13 +53,19 @@ def Dense_5_Drop_2 (train_bm =None,val_bm=None, model_loc=None, nc=None,
         model.compile(loss=weighted_binary, optimizer= opt, metrics=['accuracy'])
         early_stopping = tf.keras.callbacks.EarlyStopping(monitor='loss',
                                                           min_delta=0.0005,
-                                                          patience=10,
+                                                          patience=patience,
                                                           restore_best_weights=True)
+
+        if save_model and early_stop:
+            callbacks = [early_stopping, checkpoint_cb]
+        elif early_stop:
+            callbacks = [early_stopping]
+        else:
+            callbacks = None
+
         bm_history = model.fit(train_bm,
                      validation_data=val_bm,
                      epochs=epochs,
-                     callbacks = [early_stopping, checkpoint_cb])
+                     callbacks = callbacks)
 
-
-
-        return bm_history,model
+        return bm_history, model

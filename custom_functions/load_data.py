@@ -7,7 +7,9 @@ import os
 # does change show
 
 def Files_Load(train_file,test_file):
-
+    """
+    This just put folder directory in a list for train and test
+    """
     box_train_txt = os.listdir(train_file)
     box_train_txt.sort()
     box_test_txt = os.listdir(test_file)
@@ -65,6 +67,7 @@ def Boxes(loc_files, txt_names, time_steps, pad ='pre', to_xywh = False):
 
                 temp_box[:,0] = temp_box[:,0] + temp_box[:,2]/2
                 temp_box[:,1] = temp_box[:,1] + temp_box[:,3]/2
+
             person_seq_len = len(temp_box)
             temp_frame_id = data[data['Person_ID'] == num ]['Frame_Number Person_ID'.split()].values
             abnormal_frame_ped = data[data['Person_ID'] == num]['anomaly'].values
@@ -143,7 +146,7 @@ def norm_train_max_min(data_dict = None,data=None, max1=None, min1=None, undo_no
 
     """
     data_dict: data input in the form of a dict. input is of same structure as
-                output of  Boxes function above
+                output of  Boxes function
 
     data: data that is not in dictornary format that needs to be unnormailized
     max1 : normalizing parameter
