@@ -2,7 +2,7 @@ import tensorflow as tf
 from tensorflow import keras
 import os
 
-def lstm_xywh_avenue_20(train_data = None, val_data=None ,model_loc = None, nc = None,  epochs =300):
+def lstm_xywh_20(train_data = None, val_data=None ,model_loc = None, nc = None,  epochs =300):
     """
     train_data: train_data_tensor
     val_data: validation_data tensor

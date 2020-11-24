@@ -8,6 +8,8 @@ import os
 
 def Files_Load(train_file,test_file):
     """
+    train_file: locations of the training bounding boxes
+    test_file : locations of the testing bounding boxes
     This just put folder directory in a list for train and test
     """
     box_train_txt = os.listdir(train_file)
@@ -18,9 +20,11 @@ def Files_Load(train_file,test_file):
     loc_files_train, loc_files_test = [], []
 
     for txt in box_train_txt:
-        loc_files_train.append(train_file + txt)
+        loc_files_train.append(os.path.join(train_file, txt))
+        # loc_files_train.append(train_file + txt)
     for txt in box_test_txt:
-        loc_files_test.append(test_file + txt)
+        loc_files_test.append(os.path.join(test_file, txt))
+        # loc_files_test.append(test_file + txt)
 
     return loc_files_train, loc_files_test, box_train_txt, box_test_txt
 
