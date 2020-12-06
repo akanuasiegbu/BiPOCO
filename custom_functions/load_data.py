@@ -8,9 +8,23 @@ import os
 
 def Files_Load(train_file,test_file):
     """
+    This file seperates the unique locations of each file and
+    the has and return output of the locations and file text.
+
     train_file: locations of the training bounding boxes
     test_file : locations of the testing bounding boxes
     This just put folder directory in a list for train and test
+
+    return: dict with 'files_train', 'files_test', 'train_txt', 'test_txt'
+    dict has list of the files 
+    examples '/home/akanu/dataset/dataset/Anomaly/Avenue_Dataset/bounding_box_tlbr/Txt_Data/Train_Box/16.txt'
+
+    or '01.txt'
+
+
+    Potential fixes to make: remove the number that is returned by dict
+    01.txt etc seems unnecessary
+
     """
     box_train_txt = os.listdir(train_file)
     box_train_txt.sort()
@@ -26,22 +40,44 @@ def Files_Load(train_file,test_file):
         loc_files_test.append(os.path.join(test_file, txt))
         # loc_files_test.append(test_file + txt)
 
-    return loc_files_train, loc_files_test, box_train_txt, box_test_txt
+
+
+    locations = {}
+    locations['files_train'] = loc_files_train
+    locations['files_test'] = loc_files_test
+    locations['txt_train'] = box_train_txt
+    locations['txt_test'] = box_test_txt
+
+    return locations
 
 
 
 def Boxes(loc_files, txt_names, time_steps, pad ='pre', to_xywh = False):
     """
+    This file process the bounding box data and creates a numpy array that
+    can be put into a tensor
+
+
+
+    
     loc_files: List that contains that has text files save
     txt_names: Txt file names. For visualization process
-    time_step: Sequence length input
-    pad: inputs 'pre' or 'post'
+    time_step: Sequence length input. Also known as frames looked at for input
+    pad: inputs 'pre' or 'post'. supplments short data with ones in front
+    to_xywh: if given file is in tlbr and want to convert to xywb
 
+    return:
     x_person_box: Has bounding box locations
     y_person_box: Label for bounding box locations
     frame_person_id: Contains frame Number and person_Id of entire sequence,
                      Last element is prediction frame. For visulization process
-    video_file: Points to video file used. For visulization process
+    video_file: Points to video file used. This gives me the frame video used
+                and also the person id.
+
+    abnormal: tells you wheather the frame is abnormal or not
+
+    Potential fixes:
+        Come back and seperate frame video and person id to make cleaner
     """
 
     x_ppl_box, y_ppl_box, frame_ppl_id, video_file, abnormal = [], [], [], [],[]  #Has bounding box locations inside
@@ -73,6 +109,8 @@ def Boxes(loc_files, txt_names, time_steps, pad ='pre', to_xywh = False):
                 temp_box[:,1] = temp_box[:,1] + temp_box[:,3]/2
 
             person_seq_len = len(temp_box)
+            # To split the frame and id to seperate code this is where I would make
+            # initial change
             temp_frame_id = data[data['Person_ID'] == num ]['Frame_Number Person_ID'.split()].values
             abnormal_frame_ped = data[data['Person_ID'] == num]['anomaly'].values
             if person_seq_len > time_steps:
@@ -146,7 +184,7 @@ def test_split_norm_abnorm(testdict):
     return abnormal_dict, normal_dict
 
 
-def norm_train_max_min(data_dict = None,data=None, max1=None, min1=None, undo_norm=False):
+def norm_train_max_min(data, max1, min1, undo_norm=False):
 
     """
     data_dict: data input in the form of a dict. input is of same structure as
@@ -160,14 +198,20 @@ def norm_train_max_min(data_dict = None,data=None, max1=None, min1=None, undo_no
     return: depends on undo_norm boolean:
             if undo_norm is true return unnormailized data
             if undo_norm is false normailize
+
+
+            
     """
 
 
     if undo_norm:
+        # If data comes in here it is not in a dictornay format
         data = data*(max1-min1) + min1
         return data
 
     else:
-        xx = (data_dict['x_ppl_box'] - min1)/(max1 - min1)
-        yy = (data_dict['y_ppl_box'] - min1)/(max1-min1)
+        # If data comes in hee it should be in the same 
+        # format as Boxes function
+        xx = (data['x_ppl_box'] - min1)/(max1 - min1)
+        yy = (data['y_ppl_box'] - min1)/(max1-min1)
         return xx,yy

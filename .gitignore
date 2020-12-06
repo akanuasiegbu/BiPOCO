@@ -1,1 +1,5 @@
 results_all_datasets
+.ipynb_checkpoints
+.jupyter
+.local
+.bash_history

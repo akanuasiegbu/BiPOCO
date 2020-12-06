@@ -1,12 +1,10 @@
-FROM tensorflow/tensorflow:2.4.0rc3-gpu
+
+FROM tensorflow/tensorflow:2.3.0-gpu-jupyter
 
 # ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update &&\
-		apt-get install -y wget openssh-server
-
-RUN systemctl enable ssh
-#RUN systemctl start ssh
+		apt-get install -y wget
 
 #apt-get -y install curl g++ nano libglib2.0-0 tree libsm6
 
@@ -15,6 +13,7 @@ WORKDIR /tmp
 RUN wget --progress=bar:force https://bootstrap.pypa.io/get-pip.py && \
 		python3 get-pip.py && \
 		pip3 install \
+
 		scipy==1.4.1 \
 		matplotlib==3.3.1 \
 		Pillow==7.2.0 \

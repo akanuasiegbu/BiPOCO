@@ -1,3 +1,4 @@
+
 FROM tensorflow/tensorflow:2.4.0rc3-gpu
 
 # ENV DEBIAN_FRONTEND=noninteractive
@@ -5,8 +6,8 @@ FROM tensorflow/tensorflow:2.4.0rc3-gpu
 RUN apt-get update &&\
 		apt-get install -y wget openssh-server
 
-RUN systemctl enable ssh
-#RUN systemctl start ssh
+
+RUN https://intellij-support.jetbrains.com/hc/en-us/community/posts/360004275260-How-to-Connect-Console-to-Python-Interpreter-Running-in-a-Docker-Container-on-a-Remote-Server-
 
 #apt-get -y install curl g++ nano libglib2.0-0 tree libsm6
 
