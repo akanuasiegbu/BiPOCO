@@ -76,3 +76,6 @@ ls
 main.py
 python main.py 
 exit
+pip list
+exit
+exit

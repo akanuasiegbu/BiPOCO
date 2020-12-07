@@ -5,12 +5,14 @@ from coordinate_change import xywh_tlbr, tlbr_xywh
 
 
 
-def return_indices(data=None, abnormal_split = 0.5, seed=None):
+def return_indices(data, seed, abnormal_split = 0.5):
     """
     Note that function returns index values that will
     allow for the creation of a train and test set that has an specificed ratio
     of normal and abnormal examples. Rest of abnormal and normal are then used
-    in the training set.
+    in the training set. If you shuffle dict first without keeping
+    track of index somehow then this function will produce meaningless
+    results that are progated.
 
     data: 1 and 0's whose location in index corresponds to location
             in acutal dataset
@@ -22,16 +24,19 @@ def return_indices(data=None, abnormal_split = 0.5, seed=None):
 
     np.random.seed(seed)
 
+    #Find normal and abnormal frames 
     abnorm_index = np.where(data == 1)
     norm_index = np.where(data == 0)
 
+    # Randomify
     rand_an = np.random.permutation(len(abnorm_index[0]))
     rand_n = np.random.permutation(len(norm_index[0]))
+    
     # Permutates the found abnormal and normal indices
     abnorm_index = abnorm_index[0][rand_an]
     norm_index = norm_index[0][rand_n]
 
-
+    # Split length
     len_abn_split = floor(len(abnorm_index)*abnormal_split)
 
     # Testing set indices
@@ -40,45 +45,74 @@ def return_indices(data=None, abnormal_split = 0.5, seed=None):
 
     train_abn_indices = abnorm_index[len_abn_split:]
     train_n_indices = norm_index[len_abn_split:]
+    
+    # Dict 
+    indices = {}
+    indices['train_abn'] = train_abn_indices
+    indices['train_n'] = train_n_indices
+    indices['test_abn'] = test_abn_indices
+    indices['test_n'] = test_n_indices
 
-    return [train_abn_indices, train_n_indices, test_abn_indices, test_n_indices]
+    # return [train_abn_indices, train_n_indices, test_abn_indices, test_n_indices]
+    return indices
+
+def compute_iou(x,y,model):
+    """
+    This function takes in input x and y 
+    that is unnormed. It then normilized x and y. 
+    And passes through function
 
 
+    x: normed testing data
+    y: normed tested data
+    model: lstm_model or other model that estimates box loc
+    """
 
-def binary_data_split(x,y, model, indices):
+    predicted_bb = model.predict(x)
+    iou = bb_intersection_over_union_np(    xywh_tlbr(predicted_bb),
+                                            xywh_tlbr(y))
+    iou = np.squeeze(iou)
+
+    return iou
+
+
+def binary_data_split(iou, indices):
     """
     This function takes normed data and returns training data with IOU and return_indices
     Indices can be used to track back to location in unshuffled testdict.
     So that visulzations of what can be given as to what happened.
 
-    x: normed testing data
-    y: normed tested data
-    indices: [train_abn_indices, train_n_indices, test_abn_indices, test_n_indices]
+    iou: iou values from compute iou as input
+    indices:    Note that this is a dictornay now
+                Note that indices passed are relative to orginal
+                dict locations. If shuffle dict first without returning
+                indices . they 
 
     return: train_x, train_y, test_x, test_y
             Note that the second coloumn of train_x and test_x
             contain the indices corresponding the location in unshuffled
             dictornary
     """
-    # I dont like that I put model predict in here
-    # function name is kind of deceiving
-    out1 = model.predict(x)
-    out = bb_intersection_over_union_np(xywh_tlbr(out1),xywh_tlbr(y))
-    out = np.squeeze(out)
 
-    train_x = np.array( [np.append(out[indices[0]], out[indices[1]] ),
-                        np.append(indices[0], indices[1])])
+    train_x = np.array( [np.append(iou[indices['train_abn']], iou[indices['train_n']] ),
+                        np.append(indices['train_abn'], indices['train_n'])])
 
-    train_y = np.append(np.ones(len(indices[0])),
-                  np.zeros(len(indices[1])) )
+    train_y = np.append(np.ones(len(indices['train_abn'])),
+                  np.zeros(len(indices['train_n'])) )
 
 
-    test_x = np.array( [np.append(out[indices[2]], out[indices[3]] ),
-                        np.append(indices[2], indices[3])])
-    test_y = np.append(np.ones(len(indices[2])),
-                      np.zeros(len(indices[3])) )
+    test_x = np.array( [np.append(iou[indices['test_abn']], iou[indices['test_n']] ),
+                        np.append(indices['test_abn'], indices['test_n'])])
+    test_y = np.append(np.ones(len(indices['test_abn'])),
+                      np.zeros(len(indices['test_n'])) )
 
-    return train_x,train_y, test_x, test_y
+    data = {}
+    data['train_x'] = train_x
+    data['train_y'] = train_y
+    data['test_x'] = test_x
+    data['test_y'] = test_y
+    # return train_x,train_y, test_x, test_y
+    return data
 
 
 

@@ -23,6 +23,7 @@ from coordinate_change import xywh_tlbr, tlbr_xywh
 # Data Info
 from data import data_lstm, tensorify
 from load_data import norm_train_max_min
+from load_data_binary import *
 
 # Plots
 from metrics_plot import loss_plot
@@ -91,9 +92,51 @@ def lstm_train(traindict):
     loss_plot(history, plot_loc)
     
 
-def classifer_train():
+def classifer_train(testdict, lstm):
+
+    # Note that I am using the testing data
+    # If I do end up changing my normlization only need 
+    # to change in main file. Design intent
+    x,y = norm_train_max_min(   testdict,
+                                max1 = hyparams['max'],
+                                min1 = hyparams['min']
+                                )
+
+    iou = compute_iou(x,y,lstm)
+    # Note that indices returned are in same order
+    # as testdict unshuffled 
+    indices = return_indices(   testdict['abnormal'],
+                                seed = hyparams['seed'],
+                                abnormal_split = hyparams['binary_classifier']['abnormal_split'])
+    
+    # returns a dict with keys: train_x, train_y, test_x, test_y
+    data = binary_data_split(iou, indices)
 
 
+
+    #naming convection 
+    nc = [  loc['nc']['model_name_binary_classifer'],
+            loc['nc']['data_coordinate_out'],
+            loc['nc']['dataset_name'],
+            hyparams['frames']
+            ] # Note that frames is the sequence input
+
+
+    make_dir(loc['model_path_list']) # Make directory to save model
+
+    # print(loc['model_path_list'])
+    model_loc = join(   os.path.dirname(os.getcwd()), 
+                        *loc['model_path_list']
+                        ) # create save link
+
+    binary_network( train_bm,
+                    val_bm, 
+                    model_loc=model_loc,
+                    nc =nc,
+                    weighted_binary,
+                    output_bias,
+                    epochs=hyparams['epochs'],
+                    save_model=True):
     pass
 
 def make_dir(dir_list):
@@ -119,6 +162,7 @@ def main():
 
     ## To_DO:
     """"
+    Need to remove specifcation for GPU to run on
     1)  figuring out name and folder creation 
         seems like I will want to save model, results plots etc into 
         a single folder so if I don't like the results I can delete

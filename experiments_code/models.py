@@ -97,9 +97,10 @@ def binary_network(train_bm, val_bm, model_loc, nc,
             model.layers[-1].bias.assign([0.0])
 
         opt = tf.keras.optimizers.Adam(learning_rate=lr)
-        x = (os.path.join(model_loc, '{}_{}_{}_{}_{:.3f}.h5'.format(
-            nc[0], nc[1], nc[2], nc[3], nc[4])))
-        checkpoint_cb = keras.callbacks.ModelCheckpoint(os.path.join(model_loc, '{}_{}_{}_{}_{:.3f}.h5'.format(nc[0], nc[1], nc[2], nc[3], nc[4])),
+        
+
+        
+        checkpoint_cb = keras.callbacks.ModelCheckpoint(os.path.join(model_loc, '{}_{}_{}_{}_{:.3f}.h5'.format(nc[0], nc[1], nc[2], nc[3])),
                                                         save_best_only=True)
 
         model.compile(loss=weighted_binary,

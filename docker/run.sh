@@ -27,6 +27,6 @@ docker run -it \
   -v $(pwd)/.bash_history:$HOME/.bash_history \
   -v /mnt/roahm:/mnt/roahm \
   -v /home/akanu/project/anomalous_pred:/home/akanu \
-  -it \
-   anomalous_pred_ser:latest
+  -it \  
+  abnormal_ped:latest
 

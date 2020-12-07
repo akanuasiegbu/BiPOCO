@@ -4,7 +4,6 @@ hyparams = {
     'buffer_size': 10000,
     'val_size': 0.3,
     'learning_rate':0.001,
-    
 
     'frames': 20,
 
@@ -30,7 +29,9 @@ hyparams = {
             'early_stopping':True,
             'mointor': 'loss',
             'min_delta':0.00005,
-            'patience':10
+            'patience':10,
+            'seed':23,
+            'abnormal_split':0.5
         }
 
 
@@ -47,8 +48,10 @@ loc =  {
     'model_path_list': ['results_all_datasets', 'experiment_1', 'avenue', 'saved_model'],
     'metrics_path_list': ['results_all_datasets', 'experiment_1', 'avenue', 'metrics_plot'],
     
+    "model_binary_path_list":
     'nc':{  
-        'model_name':'lstm_network',
+        'model_name': 'lstm_network',
+        'model_name_binary_classifer': 'binary_network', 
         'data_coordinate_out': 'xywh',
         'dataset_name': 'avenue' # avenue, st
         },
