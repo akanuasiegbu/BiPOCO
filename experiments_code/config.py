@@ -31,7 +31,11 @@ hyparams = {
             'min_delta':0.00005,
             'patience':10,
             'seed':23,
-            'abnormal_split':0.5
+            'abnormal_split':0.5, # Split for the data into normal and abnormal
+            'val_ratio':0.3, #guarantee the ratio of normal and abnormal frames
+                            # are the same for validatin set and training set.
+                            # so val_ratio. Think val_ratio(normal) + val_ratio(abnormal ) = val_ratio(normal + abnormal)
+                            
         }
 
 
@@ -48,7 +52,6 @@ loc =  {
     'model_path_list': ['results_all_datasets', 'experiment_1', 'avenue', 'saved_model'],
     'metrics_path_list': ['results_all_datasets', 'experiment_1', 'avenue', 'metrics_plot'],
     
-    "model_binary_path_list":
     'nc':{  
         'model_name': 'lstm_network',
         'model_name_binary_classifer': 'binary_network', 

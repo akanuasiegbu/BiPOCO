@@ -7,5 +7,5 @@ docker run -it --rm \
   -u $(id -u):$(id -g) \
   -v $HOME:$HOME \
   -v /mnt/roahm:/mnt/roahm \
-  -v $HOME/project/anomalous_pred:/tf/notebooks \
+  -v $HOME/akanu/projects/anomalous_pred:/tf/notebooks \
   anomalous_pred:jupyter

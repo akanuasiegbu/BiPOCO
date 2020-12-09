@@ -5,7 +5,7 @@ from coordinate_change import xywh_tlbr, tlbr_xywh
 
 
 
-def return_indices(data, seed, abnormal_split = 0.5):
+def return_indices(data, seed, abnormal_split):
     """
     Note that function returns index values that will
     allow for the creation of a train and test set that has an specificed ratio
@@ -71,9 +71,7 @@ def compute_iou(x,y,model):
     predicted_bb = model.predict(x)
     iou = bb_intersection_over_union_np(    xywh_tlbr(predicted_bb),
                                             xywh_tlbr(y))
-    iou = np.squeeze(iou)
-
-    return iou
+    return np.squeeze(iou)
 
 
 def binary_data_split(iou, indices):
@@ -83,15 +81,15 @@ def binary_data_split(iou, indices):
     So that visulzations of what can be given as to what happened.
 
     iou: iou values from compute iou as input
-    indices:    Note that this is a dictornay now
+    indices:    Note that this is a dict now
                 Note that indices passed are relative to orginal
                 dict locations. If shuffle dict first without returning
-                indices . they 
+                indices.
 
-    return: train_x, train_y, test_x, test_y
+    return: train and test dict with keys:x, y
             Note that the second coloumn of train_x and test_x
-            contain the indices corresponding the location in unshuffled
-            dictornary
+            contain indices corresponding the location in unshuffled
+            dict
     """
 
     train_x = np.array( [np.append(iou[indices['train_abn']], iou[indices['train_n']] ),
@@ -106,82 +104,108 @@ def binary_data_split(iou, indices):
     test_y = np.append(np.ones(len(indices['test_abn'])),
                       np.zeros(len(indices['test_n'])) )
 
-    data = {}
-    data['train_x'] = train_x
-    data['train_y'] = train_y
-    data['test_x'] = test_x
-    data['test_y'] = test_y
+    train, test = {}, {}
+    train['x'] = train_x.T # transpose to make new features a row
+    train['y'] = train_y
+    test['x'] = test_x.T #transpose to make new features a row
+    test['y'] = test_y
     # return train_x,train_y, test_x, test_y
-    return data
+    return train, test
 
 
 
 
-
-def same_ratio_split_train_val(train_x,train_y, val_ratio = 0.3):
+# def same_ratio_split_train_val(train_x,train_y, val_ratio = 0.3):
+def train_val_same_ratio(train_x,train_y, val_ratio):
     """
-    train_x: training x data for binary classifer. shape (2, somenumber)
+    This function forces the training and validation sets
+    to have the same ratio for abnormal and normal cases
+
+    train_x: training x data for binary classifer. Shape (somenumber, 2)
+             First column is the iou values. second column is the 
+             index values that correspond to locations in train dict.
+
     train_y: training y data for binary classifer. shape (somenumber,)
+             has indicator variable for abnormal. 1 means abonormal
+
     val_ratio: ratio to split between validation and training set
 
-    return: val_x, val_y, train_x, train_y
+    return: train and val dict with keys:x, y
     """
-
+    # Find normal and abnormal index
     abnorm_index = np.where(train_y == 1)
     norm_index = np.where(train_y == 0)
+
+    # I changed the train_x input features to be rows
+    # so changed from (2, somenumber) -> (somenumber, 2)
+
+    # Randomify
     rand_an = np.random.permutation(len(abnorm_index[0]))
     rand_n = np.random.permutation(len(norm_index[0]))
     abnorm_index = abnorm_index[0][rand_an]
     norm_index = norm_index[0][rand_n]
 
+    # Split lengths
     len_val_ab = int(len(abnorm_index)*val_ratio)
     len_val_n = int(len(norm_index)*val_ratio)
 
 
-    val_x = np.append(train_x[:,abnorm_index[:len_val_ab]] ,
-                      train_x[:,norm_index[:len_val_n]], axis = 1)
-
-#     part1 = train_x[:,abnorm_index[:len_val_ab]]
-#     part2 = train_x[:,norm_index[:len_val_n]]
-#     print('This is shape of part 1 of append: {}'.format(part1.shape))
-#     print('This is shape of part 2 of append: {}'.format(part2.shape))
-#     print('This is the combined shape of part 1 and 2 {}'.format(val_x.shape))
+    val_x = np.append(train_x[abnorm_index[:len_val_ab], :] ,
+                      train_x[norm_index[:len_val_n],:], axis = 0)
 
     val_y = np.append(train_y[abnorm_index[:len_val_ab]],
                       train_y[norm_index[:len_val_n]])
 
-    train_x = np.append(train_x[:,abnorm_index[len_val_ab:]] ,
-                      train_x[:,norm_index[len_val_n:]], axis=1)
+    train_x = np.append(train_x[abnorm_index[len_val_ab:],:] ,
+                      train_x[norm_index[len_val_n:],:], axis=0)
 
     train_y = np.append(train_y[abnorm_index[len_val_ab:]],
                       train_y[norm_index[len_val_n:]])
 
+    train, val = {}, {}
+    val['x'] = val_x
+    val['y'] = val_y
+    train['x'] = train_x 
+    train['y'] = train_y
+    
+    return train, val
 
-    return val_x, val_y, train_x, train_y
 
 
-
-def one_weight_ratio_train(train_x, train_y):
+# def one_weight_ratio_train(train_x, train_y):
+def train_equal_abnorm_and_norm(train_x, train_y):
     """
     This function splits the training data to an equal amount of abnormal
     and normal sequences. Returns same type of data as inputted.
     rows and col are same format. Think about as removing the excess normal Values
     that are not used.
 
-    train_x: this contains 2 rows. First row is the iou values.
-             second row is the index values that correspond to locations in
-             train dict.
-    train_y: has indicator 1 or 0 depending on abnormal or not
+    train_x: training x data for binary classifer. Shape (somenumber, 2)
+             First column is the iou values. second column is the 
+             index values that correspond to locations in train dict.
+    train_y: training y data for binary classifer. shape (somenumber,)
+             has indicator variable for abnormal. 1 means abonormal
 
     return: train_x_even_split, train_y_even_split
     """
+    # Find normal and abnormal
     abnorm_index = np.where(train_y ==1)[0]
     norm_index = np.where(train_y == 0)[0]
+
+    # Randomify
     rand_norm = np.random.permutation(len(norm_index))
     norm_index = norm_index[rand_norm]
-    train_x_even_split = np.append(train_x[:,abnorm_index],
-                                train_x[:,norm_index][:,:len(abnorm_index)],
-                                  axis=1)
+    
+    # Apply to data
+    train_x_even_split = np.append(train_x[abnorm_index, :],
+                                train_x[norm_index,:][:len(abnorm_index),:], # double check
+                                  axis=0)
     train_y_even_split = np.append(train_y[abnorm_index],
                                   train_y[norm_index][:len(abnorm_index)])
-    return train_x_even_split, train_y_even_split
+    
+    data={}
+    data['train_x'] = train_x_even_split
+    data['train_y'] = train_y_even_split
+    
+    # return train_x_even_split, train_y_even_split
+    return data

@@ -57,7 +57,7 @@ def lstm_network(train_data, val_data, model_loc, nc,  epochs=300):
 
 def binary_network(train_bm, val_bm, model_loc, nc,
                    weighted_binary, output_bias,
-                   epochs, save_model=True):
+                   epochs=300, save_model=True):
     """
     train_bm: train_data_tensor
     val_bm: validation_data tensor
@@ -100,7 +100,7 @@ def binary_network(train_bm, val_bm, model_loc, nc,
         
 
         
-        checkpoint_cb = keras.callbacks.ModelCheckpoint(os.path.join(model_loc, '{}_{}_{}_{}_{:.3f}.h5'.format(nc[0], nc[1], nc[2], nc[3])),
+        checkpoint_cb = keras.callbacks.ModelCheckpoint(os.path.join(model_loc, '{}_{}_{}_{}.h5'.format(nc[0], nc[1], nc[2], nc[3])),
                                                         save_best_only=True)
 
         model.compile(loss=weighted_binary,

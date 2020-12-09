@@ -92,25 +92,62 @@ def lstm_train(traindict):
     loss_plot(history, plot_loc)
     
 
-def classifer_train(testdict, lstm):
+def classifer_train(traindict, testdict, lstm):
 
-    # Note that I am using the testing data
+
+    # I could have three main files that I load or
+    # I could use an if statemet to switch bewteen the 
+    # experiments? What is the best method to use? 
+    # OR I could create another function that does loading?
+
+    # Note that I am using the testing dable than Mac OS? 
+    # The answer is simple – more control to the user while providing betteta
     # If I do end up changing my normlization only need 
     # to change in main file. Design intent
+
+    # Test Data
     x,y = norm_train_max_min(   testdict,
                                 max1 = hyparams['max'],
                                 min1 = hyparams['min']
                                 )
 
     iou = compute_iou(x,y,lstm)
+    print(iou.shape)
+    quit()
     # Note that indices returned are in same order
     # as testdict unshuffled 
+
+    # Note that indexing works only if data is loaded the same way 
+    # Every time . Otherwise I could create an lstm model then I would train it.
+    # If loaded again then I would need to make 
+
+
+    ## Find indices 
     indices = return_indices(   testdict['abnormal'],
                                 seed = hyparams['seed'],
                                 abnormal_split = hyparams['binary_classifier']['abnormal_split'])
     
-    # returns a dict with keys: train_x, train_y, test_x, test_y
-    data = binary_data_split(iou, indices)
+    # Gets the train and test data
+    # returns a dict with keys: x, y
+    train, test = binary_data_split(iou, indices)
+
+
+    if exp == '1':
+        train, val = train_val_same_ratio(  train['x'], 
+                                            train['y'],
+                                            val_ratio=hyparams['binary_classifier']['val_ratio'])
+    elif exp == '2':
+        x,y = norm_train_max_min(   traindict,
+                                    max1 = hyparams['max'],
+                                    min1 = hyparams['min']
+                                    )
+        iou = compute_iou(x, y ,lstm)
+
+        train_combined = np.append(np.reshape(out,(1, len(out)) ), 
+                                   np.array([None]*len(out)).reshape((1,len(out))),
+                                   axis=0)
+
+
 
 
 
@@ -162,11 +199,13 @@ def main():
 
     ## To_DO:
     """"
-    Need to remove specifcation for GPU to run on
-    1)  figuring out name and folder creation 
-        seems like I will want to save model, results plots etc into 
-        a single folder so if I don't like the results I can delete
-        the folder eniterly
+    
+    Why do I need an initial bias for last layer. I think I got idea
+    from google. But is it advantagous. 
+    https://www.tensorflow.org/tutorials/structured_data/imbalanced_data
+    
+    1)Need to remove specifcation for GPU to run on
+    
 
     2)  Looks like I can save the hyprmas file as well in a txt file.
         Might be useful might not be 
