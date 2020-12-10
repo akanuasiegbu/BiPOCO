@@ -93,16 +93,20 @@ def binary_data_split(iou, indices):
     """
 
     train_x = np.array( [np.append(iou[indices['train_abn']], iou[indices['train_n']] ),
-                        np.append(indices['train_abn'], indices['train_n'])])
+                        np.append(indices['train_abn'], indices['train_n'])]
+                        )
 
-    train_y = np.append(np.ones(len(indices['train_abn'])),
-                  np.zeros(len(indices['train_n'])) )
+    train_y = np.append(    np.ones(len(indices['train_abn']), dtype=np.int8 ),
+                            np.zeros(len(indices['train_n']), dtype=np.int8 ) 
+                            )
 
 
     test_x = np.array( [np.append(iou[indices['test_abn']], iou[indices['test_n']] ),
-                        np.append(indices['test_abn'], indices['test_n'])])
-    test_y = np.append(np.ones(len(indices['test_abn'])),
-                      np.zeros(len(indices['test_n'])) )
+                        np.append(indices['test_abn'], indices['test_n'])]
+                        )
+    test_y = np.append( np.ones(len(indices['test_abn']), dtype=np.int8),
+                        np.zeros(len(indices['test_n']), dtype=np.int8) 
+                      )
 
     train, test = {}, {}
     train['x'] = train_x.T # transpose to make new features a row
@@ -173,7 +177,7 @@ def train_val_same_ratio(train_x,train_y, val_ratio):
 
 
 # def one_weight_ratio_train(train_x, train_y):
-def train_equal_abnorm_and_norm(train_x, train_y):
+def reduce_train(train_x, train_y):
     """
     This function splits the training data to an equal amount of abnormal
     and normal sequences. Returns same type of data as inputted.
@@ -203,9 +207,9 @@ def train_equal_abnorm_and_norm(train_x, train_y):
     train_y_even_split = np.append(train_y[abnorm_index],
                                   train_y[norm_index][:len(abnorm_index)])
     
-    data={}
-    data['train_x'] = train_x_even_split
-    data['train_y'] = train_y_even_split
+    train={}
+    train['x'] = train_x_even_split
+    train['y'] = train_y_even_split
     
     # return train_x_even_split, train_y_even_split
-    return data
+    return train

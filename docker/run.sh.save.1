@@ -8,6 +8,7 @@ fi
 #   --gpus '"device='$GPU'"' \
 #   --name anomalous_ser \ # This is the container name
 #   --hostname $(hostname) \
+y
 #   -e HOME \
 #   -p 8888:8888 \
 #   -u $(id -u):$(id -g) \
@@ -26,6 +27,6 @@ docker run -it \
   -p 80:8888 \
   -v $(pwd)/.bash_history:$HOME/.bash_history \
   -v /mnt/roahm:/mnt/roahm \
-  -v $HOME/akanu/projects/anomalous_pred:/home/akanu \
+  -v /home/akanu/akanu/project/anomalous_pred:/home/akanu \
   abnormal_ped:latest
 

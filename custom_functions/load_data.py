@@ -165,7 +165,7 @@ def Boxes(loc_files, txt_names, time_steps, pad ='pre', to_xywh = False):
     datadict['y_ppl_box'] = np.array(y_ppl_box)
     datadict['frame_ppl_id'] = np.array(frame_ppl_id)
     datadict['video_file'] = np.array(video_file)
-    datadict['abnormal'] = np.array(abnormal)
+    datadict['abnormal'] = np.array(abnormal, dtype=np.int8)
 
     return  datadict
 

@@ -3,9 +3,11 @@ import tensorflow as tf
 from tensorflow import keras
 
 from config import hyparams
+from tensorflow.keras.layers import Lambda
+
 
 # To Do List
-## Import time and make  
+## Import time and make
 
 def lstm_network(train_data, val_data, model_loc, nc,  epochs=300):
     """
@@ -31,15 +33,15 @@ def lstm_network(train_data, val_data, model_loc, nc,  epochs=300):
         lstm_20.add(keras.layers.LSTM(4, return_sequences=True))
         lstm_20.add(keras.layers.LSTM(4))
         lstm_20.add(keras.layers.Dense(4))
-        opt = keras.optimizers.Adam(learning_rate=hyparams['newtorks']['lstm']['lr'])
+        opt = keras.optimizers.Adam(learning_rate=hyparams['networks']['lstm']['lr'])
         checkpoint_cb = keras.callbacks.ModelCheckpoint(os.path.join(model_loc, '{}_{}_{}_{}.h5'.format(nc[0], nc[1], nc[2], nc[3])),
                                                         save_best_only=True)
 
-        if hyparams['newtorks']['lstm']['early_stopping'] == True:
+        if hyparams['networks']['lstm']['early_stopping'] == True:
             early_stopping = keras.callbacks.EarlyStopping(
                 monitor='loss',
-                min_delta=hyparams['newtorks']['lstm']['min_delta'],
-                patience=hyparams['newtorks']['lstm']['patience'])
+                min_delta=hyparams['networks']['lstm']['min_delta'],
+                patience=hyparams['networks']['lstm']['patience'])
 
             cb = [early_stopping, checkpoint_cb]
         else:
@@ -47,12 +49,22 @@ def lstm_network(train_data, val_data, model_loc, nc,  epochs=300):
 
     #     lstm_20.compile(optimizer=opt, loss=losses.GIoULoss(), metrics=bb_intersection_over_union)
         # if use iou metric need to conver to tlbr
-        lstm_20.compile(optimizer=opt, loss=hyparams['newtorks']['lstm']['loss'])
+        lstm_20.compile(optimizer=opt, loss=hyparams['networks']['lstm']['loss'])
         lstm_20_history = lstm_20.fit(train_data,
                                       validation_data=val_data,
                                       epochs=epochs,
                                       callbacks=cb)
         return lstm_20_history , lstm_20
+
+
+def loss(y_true, y_pred):
+    # when_y_1 = y_true*tf.keras.backend.log(y_pred)*(1/weight_ratio)
+    when_y_1 = y_true*tf.keras.backend.log(y_pred)*(1/1)
+    neg_y_pred = Lambda(lambda x: -x)(y_pred)
+    when_y_0 = ( 1+Lambda(lambda x: -x)(y_true))*tf.keras.backend.log(1+neg_y_pred )
+
+    weighted_cross_entr = Lambda(lambda x: -x)(when_y_0+when_y_1)
+    return weighted_cross_entr
 
 
 def binary_network(train_bm, val_bm, model_loc, nc,
@@ -76,9 +88,9 @@ def binary_network(train_bm, val_bm, model_loc, nc,
     # gpu = '/device:GPU:'+gpu
     with tf.device('/device:GPU:0'):
 
-        neurons = hyparams['newtorks']['binary_classifier']['neurons']
-        dropout_ratio = hyparams['newtorks']['binary_classifier']['dropout']
-        lr = hyparams['newtorks']['binary_classifier']['lr']
+        neurons = hyparams['networks']['binary_classifier']['neurons']
+        dropout_ratio = hyparams['networks']['binary_classifier']['dropout']
+        lr = hyparams['networks']['binary_classifier']['lr']
         # create model
         if output_bias is not None:
             output_bias = keras.initializers.Constant(output_bias)
@@ -97,21 +109,26 @@ def binary_network(train_bm, val_bm, model_loc, nc,
             model.layers[-1].bias.assign([0.0])
 
         opt = tf.keras.optimizers.Adam(learning_rate=lr)
-        
 
-        
+
+
         checkpoint_cb = keras.callbacks.ModelCheckpoint(os.path.join(model_loc, '{}_{}_{}_{}.h5'.format(nc[0], nc[1], nc[2], nc[3])),
                                                         save_best_only=True)
+        if weighted_binary == None:
+            model.compile(loss=loss,
+                        optimizer=opt, metrics=['accuracy'])
+        else:
+            model.compile(loss=weighted_binary,
+                        optimizer=opt, metrics=['accuracy'])
 
-        model.compile(loss=weighted_binary,
-                      optimizer=opt, metrics=['accuracy'])
+
         early_stopping = tf.keras.callbacks.EarlyStopping(
-                        monitor=hyparams['newtorks']['binary_classifier']['mointor'],
-                        min_delta=hyparams['newtorks']['binary_classifier']['min_delta'],
-                        patience=hyparams['newtorks']['binary_classifier']['patience'],
+                        monitor=hyparams['networks']['binary_classifier']['mointor'],
+                        min_delta=hyparams['networks']['binary_classifier']['min_delta'],
+                        patience=hyparams['networks']['binary_classifier']['patience'],
                         restore_best_weights=True)
 
-        if save_model and hyparams['newtorks']['binary_classifier']['early_stopping']:
+        if save_model and hyparams['networks']['binary_classifier']['early_stopping']:
             callbacks = [early_stopping, checkpoint_cb]
         elif early_stop:
             callbacks = [early_stopping]
@@ -124,3 +141,5 @@ def binary_network(train_bm, val_bm, model_loc, nc,
                                callbacks=callbacks)
 
         return bm_history, model
+
+

@@ -1,17 +1,20 @@
 hyparams = {
-    'epochs':10,
+    'epochs':400,
     'batch_size': 32,
     'buffer_size': 10000,
     'val_size': 0.3,
     'learning_rate':0.001,
 
-    'frames': 20,
+    'frames': 5,
 
     'to_xywh':True, # This is assuming file is in tlbr format
     'max':913.0, # wonder better way to pick
     'min':-138.5, # wonder better way to pick
 
-    'newtorks': {
+    'exp_1': True, # might not be best place
+    'exp_3': True, # might not be best place
+
+    'networks': {
         'lstm':{
             'loss':'mse',
             'lr': 8.726e-06,
@@ -35,7 +38,7 @@ hyparams = {
             'val_ratio':0.3, #guarantee the ratio of normal and abnormal frames
                             # are the same for validatin set and training set.
                             # so val_ratio. Think val_ratio(normal) + val_ratio(abnormal ) = val_ratio(normal + abnormal)
-                            
+
         }
 
 
@@ -47,18 +50,18 @@ hyparams = {
 # want an adaptive model saved based on arch size for model_loc
 
 loc =  {
-    # if I'm running a test where don't want to save anything 
+    # if I'm running a test where don't want to save anything
     # how do I do that. Maybe move them to tmp
     'model_path_list': ['results_all_datasets', 'experiment_1', 'avenue', 'saved_model'],
     'metrics_path_list': ['results_all_datasets', 'experiment_1', 'avenue', 'metrics_plot'],
-    
-    'nc':{  
+
+    'nc':{
         'model_name': 'lstm_network',
-        'model_name_binary_classifer': 'binary_network', 
+        'model_name_binary_classifer': 'binary_network',
         'data_coordinate_out': 'xywh',
         'dataset_name': 'avenue' # avenue, st
         },
-    # is nc the best way to propate and save things as same name 
+    # is nc the best way to propate and save things as same name
     # Might want to autmoically create a new folder with model arch saved
     # as a text file as well as in folder name
 

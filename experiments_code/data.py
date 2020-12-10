@@ -1,12 +1,12 @@
-from load_data import Files_Load, Boxes, test_split_norm_abnorm, norm_train_max_min
+from load_data import Files_Load, Boxes
 from pedsort import pedsort
-from load_data_binary_class import return_indices, binary_data_split, same_ratio_split_train_val
+
 
 from sklearn.model_selection import train_test_split
 
 from config import hyparams
 import tensorflow as tf
-
+import numpy as np
 def data_lstm(train_file, test_file):
 
     # returns a dict file
@@ -27,12 +27,12 @@ def data_lstm(train_file, test_file):
 
     return traindict, testdict
 
-def tensorify(X, Y):
+def tensorify(train, val):
 
     """
     Mainly using this function to make training and validation sets
-    X: numpy array of training x for bounding boxes
-    Y: numpy array of training y for bounding boxes
+    train: dict that contains x and y
+    val:dict that contains x and y
 
     return
     train_univariate: training tensor set
@@ -41,12 +41,20 @@ def tensorify(X, Y):
 
     buffer_size = hyparams['buffer_size']
     batch_size = hyparams['batch_size']
-    xx_train, xx_val,yy_train,yy_val = train_test_split(X,
-                                                        Y,
-                                                        test_size = hyparams['val_size'])
-    train_univariate = tf.data.Dataset.from_tensor_slices((xx_train,yy_train))
+
+
+    # print('Inside Tensorfify')
+    """
+    Come back and fix, I dont like tha I need to cast to float32
+    """
+
+    print(train['x'].shape)
+    print(train['y'].shape)
+    print(val['x'].shape)
+    print(val['y'].shape)
+    train_univariate = tf.data.Dataset.from_tensor_slices((train['x'], np.array(train['y'], dtype=np.float32)))
     train_univariate = train_univariate.cache().shuffle(buffer_size).batch(batch_size)
-    val_univariate = tf.data.Dataset.from_tensor_slices((xx_val,yy_val))
+    val_univariate = tf.data.Dataset.from_tensor_slices((val['x'],np.array(val['y'], dtype=np.float32)))
     val_univariate = val_univariate.cache().shuffle(buffer_size).batch(batch_size)
 
     return train_univariate, val_univariate
