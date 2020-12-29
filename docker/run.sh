@@ -23,9 +23,10 @@ docker run -it \
   --gpus '"device='$GPU'"' \
   --hostname $(hostname) \
   -e HOME \
-  -p 80:8888 \
   -v $(pwd)/.bash_history:$HOME/.bash_history \
   -v /mnt/roahm:/mnt/roahm \
+  -v /mnt/workspace/datasets:/mnt/workspace/datasets:ro \
+  -w /home/akanu \
   -v $HOME/akanu/projects/anomalous_pred:/home/akanu \
   abnormal_ped:latest
 

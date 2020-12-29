@@ -25,7 +25,7 @@ from load_data import norm_train_max_min
 from load_data_binary import *
 
 # Plots
-from metrics_plot import loss_plot
+from metrics_plot import *
 
 # Models
 from models import lstm_network, binary_network
@@ -54,26 +54,32 @@ def lstm_train(traindict):
     After training make plots to see results. (Make a plotter class or functions)
     """
     train_x,train_y = norm_train_max_min(   data = traindict,
-                                            max1=hyparams['max'],
-                                            min1=hyparams['min']
+                                            # max1=hyparams['max'],
+                                            # min1=hyparams['min']
+                                            max1 = max1,
+                                            min1 = min1
                                         )
     train, val = {}, {}
     train['x'], val['x'],train['y'],val['y'] = train_test_split(    train_x,
                                                                     train_y,
-                                                                    test_size = hyparams['val_size'])
+                                                                    test_size = hyparams['networks']['lstm']['val_ratio'])
+    
+    # print(train['x'].shape)
+    # quit()
     # used to do train test split in tensorify function
     # took out to make tensorify func universal
     train_data,val_data = tensorify(train, val)
 
     #naming convection
-    nc = [  loc['nc']['model_name'],
+    nc = [  loc['nc']['date'],
+            loc['nc']['model_name'],
             loc['nc']['data_coordinate_out'],
             loc['nc']['dataset_name'],
-            hyparams['frames']
+            hyparams['frames'],
             ] # Note that frames is the sequence input
 
-
-    make_dir(loc['model_path_list']) # Make directory to save model
+    # folders not saved by dates
+    make_dir(loc['model_path_list']) # Make directory to save model, no deped
 
     # print(loc['model_path_list'])
     model_loc = join(   os.path.dirname(os.getcwd()),
@@ -93,7 +99,7 @@ def lstm_train(traindict):
                         *loc['metrics_path_list']
                         )
     # Note that loss plot is saved to plot_lcc
-    loss_plot(history, plot_loc)
+    loss_plot(history, plot_loc, nc)
 
     return model
 
@@ -110,15 +116,18 @@ def classifer_train(traindict, testdict, lstm):
     # The answer is simple – more control to the user while providing betteta
     # If I do end up changing my normlization only need
     # to change in main file. Design intent
+    
 
     # Test Data
     x,y = norm_train_max_min(   testdict,
-                                max1 = hyparams['max'],
-                                min1 = hyparams['min']
+                                # max1 = hyparams['max'],
+                                # min1 = hyparams['min']
+                                max1 = max1,
+                                min1 = min1
                                 )
 
     iou = compute_iou(x,y,lstm)
-    print('iou shape {}'.format(iou.shape) )
+    # print('iou shape {}'.format(iou.shape) )
     # print('Intented quit')
     # quit()
     # Note that indices returned are in same order
@@ -135,6 +144,7 @@ def classifer_train(traindict, testdict, lstm):
                                 abnormal_split = hyparams['networks']['binary_classifier']['abnormal_split']
                                 )
 
+
     # Gets the train and test data
     # returns a dict with keys: x, y
     train, test = binary_data_split(iou, indices)
@@ -143,31 +153,43 @@ def classifer_train(traindict, testdict, lstm):
     if hyparams['exp_1']:
         if hyparams['exp_3']:
             # Makes same amount of normal and abnormal in train
-            train = reduce_train(train['x'], train['y'])
-            print(train['x'].shape)
-            print(train['y'].shape)
+            train = reduce_train(   train['x'],
+                                    train['y'],
+                                    seed = hyparams['networks']['binary_classifier']['seed'])
+
+            # print(train['x'].shape)
+            # print(train['y'].shape)
            
 
         train, val = train_val_same_ratio(  train['x'],
                                             train['y'],
-                                            val_ratio=hyparams['networks']['binary_classifier']['val_ratio']
+                                            hyparams['networks']['binary_classifier']['val_ratio'],
+                                            seed = hyparams['networks']['binary_classifier']['seed']
                                             )
 
-        print(train['x'].shape)
-        print(train['y'].shape)
+        print(train['x'][:10, 1])
+        print(test['x'][:10, 1])
+        # print(indices['test_abn'][:10])
+        # print(indices['test_n'][:10])
+        # quit()
 
-        print(val['x'].shape)
-        print(val['y'].shape)
-        print(train['y'][:10])
-        print(np.bincount(train['y']))
-        print(np.bincount(val['y']))
-        print('For exp 1')
+        # print(train['x'].shape)
+        # print(train['y'].shape)
+
+        # print(val['x'].shape)
+        # print(val['y'].shape)
+        # print(train['y'][:10])
+        # print(np.bincount(train['y']))
+        # print(np.bincount(val['y']))
+        # print('For exp 1')
         # quit()
 
     else:
         x,y = norm_train_max_min(   traindict,
-                                    max1 = hyparams['max'],
-                                    min1 = hyparams['min']
+                                    # max1 = hyparams['max'],
+                                    # min1 = hyparams['min']
+                                    max1 = max1,
+                                    min1 = min1
                                     )
         iou = compute_iou(x, y ,lstm)
 
@@ -180,14 +202,14 @@ def classifer_train(traindict, testdict, lstm):
                                             )
         temp_combined_train = {}
 
-        print('train[x] {}'.format(train['x'].shape))
-        print('training from lstm set {}'.format(training_set_from_lstm.shape))
+        # print('train[x] {}'.format(train['x'].shape))
+        # print('training from lstm set {}'.format(training_set_from_lstm.shape))
         temp_combined_train['x']= np.append(    train['x'],
                                                 training_set_from_lstm,
                                                 axis=0
                                                 )
 
-        print('shape of tem[ combined from lstm set {}'.format(temp_combined_train['x'].shape))
+        # print('shape of tem[ combined from lstm set {}'.format(temp_combined_train['x'].shape))
 
 
         #since training set appended is coming from the orginal data
@@ -199,25 +221,21 @@ def classifer_train(traindict, testdict, lstm):
 
         if hyparams['exp_3']:
             temp_combined_train = reduce_train( temp_combined_train['x'],
-                                                temp_combined_train['y']
+                                                temp_combined_train['y'],
+                                                seed = hyparams['networks']['binary_classifier']['seed']
                                                 )
 
         train, val = train_val_same_ratio(  temp_combined_train['x'],
                                             temp_combined_train['y'],
-                                            val_ratio=hyparams['networks']['binary_classifier']['val_ratio']
+                                            val_ratio=hyparams['networks']['binary_classifier']['val_ratio'],
+                                            seed = hyparams['networks']['binary_classifier']['seed']
                                             )
-        # print(train['x'].shape)
-        # print(train['y'].shape)
-
-        # print(val['x'].shape)
-        # print(val['y'].shape)
-        # print(train['y'][:10])
-        # print(np.bincount(train['y']))
-        # print(np.bincount(val['y']))
-        # print('For exp 2')
-        # quit()
 
 
+    # for the weight_loss function
+    neg, pos = np.bincount(train['y'])
+    print(pos/neg)
+    # quit()
     # Removing the index so I can pass into tensofify and not have two
     # functions that do similar things.
     train_no_index, val_no_index = {},{}
@@ -228,21 +246,22 @@ def classifer_train(traindict, testdict, lstm):
     train_no_index['y'] = train['y']
 
 
-    print(train_no_index['x'].shape)
-    print(train_no_index['y'].shape)
-    print(val_no_index['x'].shape)
-    print(val_no_index['y'].shape)
+    # print(train_no_index['x'].shape)
+    # print(train_no_index['y'].shape)
+    # print(val_no_index['x'].shape)
+    # print(val_no_index['y'].shape)
 
-    print(np.sum(train_no_index['x']))
-    print(train_no_index['x'][1400:1500])
-    print(val_no_index['x'][1400:1500])
-    print('Double check check here before moving on. Should only contain iou values')
-    print('Intentful quit')
+    # print(np.sum(train_no_index['x']))
+    # print(train_no_index['x'][1400:1500])
+    # print(val_no_index['x'][1400:1500])
+    # print('Double check check here before moving on. Should only contain iou values')
+    # print('Intentful quit')
     # quit()
     train_tensor, val_tensor = tensorify(train_no_index, val_no_index)
 
     #naming convection
-    nc = [  loc['nc']['model_name_binary_classifer'],
+    nc = [  loc['nc']['date'],
+            loc['nc']['model_name_binary_classifer'],
             loc['nc']['data_coordinate_out'],
             loc['nc']['dataset_name'],
             hyparams['frames']
@@ -257,28 +276,38 @@ def classifer_train(traindict, testdict, lstm):
                         ) # create save link
 
 
-
     
+    print('Here')
     ## Stuck here Need to some how load the custom loss function into network func
     history, model= binary_network( train_tensor,
                                     val_tensor,
                                     model_loc=model_loc,
                                     nc =nc,
-                                    weighted_binary=None, # filler
-                                    output_bias =0, # Filler
+                                    weighted_binary=True, # should make clearer
+                                    weight_ratio = pos/neg,
+                                    output_bias =0, # Filler Play around with
                                     epochs=hyparams['epochs'],
                                     save_model=True
                                     )
-
+    # folders not saved by dates
     make_dir(loc['metrics_path_list'])
     plot_loc = join(    os.path.dirname(os.getcwd()),
                         *loc['metrics_path_list']
                         )
-    accuracy_plot(history, plot_loc     )
+
+    loss_plot(history, plot_loc, nc)
+    accuracy_plot(history, plot_loc,nc)
+
+    # Removes the index 
+    test_no_index = {}
+    test_no_index['x'] = test['x'][:,0]
+    test_no_index['y'] = test['y']
+    roc_plot(model,test_no_index, plot_loc, nc)
+
     # go back and fix filler
     print('go back and fix filler')
     print('go fix how weight ratio is being added to')
-    quit()
+    # quit()
     # Need to save metric plots for classifer
 
 def make_dir(dir_list):
@@ -293,14 +322,44 @@ def make_dir(dir_list):
                                                                 *dir_list) ) )
 
 
-
 def main():
+    load_model = True
+    model_loc = join(   os.path.dirname(os.getcwd()),
+                        *loc['model_path_list']
+                        ) # create save link
 
-    traindict, testdict = data_lstm(    loc['data_load']['avenue']['train_file'],
-                                        loc['data_load']['avenue']['test_file']
+    nc = [  #loc['nc']['date'],
+            '12_18_2020',
+            loc['nc']['model_name'],
+            loc['nc']['data_coordinate_out'],
+            loc['nc']['dataset_name'],
+            hyparams['frames'],
+            ] # Note that frames is the sequence input
+
+    traindict, testdict = data_lstm(    loc['data_load']['st']['train_file'],
+                                        loc['data_load']['st']['test_file']
                                         )
-    # returning model right now but might change that in future and load instead
-    lstm_model = lstm_train(traindict)
+
+    # This is a temp solution, permant is to make function normalize function
+    global max1, min1
+    max1 = traindict['x_ppl_box'].max()
+    min1 = traindict['x_ppl_box'].min()
+    
+
+
+    if load_model:        
+        model_path = os.path.join(  model_loc,
+                                    '{}_{}_{}_{}_{}.h5'.format(*nc)
+                                    )
+
+        lstm_model = tf.keras.models.load_model(    model_path,  
+                                                    custom_objects = {'loss':'mse'} , 
+                                                    compile=True
+                                                    )
+    else:
+        # returning model right now but might change that in future and load instead
+        lstm_model = lstm_train(traindict)
+
 
     classifer_train(traindict, testdict, lstm_model)
 
@@ -313,8 +372,6 @@ def main():
     Why do I need an initial bias for last layer. I think I got idea
     from google. But is it advantagous.
     https://www.tensorflow.org/tutorials/structured_data/imbalanced_data
-
-    1)Need to remove specifcation for GPU to run on
 
 
     2)  Looks like I can save the hyprmas file as well in a txt file.

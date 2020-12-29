@@ -120,7 +120,7 @@ def binary_data_split(iou, indices):
 
 
 # def same_ratio_split_train_val(train_x,train_y, val_ratio = 0.3):
-def train_val_same_ratio(train_x,train_y, val_ratio):
+def train_val_same_ratio(train_x,train_y, val_ratio, seed):
     """
     This function forces the training and validation sets
     to have the same ratio for abnormal and normal cases
@@ -136,6 +136,8 @@ def train_val_same_ratio(train_x,train_y, val_ratio):
 
     return: train and val dict with keys:x, y
     """
+    np.random.seed(seed)
+
     # Find normal and abnormal index
     abnorm_index = np.where(train_y == 1)
     norm_index = np.where(train_y == 0)
@@ -177,7 +179,7 @@ def train_val_same_ratio(train_x,train_y, val_ratio):
 
 
 # def one_weight_ratio_train(train_x, train_y):
-def reduce_train(train_x, train_y):
+def reduce_train(train_x, train_y,seed):
     """
     This function splits the training data to an equal amount of abnormal
     and normal sequences. Returns same type of data as inputted.
@@ -192,6 +194,8 @@ def reduce_train(train_x, train_y):
 
     return: train_x_even_split, train_y_even_split
     """
+    np.random.seed(seed)
+
     # Find normal and abnormal
     abnorm_index = np.where(train_y ==1)[0]
     norm_index = np.where(train_y == 0)[0]

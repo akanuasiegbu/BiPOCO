@@ -3,7 +3,7 @@ FROM tensorflow/tensorflow:2.4.0rc3-gpu
 # ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update &&\
-		apt-get install -y wget openssh-server
+		apt-get install -y wget openssh-server nano tree
 
 RUN systemctl enable ssh
 #RUN systemctl start ssh
@@ -25,7 +25,9 @@ RUN wget --progress=bar:force https://bootstrap.pypa.io/get-pip.py && \
 		hyperas==0.4.1 \
 		pandas==1.1.2\
 		seaborn==0.11.0\
-		tensorflow_addons==0.11.2
+		tensorflow_addons==0.11.2 \
+		tensorflow_datasets\
+		wandb
 
 
 

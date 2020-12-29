@@ -4,6 +4,7 @@ from tensorflow import keras
 
 from config import hyparams
 from tensorflow.keras.layers import Lambda
+import wandb 
 
 
 # To Do List
@@ -34,7 +35,7 @@ def lstm_network(train_data, val_data, model_loc, nc,  epochs=300):
         lstm_20.add(keras.layers.LSTM(4))
         lstm_20.add(keras.layers.Dense(4))
         opt = keras.optimizers.Adam(learning_rate=hyparams['networks']['lstm']['lr'])
-        checkpoint_cb = keras.callbacks.ModelCheckpoint(os.path.join(model_loc, '{}_{}_{}_{}.h5'.format(nc[0], nc[1], nc[2], nc[3])),
+        checkpoint_cb = keras.callbacks.ModelCheckpoint(os.path.join(model_loc, '{}_{}_{}_{}_{}.h5'.format(*nc)),
                                                         save_best_only=True)
 
         if hyparams['networks']['lstm']['early_stopping'] == True:
@@ -56,19 +57,23 @@ def lstm_network(train_data, val_data, model_loc, nc,  epochs=300):
                                       callbacks=cb)
         return lstm_20_history , lstm_20
 
+def custom_loss(weight_ratio):
+    """
+    Note that weight_ratio is postive/negative
+    """
+    def loss(y_true, y_pred):
+        when_y_1 = y_true*tf.keras.backend.log(y_pred)*(1/weight_ratio)
+        # when_y_1 = y_true*tf.keras.backend.log(y_pred)*(1/1)
+        neg_y_pred = Lambda(lambda x: -x)(y_pred)
+        when_y_0 = ( 1+Lambda(lambda x: -x)(y_true))*tf.keras.backend.log(1+neg_y_pred )
 
-def loss(y_true, y_pred):
-    # when_y_1 = y_true*tf.keras.backend.log(y_pred)*(1/weight_ratio)
-    when_y_1 = y_true*tf.keras.backend.log(y_pred)*(1/1)
-    neg_y_pred = Lambda(lambda x: -x)(y_pred)
-    when_y_0 = ( 1+Lambda(lambda x: -x)(y_true))*tf.keras.backend.log(1+neg_y_pred )
-
-    weighted_cross_entr = Lambda(lambda x: -x)(when_y_0+when_y_1)
-    return weighted_cross_entr
+        weighted_cross_entr = Lambda(lambda x: -x)(when_y_0+when_y_1)
+        return weighted_cross_entr
+    return loss
 
 
 def binary_network(train_bm, val_bm, model_loc, nc,
-                   weighted_binary, output_bias,
+                   weighted_binary, weight_ratio, output_bias,
                    epochs=300, save_model=True):
     """
     train_bm: train_data_tensor
@@ -81,7 +86,8 @@ def binary_network(train_bm, val_bm, model_loc, nc,
         seq: size of sequence, 20, 5 etc int of sequence
         abnormal_split: percentage of abnormal frames to put in test frame
 
-    weighted_binary: weighted_binary loss function
+    weighted_binary: weighted_binary loss function,
+    weight_ratio: input into the weighted loss function len(pos)/len(neg)
     output_bias: if not set output bias is set to 0 later in function
         """
 
@@ -112,11 +118,13 @@ def binary_network(train_bm, val_bm, model_loc, nc,
 
 
 
-        checkpoint_cb = keras.callbacks.ModelCheckpoint(os.path.join(model_loc, '{}_{}_{}_{}.h5'.format(nc[0], nc[1], nc[2], nc[3])),
+        checkpoint_cb = keras.callbacks.ModelCheckpoint(os.path.join(model_loc, '{}_{}_{}_{}_{}.h5'.format(*nc)),
                                                         save_best_only=True)
-        if weighted_binary == None:
-            model.compile(loss=loss,
+
+        if weighted_binary==True:
+            model.compile(loss=custom_loss(weight_ratio),
                         optimizer=opt, metrics=['accuracy'])
+
         else:
             model.compile(loss=weighted_binary,
                         optimizer=opt, metrics=['accuracy'])
@@ -130,11 +138,11 @@ def binary_network(train_bm, val_bm, model_loc, nc,
 
         if save_model and hyparams['networks']['binary_classifier']['early_stopping']:
             callbacks = [early_stopping, checkpoint_cb]
-        elif early_stop:
+        elif hyparams['networks']['binary_classifier']['early_stopping']:
             callbacks = [early_stopping]
         else:
             callbacks = None
-
+        
         bm_history = model.fit(train_bm,
                                validation_data=val_bm,
                                epochs=epochs,
