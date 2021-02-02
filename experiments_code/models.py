@@ -2,9 +2,10 @@ import os
 import tensorflow as tf
 from tensorflow import keras
 
-from config import hyparams
+from config import hyparams, exp
 from tensorflow.keras.layers import Lambda
 import wandb 
+from wandb.keras import WandbCallback
 
 
 # To Do List
@@ -73,7 +74,7 @@ def custom_loss(weight_ratio):
 
 
 def binary_network(train_bm, val_bm, model_loc, nc,
-                   weighted_binary, weight_ratio, output_bias,
+                   weighted_binary, weight_ratio, output_bias, run,
                    epochs=300, save_model=True):
     """
     train_bm: train_data_tensor
@@ -91,30 +92,56 @@ def binary_network(train_bm, val_bm, model_loc, nc,
     output_bias: if not set output bias is set to 0 later in function
         """
 
+
+    # delete if using wandb
+    
+    class my_struct:
+        pass
+
+    if not hyparams['networks']['binary_classifier']['wandb']:
+        config = my_struct()
+    else:
+        config = run.config
+
+
+    config.neurons = hyparams['networks']['binary_classifier']['neurons']
+    config.dropout_ratio = hyparams['networks']['binary_classifier']['dropout']
+    config.lr = hyparams['networks']['binary_classifier']['lr']
+    config.seed = hyparams['networks']['binary_classifier']['seed']
+    config.abnormal_split = hyparams['networks']['binary_classifier']['abnormal_split']
+    config.val_ratio = hyparams['networks']['binary_classifier']['val_ratio']
+    config.batch_size = hyparams['networks']['binary_classifier']['batch_size']
+    config.data = exp['data']
+    if exp['1']:
+        config.exp_type = '1'
+    elif exp['2']:
+        config.exp_type = '2'
+    elif exp['3_1']:
+        config.exp_type ='3_1'
+    elif exp['3_2']:
+        config.exp_type = '3_2'
+
     # gpu = '/device:GPU:'+gpu
     with tf.device('/device:GPU:0'):
 
-        neurons = hyparams['networks']['binary_classifier']['neurons']
-        dropout_ratio = hyparams['networks']['binary_classifier']['dropout']
-        lr = hyparams['networks']['binary_classifier']['lr']
         # create model
         if output_bias is not None:
             output_bias = keras.initializers.Constant(output_bias)
 
         model = keras.Sequential()
-        model.add(keras.layers.Dense(neurons, input_dim=1, activation='relu'))
-        model.add(keras.layers.Dense(neurons, activation='relu'))
-        model.add(keras.layers.Dropout(dropout_ratio))  # comment
-        model.add(keras.layers.Dense(neurons, input_dim=1, activation='relu'))
+        model.add(keras.layers.Dense(config.neurons, input_dim=1, activation='relu'))
+        model.add(keras.layers.Dense(config.neurons, activation='relu'))
+        model.add(keras.layers.Dropout(config.dropout_ratio))  # comment
+        model.add(keras.layers.Dense(config.neurons, input_dim=1, activation='relu'))
         model.add(keras.layers.Dense(
-            neurons, input_dim=1, activation='relu'))  # coment
-        model.add(keras.layers.Dropout(dropout_ratio))  # comment
+            config.neurons, input_dim=1, activation='relu'))  # coment
+        model.add(keras.layers.Dropout(config.dropout_ratio))  # comment
         model.add(keras.layers.Dense(
             1, bias_initializer=output_bias, activation='sigmoid'))
         if output_bias is None:
             model.layers[-1].bias.assign([0.0])
 
-        opt = tf.keras.optimizers.Adam(learning_rate=lr)
+        opt = tf.keras.optimizers.Adam(learning_rate=config.lr)
 
 
 
@@ -136,18 +163,34 @@ def binary_network(train_bm, val_bm, model_loc, nc,
                         patience=hyparams['networks']['binary_classifier']['patience'],
                         restore_best_weights=True)
 
-        if save_model and hyparams['networks']['binary_classifier']['early_stopping']:
-            callbacks = [early_stopping, checkpoint_cb]
-        elif hyparams['networks']['binary_classifier']['early_stopping']:
-            callbacks = [early_stopping]
-        else:
-            callbacks = None
-        
-        bm_history = model.fit(train_bm,
-                               validation_data=val_bm,
-                               epochs=epochs,
-                               callbacks=callbacks)
+        if not hyparams['networks']['binary_classifier']['wandb']:
+            bm_history = model.fit( train_bm,
+                                    validation_data=val_bm,
+                                    epochs=epochs
+                                    )        
 
+        elif save_model and hyparams['networks']['binary_classifier']['early_stopping']:
+            bm_history = model.fit( train_bm,
+                                    validation_data=val_bm,
+                                    epochs=epochs,
+                                    callbacks = [WandbCallback(), early_stopping, checkpoint_cb]
+                                    )           
+
+        elif hyparams['networks']['binary_classifier']['early_stopping']:
+            bm_history = model.fit( train_bm,
+                                    validation_data=val_bm,
+                                    epochs=epochs,
+                                    callbacks = [WandbCallback(), early_stopping]                                
+                                    )           
+
+        else:
+            bm_history = model.fit( train_bm,
+                                    validation_data=val_bm,
+                                    epochs=epochs,
+                                    callbacks = [WandbCallback()]
+                                    )           
+
+        
         return bm_history, model
 
 

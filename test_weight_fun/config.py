@@ -1,15 +1,15 @@
 import datetime
 
-exp = { '1': False,
+exp = { '1': True,
         '2': False,
-        '3_1': True,
+        '3_1': False,
         '3_2': False,
         # want an adaptive model saved based on arch size for model_loc
         'data': 'avenue', #st, avenue,hr-st
         }
 
 hyparams = {
-    'epochs':100,
+    'epochs':30,
     'batch_size': 32,
     'buffer_size': 10000,
  
@@ -26,22 +26,21 @@ hyparams = {
             'early_stopping': True,
             'mointor':'loss',
             'min_delta': 0.00005,
-            'patience': 15,
+            'patience': 15,                                                                       
             'val_ratio': 0.3,
         },
 
 
         'binary_classifier':{
-            'neurons': 30,
+            'neurons': 5,
             'dropout':0.3,
             'lr': 0.0001, #0.00001
             'save_model': False,
-            'early_stopping':False,
+            'early_stopping':True,
             'mointor': 'loss',
             'min_delta':0.0000005,
             'batch_size': 32,
             'patience':30,
-            'wandb': False,
             'seed':40,
             'abnormal_split':0.5, # Split for the data into normal and abnormal
             'val_ratio':0.3, #guarantee the ratio of normal and abnormal frames
@@ -65,9 +64,8 @@ elif exp['3_1']:
 elif exp['3_2']:
     name_exp = '3_2'
 
-now = datetime.datetime.now()
-date = now.strftime("%m_%d_%Y")
-time = now.strftime("%H:%M:%S")
+date = datetime.datetime.now()
+
 
 loc =  {
     # if I'm running a test where don't want to save anything
@@ -75,15 +73,16 @@ loc =  {
     
     'model_path_list': ['results_all_datasets', 'experiment_{}'.format(name_exp), 'saved_model'],
     'metrics_path_list': ['results_all_datasets', 'experiment_{}'.format(name_exp), 'metrics_plot'], 
-    'visual_trajectory_list': ['results_all_datasets', 'experiment_{}'.format(name_exp), 'visual_trajectory', '{}_{}_{}'.format(date, exp['data'], time)],
-    
+
     'nc':{
         'model_name': 'lstm_network',
         'model_name_binary_classifer': 'binary_network',
         'data_coordinate_out': 'xywh',
-        'dataset_name': exp['data'], # avenue, st                   ################# ________________________________________________________________________________________________________________________________--
-        'date': date,
-        },    # is nc the best way to propate and save things as same name
+        'dataset_name': exp['data'], # avenue, st                   #################
+        # ________________________________________________________________________________________________________________________________--
+        'date': date.strftime("%m") + '_' +date.strftime("%d") + '_' + date.strftime("%Y"),
+        },
+    # is nc the best way to propate and save things as same name
     # Might want to autmoically create a new folder with model arch saved
     # as a text file as well as in folder name
 
@@ -92,8 +91,6 @@ loc =  {
                 # These are good because these locations are perm unless I manually move them
                 'train_file': "/mnt/roahm/users/akanu/projects/anomalous_pred/output_deepsort/avenue/train_txt/",
                 'test_file': "/mnt/roahm/users/akanu/projects/anomalous_pred/output_deepsort/avenue/test_txt/",
-                'train_vid': '/mnt/roahm/users/akanu/dataset/Anomaly/Avenue_Dataset/training_videos',
-                'test_vid': '/mnt/roahm/users/akanu/dataset/Anomaly/Avenue_Dataset/testing_videos',
                 },
 
             #Need to rerun ped1
@@ -104,14 +101,10 @@ loc =  {
             'st':{
                 'train_file':"/mnt/roahm/users/akanu/projects/anomalous_pred/output_deepsort/st/train_txt/",
                 "test_file": "/mnt/roahm/users/akanu/projects/anomalous_pred/output_deepsort/st/test_txt/",
-                'train_vid': '/mnt/workspace/datasets/shanghaitech/training/videos',
-                'test_vid':  '/mnt/roahm/users/akanu/projects/Deep-SORT-YOLOv4/tensorflow2.0/deep-sort-yolov4/input_video/st_test',
                 },
             'hr-st':{
                 'train_file':"/mnt/roahm/users/akanu/projects/anomalous_pred/output_deepsort/HR-ShanghaiTech/train_txt/",
                 "test_file": "/mnt/roahm/users/akanu/projects/anomalous_pred/output_deepsort/HR-ShanghaiTech/test_txt/",
-                'train_vid': '/mnt/workspace/datasets/shanghaitech/training/videos',
-                'test_vid':  '/mnt/roahm/users/akanu/projects/Deep-SORT-YOLOv4/tensorflow2.0/deep-sort-yolov4/input_video/st_test',
                 },
             }
 

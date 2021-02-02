@@ -1,4 +1,5 @@
 results_all_datasets
+**/wandb/*
 .ipynb_checkpoints
 .jupyter
 .local

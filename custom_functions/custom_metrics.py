@@ -1,3 +1,11 @@
+"""
+Go back and figure out what to delete
+wheather its coordinate_change or custom_metrics
+because both files are doing the same thing
+expect one is in tensorflow and other is in
+numpy 
+
+"""
 import tensorflow.keras.backend as kb
 import numpy as np
 

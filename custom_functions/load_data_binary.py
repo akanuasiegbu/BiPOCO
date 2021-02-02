@@ -10,7 +10,7 @@ def return_indices(data, seed, abnormal_split):
     Note that function returns index values that will
     allow for the creation of a train and test set that has an specificed ratio
     of normal and abnormal examples. Rest of abnormal and normal are then used
-    in the training set. If you shuffle dict first without keeping
+    in the training set depending on experiment. If you shuffle dict first without keeping
     track of index somehow then this function will produce meaningless
     results that are progated.
 
@@ -45,7 +45,7 @@ def return_indices(data, seed, abnormal_split):
 
     train_abn_indices = abnorm_index[len_abn_split:]
     train_n_indices = norm_index[len_abn_split:]
-    
+        
     # Dict 
     indices = {}
     indices['train_abn'] = train_abn_indices
@@ -93,8 +93,10 @@ def binary_data_split(iou, indices):
     """
 
     train_x = np.array( [np.append(iou[indices['train_abn']], iou[indices['train_n']] ),
-                        np.append(indices['train_abn'], indices['train_n'])]
+                        np.append(indices['train_abn'], indices['train_n']) ]
                         )
+
+    # indices turn to floats here when appended , come back and fix maybe not as important
 
     train_y = np.append(    np.ones(len(indices['train_abn']), dtype=np.int8 ),
                             np.zeros(len(indices['train_n']), dtype=np.int8 ) 

@@ -81,6 +81,7 @@ def Boxes(loc_files, txt_names, time_steps, pad ='pre', to_xywh = False):
     """
 
     x_ppl_box, y_ppl_box, frame_ppl_id, video_file, abnormal = [], [], [], [],[]  #Has bounding box locations inside
+    frame_x, frame_y, id_x, id_y = [], [], [], []
 
     #For splitting process
     split_train_test = 0
@@ -125,6 +126,11 @@ def Boxes(loc_files, txt_names, time_steps, pad ='pre', to_xywh = False):
                     assert temp_fr_person_id.shape  == (time_steps+1,2), print(temp_fr_person_id.shape)
 
                     frame_ppl_id.append(temp_fr_person_id)
+                    frame_x.append(temp_fr_person_id[:-1,0])
+                    frame_y.append(temp_fr_person_id[-1,0])
+                    id_x.append(temp_fr_person_id[:-1,1])
+                    id_y.append(temp_fr_person_id[-1,1])
+
 
                     video_file.append(txt_name)
                     abnormal.append(abnormal_frame_ped[i+time_steps]) #Finds if predicted frame is abnormal
@@ -163,9 +169,13 @@ def Boxes(loc_files, txt_names, time_steps, pad ='pre', to_xywh = False):
 
     datadict['x_ppl_box'] = np.array(x_ppl_box)
     datadict['y_ppl_box'] = np.array(y_ppl_box)
-    datadict['frame_ppl_id'] = np.array(frame_ppl_id)
+    datadict['frame_ppl_id'] = np.array(frame_ppl_id) # delete later not needed once otuer changes 
     datadict['video_file'] = np.array(video_file)
     datadict['abnormal'] = np.array(abnormal, dtype=np.int8)
+    datadict['id_x'] = np.array(id_x)
+    datadict['id_y'] = np.array(id_y)
+    datadict['frame_x'] = np.array(frame_x)
+    datadict['frame_y'] = np.array(frame_y)
 
     return  datadict
 
@@ -210,8 +220,8 @@ def norm_train_max_min(data, max1, min1, undo_norm=False):
         return data
 
     else:
-        # If data comes in hee it should be in the same 
-        # format as Boxes function
+        # If data comes in here it should be in the same 
+        # format as Boxes function output partially 
         xx = (data['x_ppl_box'] - min1)/(max1 - min1)
         yy = (data['y_ppl_box'] - min1)/(max1-min1)
         return xx,yy

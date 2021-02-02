@@ -34,18 +34,15 @@ def plot_sequence(model, one_ped_seq, max1, min1, vid_key,pic_loc, loc_videos, x
     """
     This will plot the sequences of the of one pedestrain
     Not computially efficent if you want to plot lots of pedestrain
-
-
     model: lstm bm_model
     one_ped_seq: one pedestrain sequence: 'x_ppl_box', 'y_ppl_box',
-                     'frame_ppl_id', 'video_file', 'abnormal'. From ind_seq
-                     function
+    'frame_ppl_id', 'video_file', 'abnormal'. From ind_seq function
     max1:  scaling factor
     min1:  scaline factor
     loc_videos: this are videos that are used to make plots
     pic_loc: need to save to different location depending on confusion
                     type and/or can input generic location to allow for
-                    plotting all videos at the same sort_TP_TN_FP_FN_by_vid_n_frame                
+                    plotting all videos at the same sort_TP_TN_FP_FN_by_vid_n_frame
     """
 
     x_input = data['x_ppl_box']

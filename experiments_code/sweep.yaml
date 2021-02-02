@@ -1,0 +1,26 @@
+method: bayes
+metric:
+  goal: minimize
+  name: epoch
+parameters:
+  batch_size:
+    distribution: int_uniform
+    max: 64
+    min: 16
+  dropout_ratio:
+    distribution: uniform
+    max: 0.6
+    min: 0.15
+  lr:
+    distribution: uniform
+    max: 0.0002
+    min: 5e-05
+  neurons:
+    distribution: int_uniform
+    max: 60
+    min: 15
+  val_ratio:
+    distribution: uniform
+    max: 0.6
+    min: 0.15
+program: train.py

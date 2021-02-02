@@ -608,3 +608,548 @@ ls
 python main.py 
 nvidia-smi
 exit
+nvidia-smi
+clear
+cd  experiments_code/
+ls 
+python main.py 
+exirt
+exit
+nvidia-smi
+cd experiments_code/
+python main.py 
+exit
+cleaar
+clear
+cd experiments_code/
+ls
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+ls
+exit
+cd experiments_code/
+python main.py 
+python main.py 
+exit
+wandb
+wandb login
+wandb login
+exit
+wandb login
+exit
+wandb login
+exit
+cd experiments_code/
+ls
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+exit
+cd experiments_code/
+ls
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+clear
+ls
+cd experiments_code/
+ls
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+exit
+clear
+cd experiments_code/
+ls
+python main.py 
+exit
+cd experiments_code/
+ls
+python main.py 
+python
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python
+ls
+python main.py 
+python main.py 
+python
+python main.py 
+python
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+clear
+ls
+cd experiments_code/
+ls
+python main.py 
+clear
+ls
+cd test_weight_fun/
+ls
+exit
+nvidia-smi
+clear
+ls
+cd test_weight_fun/
+ls
+python main.py 
+python main.py 
+python main.py 
+clear
+python main.py 
+ls
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+clear
+ls
+python main.py 
+python main.py 
+python main.py 
+clea
+clear
+'s
+clear
+ls
+cd experiments_code/
+ls
+clear
+exit
+clear
+ls
+exit
+clear
+;s
+ls
+cd experiments_code/
+ls
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+wanbd login
+wandb
+wandb login
+clear
+python main.py 
+exit
+cd experiments_code/
+ls
+python main.py 
+exot
+exit
+clear
+ls
+cd input_data/
+cd ..
+ls
+cd experiments_code/
+ls
+ls
+python main.py 
+exit
+clear
+cd experiments_code/
+ls
+python main.py 
+clear
+nvidia-smi
+exit
+exit
+clear
+ls
+cd experiments_code/
+ls
+python ls
+python main.py 
+wandb
+wandb login
+clear
+;s
+ls
+python main.py 
+python mexit
+exit
+clear
+ls
+cd docker/
+ls
+cd ..
+ls
+cd experiments_code/
+ls
+python main.py 
+clear
+ls
+python main.py 
+exit
+clear
+exit
+ls
+cd experiments_code/
+ls
+python main.py 
+wanbd login
+wandb
+exit
+cclear
+clear
+cd experiments_code/
+ls
+python main.py 
+exit
+clear
+ls
+cd experiments_code/
+ls
+wanbd
+wandb
+wandb login
+clear
+wandb sweep --update akanu/abnormal_pedestrain/0lzebmsx sweep.yaml
+ls
+wandb sweep --update akanu/abnormal_pedestrain/0lzebmsx sweep.yaml
+ls
+python main.py 
+exit
+ls
+cd experiments_code/
+ls
+wandb sweep --update akanu/abnormal_pedestrain/0lzebmsx sweep.yaml
+python main.py 
+clear
+ls
+cd might_be_useful/
+ls
+cd ..
+ls
+ls
+cd ..
+ls
+cd cd test_weight_fun/
+cd test_weight_fun/
+ls
+python main.py 
+exit
+clear
+ls
+cd test_weight_fun/
+ls
+python main.py 
+cd experiments_code/
+python main.py 
+cd experiments_code/
+;s
+ls
+python main.py 
+clear
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+clear
+ls
+cd experiments_code/
+ls
+ls
+python main.py 
+python main.py 
+clear
+ls
+;s
+ls
+cd experiments_code/
+python main.py 
+python main.py 
+clear
+ls
+python main.py 
+cd experiments_code/
+python main.py 
+python main.py 
+clear
+ls
+python main.py 
+clear
+cd experiments_code/
+ls
+python main.py 
+nvidia-smi
+clear
+cd experiments_code/
+ls
+python main.py 
+clear 
+ls
+cd experiments_code/
+ls
+ls
+clear
+python main.py 
+cd experiments_code/
+ls
+python main.py 
+clear
+exit
+clear
+ls
+cd experiments_code/
+ls
+cd ..
+ls
+cd results_all_datasets/
+ls
+cd experiment_
+cd experiment_1
+ls
+cd metrics_plot/
+ls
+clear
+ls
+cd docker/
+cd .
+cd ..
+ls
+cd experiments_code/
+ls
+exit
+clear
+ls
+clear
+ls
+cd ls
+ls
+ls
+ls
+cd experiments_code/
+ls
+exit
+clear
+exit
+clear
+ls
+exit 
+clear
+ls
+cd experiments_code/
+ls
+ls
+python main.py 
+python main.py 
+clear
+clear
+ls
+clear
+ls
+nano main.py 
+nano metrics_plot.py 
+cler
+clear
+clear
+ls
+ls
+exit
+clear
+ls
+cd experiments_code/
+l
+ls
+ls
+python main.py 
+clear
+exot
+clear
+exit
+clear
+ls
+cd experiments_code/
+ls
+python main.py 
+ls
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python
+ls
+clear
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+clear
+clear
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+clear
+clear
+ls
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+clear
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+clear
+python
+clear
+ls
+cd experiments_code/
+ls
+python main.py 
+clear
+exit
+python
+clear
+ls
+cd experiments_code/
+ls
+python main.py 
+python main.py 
+python
+ls
+cd experiments_code/
+ls
+python main.py 
+exit
+ls
+cd experiments_code/
+ls
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+clear
+ls
+python main.py 
+python main.py 
+clear
+ls
+python main.py 
+python -m pdb main.py 
+ls
+python -m pdb main.py 
+clear
+python -m pdb main.py 
+python main.py 
+python main.py 
+python -m pdb main.py 
+clear
+python -m pdb main.py 
+python -m pdb main.py 
+python main.py 
+python -m pdb main.py 
+exit
+cd experiments_code/
+ls
+python main.py 
+python -m pdb main.py 
+clear
+ls
+clear
+ls
+clear
+ls
+python -m pdb main.py 
+python -m pdb main.py 
+clear
+ls
+python main.py 
+clear
+python -m pdb main.py 
+clear
+cd experiments_code/
+ls
+clear
+python main.py 
+python
+python main.py 
+python -m pdb main.py 
+exit
+cd experiments_code/
+ls
+python -m pdb main.py 
+python -m pdb main.py 
+clear
+clear
+ls
+python -m pdb main.py 
+ls
+python -m pdb main.py 
+clear
+ls
+python -m pdb main.py 
+clear
+ls
+python -m pdb main.py 
+python main.py 
+clar
+clear
+ls
+cd experiments_code/
+ls
+python main.py 
+clear
+cd experiments_code/
+ls
+python main.py 
+clear
