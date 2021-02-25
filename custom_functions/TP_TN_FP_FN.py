@@ -4,7 +4,8 @@ import cv2
 import os
 
 
-def seperate_misclassifed_examples(bm_model,test_x, indices, test_y, threshold=0.5):
+# def seperate_misclassifed_examples(bm_model,test_x, indices, test_y, threshold=0.5):
+def seperate_misclassifed_examples(y_pred,indices, test_y, threshold=0.5):
     """
     This function takes in the binary model and seperates out the index
     Values. Note that index values on the second row of test_x data.
@@ -21,8 +22,9 @@ def seperate_misclassifed_examples(bm_model,test_x, indices, test_y, threshold=0
         index values seperate into FN and FP maybe a dictornay ??
     """
     # Now this seperate into True and False
-    y_pred = bm_model.predict(test_x) > threshold  #might need to just have this not be indexed
+    # y_pred = bm_model.predict(test_x) > threshold  #might need to just have this not be indexed
 
+    y_pred = y_pred > threshold
 
     TN, TP, FP, FN = [], [], [], []
     index ={}

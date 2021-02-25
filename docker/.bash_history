@@ -1153,3 +1153,119 @@ cd experiments_code/
 ls
 python main.py 
 clear
+clear
+ls
+python
+np.arange(0,10,1)
+import numpy as np
+python 
+clear
+ls
+cd experiments_code/
+ls
+clear
+ls
+python main.py 
+clea
+clear
+exiit
+exit
+clear
+cd experiments_code/
+s
+python main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+ls
+python -m pdb main.py 
+clear
+ls
+python -m pdb main.py 
+clear
+python main.py 
+clear
+ls
+ls
+cd experiments_code/
+ls
+python main.py 
+exit
+clear
+cd experiments_code/
+ls
+python main.py 
+clea
+clear
+exot
+exit
+clear
+ls
+cd experiments_code/
+;s
+ls
+python main.py 
+python main.py 
+clear
+python main.py 
+python main.py 
+exit
+clear
+ls
+cd experiments_code/
+ls
+python main.py 
+python main.py 
+clear
+python main.py 
+clear
+python main.py 
+python main.py 
+clear
+ls
+python main.py 
+exit
+clear
+ls
+cd experiments_code/
+ls
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python pdb -m main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+clear
+clear
+python main.py 
+python main.py 
+python main.py 
+clear
+python main.py 
+python main.py 
+clear
+ls
+cd experiments_code/
+clear
+ls
+python main.py 
+clear
+exit()
+exit
+clear
+cd experiments_code/
+ls
+python main.py 
+clear
+python main.py 
+clear
+python main.py 
+python main.py 
+python main.py 
+python main.py 

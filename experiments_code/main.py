@@ -23,7 +23,7 @@ from TP_TN_FP_FN import *
 # Data Info
 from data import data_lstm, tensorify, data_binary
 from load_data import norm_train_max_min
-
+from load_data_binary import compute_iou
 # Plots
 from metrics_plot import *
 
@@ -47,7 +47,31 @@ def gpu_check():
 
 #     weighted_cross_entr = Lambda(lambda x: -x)(when_y_0+when_y_1)
 #     return weighted_cross_entr
-def ped_auc_to_frame_auc_data(testdict, test_bin, model):
+
+def iou_as_probability(testdict, model):
+    """
+    Note that to make abnormal definition similar to orgininal definition
+    Need to switch ious because low iou indicates abnormal and high 
+    iou indicate normal
+    testdict: 
+    model: traj prediction model
+    iou_prob: probability where high indicates abnormal pedestrain and low
+              indicates normal pedestrain
+    """ 
+    # model here is lstm model
+    # need to normalize because lstm expects normalized
+    x,y = norm_train_max_min(   testdict,
+                                # max1 = hyparams['max'],
+                                # min1 = hyparams['min']
+                                max1 = max1,
+                                min1 = min1
+                                )
+
+    iou = compute_iou(x, y, model)
+    iou_prob =  1 - iou
+    return  iou_prob
+
+def ped_auc_to_frame_auc_data(model, testdict, test_bin=None):
     """
     Note that this does not explictly calcuate frame auc
     but removes select points to reduce to frame AUC data.
@@ -60,36 +84,40 @@ def ped_auc_to_frame_auc_data(testdict, test_bin, model):
 
     testdict: From orginal data test dict
     test_bin: binary classifer test dict
-    model: binary classifer model
+    model: binary classifer model or lstm model
 
 
     return:
-    test_auc_frame: people that are in the frame
+    test_auc_frame: people that are in the frame as proability and index of frame
     remove_list: indices of pedestrain removed
     """
+    if not test_bin:
+        # calc iou prob
+        iou_prob = iou_as_probability(testdict, model)
+        
+        # since test dict was not shuffled lets created index
+        test_index = np.arange(0, len(testdict['abnormal']), 1)
+        
+        vid_loc = testdict['video_file'].reshape(-1,1) #videos locations
+        frame_loc = testdict['frame_y'].reshape(-1,1) # frame locations
+    
+    else:
+        test_bin_index = test_bin['x'][:,1]
 
-    test_bin_index = test_bin['x'][:,1]
+        test_bin_index = test_bin_index.astype(int) 
 
-    test_bin_index = test_bin_index.astype(int) 
-    # print(test_bin['x'].shape)
-    # print(test_bin['y'].shape)
-    # print('from test_bin_x : {}'.format(test_bin['x'][:10]) )
-    # print(test_bin_index[:10])
-    # quit()
-    vid_loc = testdict['video_file'][test_bin_index].reshape(-1,1) #videos locations
-    frame_loc = testdict['frame_y'][test_bin_index].reshape(-1,1) # frame locations
-
+        vid_loc = testdict['video_file'][test_bin_index].reshape(-1,1) #videos locations
+        frame_loc = testdict['frame_y'][test_bin_index].reshape(-1,1) # frame locations
+    
+    # encoding video and the frame together 
     vid_frame = np.append(vid_loc, frame_loc, axis=1)
-    # print('vid_frame shape {}'.format(vid_frame.shape))
 
+
+    
     # Treating each row vector as a unique element 
     # and looking for reapeats
     unique, unique_inverse, unique_counts = np.unique(vid_frame, axis=0, return_inverse=True, return_counts=True)
 
-    # print('unique {}'.format(unique[:10]))
-    # # print('from test_bin_y : {}'.format(test_bin['y'][:10]*100))
-    # print('unique_inverse {}'.format(unique_inverse[:10]))
-    # print('unique_counts {}'.format(unique_counts[:10]))
 
     #  finds where repeats happened and gives id for input
     # into unique_inverse
@@ -98,31 +126,51 @@ def ped_auc_to_frame_auc_data(testdict, test_bin, model):
     
     # Pedestrain AUC equals Frame AUC
     if len(repeat_inverse_id) == 0:
-        print('Ped AUC = Frame AUC')
-        test_auc_frame = test_bin
+        # print('Ped AUC = Frame AUC')
+        if not test_bin:
+            test_auc_frame = 'not possible'
+        else: 
+            test_auc_frame = test_bin
+
     # Convert Pedestrain AUC to Frame AUC
     else:
-        print('Ped AUC != Frame AUC')
-        print(repeat_inverse_id.shape)
-        # find pairs given repeat_inverse_id
+        # print('Ped AUC != Frame AUC')
+        # print(repeat_inverse_id.shape)
+        # # find pairs given repeat_inverse_id
         remove_list_temp = []
         for i in repeat_inverse_id:
             # find all same vid and frame
-            same_vid_frame = np.where(unique_inverse == i )[0]
-            # print('same_vid_frame {}'.format(same_vid_frame))
-            # print('vid_frame :{}'.format(vid_frame[same_vid_frame]))
+            if not test_bin:
+                same_vid_frame = np.where(unique_inverse == i)[0]
+                # Note that this is treating iou_as_prob
+                y_pred = iou_prob[same_vid_frame]
+                # if sum(y_pred) == 0:
+                #     rand = np.random.randint(len(y_pred))
+                #     index = np.arange(0,len(y_pred) )
+                #     temp = np.delete(index, rand)
+                #     # would need to check for if len(y_pred )==1
+                    
+                # else:
+                temp = np.where(y_pred != np.max(y_pred))[0]
+                
+                remove_list_temp.append(same_vid_frame[temp])
 
-            y_pred = model.predict(test_bin['x'][:,0][same_vid_frame])
-            # find max y_pred input other indices to remove list
-            
-            temp = np.where(y_pred != np.max(y_pred))[0]
+            else:
+                same_vid_frame = np.where(unique_inverse == i )[0]
+                # print('same_vid_frame {}'.format(same_vid_frame))
+                # print('vid_frame :{}'.format(vid_frame[same_vid_frame]))
 
-            remove_list_temp.append(same_vid_frame[temp])
-            
-            print('y_pred :{}'.format(y_pred))
-            print('removed elements {}'.format(temp))
-            print('*'*20)
-            print('\n')
+                y_pred = model.predict(test_bin['x'][:,0][same_vid_frame])
+                # find max y_pred input other indices to remove list
+                
+                temp = np.where(y_pred != np.max(y_pred))[0]
+
+                remove_list_temp.append(same_vid_frame[temp])
+                
+            # print('y_pred :{}'.format(y_pred))
+            # print('removed elements {}'.format(temp))
+            # print('*'*20)
+            # print('\n')
         
         
         remove_list = [item for sub_list in remove_list_temp for item in sub_list]
@@ -134,8 +182,13 @@ def ped_auc_to_frame_auc_data(testdict, test_bin, model):
         # print('Length of removed elements is :{}'.format(len(remove_list)))
         # print(test_bin['x'].shape)
         test_auc_frame = {}
-        test_auc_frame['x'] = np.delete(test_bin['x'], remove_list, axis=0)
-        test_auc_frame['y'] = np.delete(test_bin['y'], remove_list, axis=0)
+        if not test_bin:
+            iou_prob_per_frame = np.append(iou_prob.reshape(-1,1), test_index.reshape(-1,1), axis=1)
+            test_auc_frame['x'] = np.delete( iou_prob_per_frame, remove_list, axis = 0 )
+            test_auc_frame['y'] = np.delete(testdict['abnormal'].reshape(-1,1) , remove_list, axis=0)
+        else:
+            test_auc_frame['x'] = np.delete(test_bin['x'], remove_list, axis=0)
+            test_auc_frame['y'] = np.delete(test_bin['y'], remove_list, axis=0)
         # print(test_auc_frame['y'].shape)
         # print(test_auc_frame['x'].shape)
 
@@ -202,15 +255,106 @@ def lstm_train(traindict):
 
     return model
 
+def frame_traj_model_auc(model, testdict):
+    """
+    This function is meant to find the frame level based AUC
+    model: any trajactory prediction model (would need to check input matches)
+    """
+
+    # Note that this return ious as a prob 
+    test_auc_frame, remove_list = ped_auc_to_frame_auc_data(model, testdict)
+    
+    if test_auc_frame == 'not possible':
+        quit()
+    
+    # 1 means  abnormal, if normal than iou would be high
+    wandb_name = ['rocs', 'roc_curve']
+    y_true = test_auc_frame['y']
+    y_pred = test_auc_frame['x'][:,0]
+
+    make_dir(loc['metrics_path_list'])
+    plot_loc = join(    os.path.dirname(os.getcwd()),
+                        *loc['metrics_path_list']
+                        )    
+    nc = [  loc['nc']['date'] + '_per_frame',
+            loc['nc']['model_name'],
+            loc['nc']['data_coordinate_out'],
+            loc['nc']['dataset_name'],
+            hyparams['frames']
+            ] # Note that frames is the sequence input
+
+    wandb_name = ['rocs', 'roc_curve']
+    roc_plot(y_true,y_pred, plot_loc, nc,wandb_name)
+    print(remove_list.shape)
+    
+
+    #### Per bounding box
+    nc_per_human = nc.copy()
+    nc_per_human[0] = loc['nc']['date'] + '_per_bounding_box'
+    y_pred_per_human = iou_as_probability(testdict, model)
+
+    y_true_per_human = testdict['abnormal']
+    #####################################################################
+    # Might have a problem here in wandb if tried running and saving 
+    roc_plot(y_true_per_human, y_pred_per_human, plot_loc, nc_per_human, wandb_name)
+
+
+def helper_TP_TN_FP_TN(datadict, traj_model, ped):
+
+    """
+    datadict: 
+    traj_model: lstm, etc
+    ped: dict with x is two columns contains predictions, indices
+         y contains the ground truth information 
+    """
+  
+
+    print('removed ped length x: {}'.format( len( removed_ped['x'] ) ) )
+    print('removed ped length y: {}'.format( len( removed_ped['y'] ) ) )
+    # seperates them into TP. TN, FP, FN
+    y_pred = bm_model.predict(removed_ped['x'][:,0])
+
+    conf_dict = seperate_misclassifed_examples( y_pred = y_pred,
+                                                indices = removed_ped['x'][:,1],
+                                                test_y = removed_ped['y'],
+                                                threshold=0.5
+                                                )
+
+    # what am I actually returning
+    TP_TN_FP_FN, boxes_dict = sort_TP_TN_FP_FN_by_vid_n_frame(datadict, conf_dict )
+
+
+    # Does not return result, but saves images to folders
+    make_dir(loc['visual_trajectory_list'])
+    pic_loc = join(     os.path.dirname(os.getcwd()),
+                        *loc['visual_trajectory_list']
+                        )
+
+    # need to make last one robust "test_vid" : "train_vid"
+    # can change
+
+    loc_videos = loc['data_load'][exp['data']]['test_vid']
+    # print(boxes_dict.keys())
+    # quit()
+    for conf_key in boxes_dict.keys():
+        temp = loc['visual_trajectory_list'].copy()
+        temp.append(conf_key)
+        make_dir(temp)
+
+    for conf_key in boxes_dict.keys():
+        pic_loc_conf_key =  join(pic_loc, conf_key)
+        cycle_through_videos(traj_model, boxes_dict[conf_key], max1, min1, pic_loc_conf_key, loc_videos, xywh=True)
+
+
 
 def classifer_train(traindict, testdict, lstm_model):
 
     # Loads based on experiment 
     train, val, test = data_binary(traindict, testdict, lstm_model, max1, min1)
 
+    print("pos:{}, neg:{}".format(pos,neg))
     neg, pos = np.bincount(train['y'])
     print(pos/neg)
-    print("pos:{}, neg:{}".format(pos,neg))
     # quit()
 
     
@@ -284,28 +428,67 @@ def classifer_train(traindict, testdict, lstm_model):
     ###################################################################
     #  Testing results
     ###################################################################
-    test_auc_frame, removed_ped_index = ped_auc_to_frame_auc_data(testdict, test, model)
     
     # Removes the index 
     test_no_index = {}
     test_no_index['x'] = test['x'][:,0]
     test_no_index['y'] = test['y']
     wandb_name = ['rocs', 'roc_curve']
-    roc_plot(model,test_no_index, plot_loc, nc,wandb_name)
+    
+    y_pred = model.predict(test_no_index['x'])
+    y_true = test_no_index['y']
+    roc_plot(y_true, y_pred, plot_loc, nc,wandb_name)
+    
+    # if exp['3_1']:
+    test_auc_frame, removed_ped_index = ped_auc_to_frame_auc_data(model, testdict, test)
+    # elif exp['3_2']:
+    # For 3_2
+    ########################################################################################################
+    # Need to seperate test based on if their are negative index values
+    # Note that negative index values means that selected test frame
+    # came from the orgininal training frame in dictornary
+        # from_traindict_index = np.where(test['x'][:,1] < 0)[0] # cuz of initializing the 0 of train as -0.01
+        # from_testdict_index = np.where(test['x'][:,1] >= 0)[0] 
+        
+        # from_traindict  = {}
+        # from_traindict['x'] = test['x'][from_traindict_index]
+        # from_traindict['y'] = test['y'][from_traindict_index]
+        # from_traindict_auc_frame, from_traindict_removed_ped_index = ped_auc_to_frame_auc_data(model, traindict, from_traindict)
+        
+        # from_testdict = {}
+        # from_testdict['x'] = test['x'][from_testdict_index]
+        # from_testdict['y'] = test['y'][from_testdict_index]
+        # from_testdict_auc_frame, from_testdict_removed_ped_index = ped_auc_to_frame_auc_data(model, testdict, from_testdict)
+
+        # test_auc_frame = {}
+        # test_auc_frame['x'] = np.append(from_traindict_auc_frame['x'], from_testdict_auc_frame['x'], axis = 0)
+        # test_auc_frame['y'] = np.append(from_traindict_auc_frame['y'], from_testdict_auc_frame['y'])
+    ########################################################################################################
+
 
 
     # Removes the index 
-    nc_frame = nc
+    nc_frame = nc.copy()
     nc_frame[0] = loc['nc']['date'] + 'frame'
     test_no_index = {}
     test_no_index['x'] = test_auc_frame['x'][:,0]
     test_no_index['y'] = test_auc_frame['y']
-    wandb_name = ['rocs_frame', 'roc_curve_frame']
-    roc_plot(model,test_no_index, plot_loc, nc_frame, wandb_name)
+    wandb_name_frame = ['rocs_frame', 'roc_curve_frame']
+    print("this is nc_frame:{}".format(nc_frame))
+    print("this is nc:{}".format(nc))
+
+    y_pred = model.predict(test_no_index['x'])
+    y_true = test_no_index['y']
+
+    roc_plot(y_true, y_pred, plot_loc, nc_frame, wandb_name_frame)
 
     # should allow me to debug safety without abort program
     # run.finish()
 
+    # quit()
+    #########################################
+    # More of a plotter than anything
+    # Make into a function 
     # Looking at pedestrains that are deleted
     if len(removed_ped_index) >= 1:
         removed_ped = {}
@@ -322,16 +505,14 @@ def classifer_train(traindict, testdict, lstm_model):
                                                     threshold=0.5
                                                     )
 
-        print(len(conf_dict['TN']))
-        print(len(conf_dict['FN']))
-        print(len(conf_dict['FP']))
-        print(len(conf_dict['TP']))
-        print(conf_dict['TN'])
-        print(conf_dict['FN'])
-        print(conf_dict['FP'])
-        print(conf_dict['TP'])
-        print(conf_dict)
-        print(type(conf_dict['TN'][0]))
+        # print(len(conf_dict['TN']))
+        # print(len(conf_dict['FN']))
+        # print(len(conf_dict['FP']))
+        # print(len(conf_dict['TP']))
+        # print(conf_dict['TN'])
+        # print(conf_dict['FN'])
+        # print(conf_dict['FP'])
+        # print(conf_dict['TP'])
 
         # quit()
         # what am I actually returning
@@ -359,7 +540,7 @@ def classifer_train(traindict, testdict, lstm_model):
             pic_loc_conf_key =  join(pic_loc, conf_key)
             cycle_through_videos(lstm_model, boxes_dict[conf_key], max1, min1, pic_loc_conf_key, loc_videos, xywh=True)
 
-    # print("pos:{}, neg:{}".format(pos,neg))
+    print("pos:{}, neg:{}".format(pos,neg))
 
     # go back and fix filler
     print('go back and fix filler')
@@ -379,14 +560,16 @@ def make_dir(dir_list):
 
 
 def main():
+    # To-Do add input argument for when loading 
     load_lstm_model = True
+    special_load = True # go back and clean up with command line inputs
     model_loc = join(   os.path.dirname(os.getcwd()),
                         *loc['model_path_list']
                         ) # create save link
     # 01_07_2021_lstm_network_xywh_hr-st_20
     
     nc = [  #loc['nc']['date'],
-            '01_07_2021',
+            '12_18_2020',
             loc['nc']['model_name'],
             loc['nc']['data_coordinate_out'],
             loc['nc']['dataset_name'],
@@ -405,9 +588,18 @@ def main():
 
 
     if load_lstm_model:        
-        model_path = os.path.join(  model_loc,
-                                    '{}_{}_{}_{}_{}.h5'.format(*nc)
-                                    )
+        if special_load:
+            # model_path = os.path.join( os.path.dirname(os.getcwd()),
+            #                             'results_all_datasets/experiment_3_1/saved_model/01_07_2021_lstm_network_xywh_avenue_20.h5'
+            #                             )
+
+            model_path = os.path.join( os.path.dirname(os.getcwd()),
+                                        'results_all_datasets/experiment_3_1/saved_model/12_18_2020_lstm_network_xywh_st_20.h5'
+                                        )
+        else:
+            model_path = os.path.join(  model_loc,
+                            '{}_{}_{}_{}_{}.h5'.format(*nc)
+                            )
         print(model_path)
         lstm_model = tf.keras.models.load_model(    model_path,  
                                                     custom_objects = {'loss':'mse'} , 
@@ -418,14 +610,15 @@ def main():
         lstm_model = lstm_train(traindict)
 
 
-    classifer_train(traindict, testdict, lstm_model)
+    # classifer_train(traindict, testdict, lstm_model)
+    frame_traj_model_auc(lstm_model, testdict)
+
 
 
     ## To_DO:
     """"
-    fix why the y are not ints for classifer train and in abnormality
-    will allow to use np.bincount
-
+    1)  Fix the wandb saved metrics plots,
+        make config file more consistent with how wandb should be call
     Why do I need an initial bias for last layer. I think I got idea
     from google. But is it advantagous.
     https://www.tensorflow.org/tutorials/structured_data/imbalanced_data
@@ -433,8 +626,7 @@ def main():
     2)  Looks like I can save the hyprmas file as well in a txt file.
         Might be useful might not be
 
-    3)  Make a function or class that plots data and saves it. I talking about
-        the plots that I need to make for metrics.
+
 
     4)  create a testing lstm. This would mean I need to return the model
         of lstm_train. Or more robustly just read saved model instead.

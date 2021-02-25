@@ -156,17 +156,17 @@ def data_binary(traindict, testdict, lstm, max1, min1):
 
         # Note training_set_from_lstm has iou in first column
         # second colum is the index( Put in a filler -1)
-        # synethic_index = -np.arange(len(iou))
-        # synethic_index[0] = -0.01 
-        training_set_from_lstm = np.append( iou.reshape((-1,1)),
-                                            -np.ones((len(iou), 1)),
-                                            axis=1
-                                            )
-
+        synethic_index = -np.linspace(0,len(iou)-1, len(iou))
+        synethic_index[0] = -0.01 
         # training_set_from_lstm = np.append( iou.reshape((-1,1)),
-        #                                     synethic_index,
+        #                                     -np.ones((len(iou), 1)),
         #                                     axis=1
         #                                     )
+
+        training_set_from_lstm = np.append( iou.reshape((-1,1)),
+                                            synethic_index.reshape((-1,1)),
+                                            axis=1
+                                            )
 
 
         temp_combined_train = {}

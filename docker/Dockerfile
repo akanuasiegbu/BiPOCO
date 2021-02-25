@@ -40,5 +40,7 @@ RUN rm -rf /var/lib/apt/lists/* /tmp/* /root/.cache/*
 
 RUN mkdir /home/akanu
 # This allows me to set Python Path 
+# Make dynam before release
 ENV PYTHONPATH "/mnt/roahm/users/akanu/projects/anomalous_pred/custom_functions:/home/akanu"
 #ENV PYTHONPATH "/home/akanu/git/anomalous_pred/model:/home/akanu"
+

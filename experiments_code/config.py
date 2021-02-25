@@ -2,14 +2,14 @@ import datetime
 
 exp = { '1': False,
         '2': False,
-        '3_1': True,
+        '3_1': False,
         '3_2': False,
         # want an adaptive model saved based on arch size for model_loc
-        'data': 'avenue', #st, avenue,hr-st
+        'data': 'st', #st, avenue,hr-st
         }
 
 hyparams = {
-    'epochs':100,
+    'epochs':350,
     'batch_size': 32,
     'buffer_size': 10000,
  
@@ -39,9 +39,9 @@ hyparams = {
             'early_stopping':False,
             'mointor': 'loss',
             'min_delta':0.0000005,
-            'batch_size': 32,
+            'batch_size': 128,
             'patience':30,
-            'wandb': False,
+            'wandb': False, # want to move this out of here and create a seperate wandb file
             'seed':40,
             'abnormal_split':0.5, # Split for the data into normal and abnormal
             'val_ratio':0.3, #guarantee the ratio of normal and abnormal frames
@@ -55,7 +55,7 @@ hyparams = {
 
 }
 
-name_exp = None
+# name_exp = None
 if exp['1']:
     name_exp = '1'
 elif exp['2']:
@@ -64,6 +64,8 @@ elif exp['3_1']:
     name_exp ='3_1'
 elif exp['3_2']:
     name_exp = '3_2'
+else:
+    name_exp = 'traj_model'
 
 now = datetime.datetime.now()
 date = now.strftime("%m_%d_%Y")
@@ -84,7 +86,7 @@ loc =  {
         'dataset_name': exp['data'], # avenue, st                   ################# ________________________________________________________________________________________________________________________________--
         'date': date,
         },    # is nc the best way to propate and save things as same name
-    # Might want to autmoically create a new folder with model arch saved
+    # Might want to automatically  create a new folder with model arch saved
     # as a text file as well as in folder name
 
     'data_load':{
