@@ -1269,3 +1269,196 @@ python main.py
 python main.py 
 python main.py 
 python main.py 
+clear
+ls
+cd experiments_code/
+ls
+python main.py 
+clear
+exir
+exot
+exit
+clear
+ls
+ls
+cd experiments_code/
+ls
+python main
+python main.py 
+python main.py 
+clear
+clear
+python main.py 
+python -m pdb  main.py 
+python -m pdb  main.py 
+python main.py 
+python main.py 
+python -m pdb  main.py 
+
+clear
+python -m pdb  main.py 
+clear
+python main.py 
+clear
+exot
+exit
+clear
+cd experiments_code/
+ls
+python main.py 
+clear
+exit
+clear
+ls
+cd experiments_code/
+python -m pdb main.py 
+clear
+ls
+clear
+python -m pdb main.py 
+exit
+clear
+cd experiments_code/
+ls
+python -m pdb main.py 
+clear
+ls
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+clear
+pytho main.py 
+python main.py 
+clear
+clear
+clear
+clear
+python main.py 
+python main.py 
+clear
+python main.py 
+clear
+python main.py 
+python main.py 
+python main.py 
+clear
+cd experiments_code/
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+clear
+ls
+cd experiments_code/
+clear
+python -m pdb main.py 
+clear
+ls
+exit
+clear
+ls
+python 
+ls
+cd output_deepsort/
+ls
+cd st
+ls
+cd test_
+cd test_txt/
+ls
+lox = '01_9926.txt'
+python
+clear
+ls
+cd experiments_code/
+ls
+python main.py 
+clear
+python -m pdb main.py 
+clear
+python -m pdb main.py 
+clear
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+clear
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+clear
+python main.py 
+python
+python main.py 
+clear
+python main.py 
+python main.py 
+python main.py 
+python -m pdb  main.py 
+python main.py 
+python -m pdb  main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+clear
+python main.py 
+clear
+python main.py 
+python main.py 
+ls
+pwd
+cd //
+ls
+cd ~
+ls
+pwd
+cd ..
+ls
+cd akanu/
+ls
+cd experiments_code/
+ls
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+clear
+python main.py 
+python main.py 
+clear
+cd experiments_code/
+ls
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python main.py 
+python main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+clear
+python main.py 
+python main.py 
+clear
+clear
+python -m pdb main.py 
+clear
+ls
+clear
+ls
+python -m pdb main.py 
+clear
+python main.py 
+python main.py 
+clear
+python main.py 

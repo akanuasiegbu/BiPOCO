@@ -79,7 +79,7 @@ def Boxes(loc_files, txt_names, time_steps, pad ='pre', to_xywh = False):
     Potential fixes:
         Come back and seperate frame video and person id to make cleaner
     """
-
+    #intilization 
     x_ppl_box, y_ppl_box, frame_ppl_id, video_file, abnormal = [], [], [], [],[]  #Has bounding box locations inside
     frame_x, frame_y, id_x, id_y = [], [], [], []
 

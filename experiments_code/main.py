@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+import pandas as pd
 from sklearn.model_selection import train_test_split
 
 import tensorflow as tf
@@ -30,6 +31,7 @@ from metrics_plot import *
 # Models
 from models import lstm_network, binary_network
 import wandb
+from custom_functions.ped_sequence_plot import ind_seq_dict, plot_sequence
 
 def gpu_check():
     """
@@ -47,6 +49,67 @@ def gpu_check():
 
 #     weighted_cross_entr = Lambda(lambda x: -x)(when_y_0+when_y_1)
 #     return weighted_cross_entr
+
+def lstm_train(traindict):
+    """
+    All this is doing is training the lstm network.
+    After training make plots to see results. (Make a plotter class or functions)
+    """
+    train_x,train_y = norm_train_max_min(   data = traindict,
+                                            # max1=hyparams['max'],
+                                            # min1=hyparams['min']
+                                            max1 = max1,
+                                            min1 = min1
+                                        )
+    
+    train, val = {}, {}
+    train['x'], val['x'],train['y'],val['y'] = train_test_split(    train_x,
+                                                                    train_y,
+                                                                    test_size = hyparams['networks']['lstm']['val_ratio']
+                                                                    )
+    
+    # print(train['x'].shape)
+    # quit()
+    # took out to make tensorify func universal
+    # used to do train test split in tensorify function
+    train_data,val_data = tensorify(    train, 
+                                        val,
+                                        batch_size = hyparams['batch_size']
+                                        )
+
+    #naming convection
+    nc = [  loc['nc']['date'],
+            loc['nc']['model_name'],
+            loc['nc']['data_coordinate_out'],
+            loc['nc']['dataset_name'],
+            hyparams['frames'],
+            ] # Note that frames is the sequence input
+
+    # folders not saved by dates
+    make_dir(loc['model_path_list']) # Make directory to save model, no deped
+
+    # print(loc['model_path_list'])
+    model_loc = join(   os.path.dirname(os.getcwd()),
+                        *loc['model_path_list']
+                        ) # create save link
+
+   
+
+    history, model = lstm_network(  train_data,
+                                    val_data,
+                                    model_loc=model_loc, ### Fix this line
+                                    nc = nc,
+                                    epochs=hyparams['epochs']
+                                    )
+
+    make_dir(loc['metrics_path_list'])
+    plot_loc = join(    os.path.dirname(os.getcwd()),
+                        *loc['metrics_path_list']
+                        )
+    # Note that loss plot is saved to plot_lcc
+    loss_plot(history, plot_loc, nc, save_wandb=False)
+
+    return model
 
 def iou_as_probability(testdict, model):
     """
@@ -81,6 +144,9 @@ def ped_auc_to_frame_auc_data(model, testdict, test_bin=None):
     When normal data can be drawn from the training set.
     Would expect percentage of data removed to decrease
     # To do
+    could make more computailly efficent by
+    returning iou_prob in this function for prob per human of
+    being abnormal
 
     testdict: From orginal data test dict
     test_bin: binary classifer test dict
@@ -94,6 +160,13 @@ def ped_auc_to_frame_auc_data(model, testdict, test_bin=None):
     if not test_bin:
         # calc iou prob
         iou_prob = iou_as_probability(testdict, model)
+
+        #############################
+        # comment out after listening
+
+       
+
+        #############################
         
         # since test dict was not shuffled lets created index
         test_index = np.arange(0, len(testdict['abnormal']), 1)
@@ -183,8 +256,8 @@ def ped_auc_to_frame_auc_data(model, testdict, test_bin=None):
         # print(test_bin['x'].shape)
         test_auc_frame = {}
         if not test_bin:
-            iou_prob_per_frame = np.append(iou_prob.reshape(-1,1), test_index.reshape(-1,1), axis=1)
-            test_auc_frame['x'] = np.delete( iou_prob_per_frame, remove_list, axis = 0 )
+            iou_prob_per_person = np.append(iou_prob.reshape(-1,1), test_index.reshape(-1,1), axis=1)
+            test_auc_frame['x'] = np.delete( iou_prob_per_person, remove_list, axis = 0 )
             test_auc_frame['y'] = np.delete(testdict['abnormal'].reshape(-1,1) , remove_list, axis=0)
         else:
             test_auc_frame['x'] = np.delete(test_bin['x'], remove_list, axis=0)
@@ -192,68 +265,10 @@ def ped_auc_to_frame_auc_data(model, testdict, test_bin=None):
         # print(test_auc_frame['y'].shape)
         # print(test_auc_frame['x'].shape)
 
-    return test_auc_frame, remove_list
+        y_pred_per_human = iou_prob
 
-def lstm_train(traindict):
-    """
-    All this is doing is training the lstm network.
-    After training make plots to see results. (Make a plotter class or functions)
-    """
-    train_x,train_y = norm_train_max_min(   data = traindict,
-                                            # max1=hyparams['max'],
-                                            # min1=hyparams['min']
-                                            max1 = max1,
-                                            min1 = min1
-                                        )
-    
-    train, val = {}, {}
-    train['x'], val['x'],train['y'],val['y'] = train_test_split(    train_x,
-                                                                    train_y,
-                                                                    test_size = hyparams['networks']['lstm']['val_ratio']
-                                                                    )
-    
-    # print(train['x'].shape)
-    # quit()
-    # took out to make tensorify func universal
-    # used to do train test split in tensorify function
-    train_data,val_data = tensorify(    train, 
-                                        val,
-                                        batch_size = hyparams['batch_size']
-                                        )
+    return test_auc_frame, remove_list, y_pred_per_human
 
-    #naming convection
-    nc = [  loc['nc']['date'],
-            loc['nc']['model_name'],
-            loc['nc']['data_coordinate_out'],
-            loc['nc']['dataset_name'],
-            hyparams['frames'],
-            ] # Note that frames is the sequence input
-
-    # folders not saved by dates
-    make_dir(loc['model_path_list']) # Make directory to save model, no deped
-
-    # print(loc['model_path_list'])
-    model_loc = join(   os.path.dirname(os.getcwd()),
-                        *loc['model_path_list']
-                        ) # create save link
-
-   
-
-    history, model = lstm_network(  train_data,
-                                    val_data,
-                                    model_loc=model_loc, ### Fix this line
-                                    nc = nc,
-                                    epochs=hyparams['epochs']
-                                    )
-
-    make_dir(loc['metrics_path_list'])
-    plot_loc = join(    os.path.dirname(os.getcwd()),
-                        *loc['metrics_path_list']
-                        )
-    # Note that loss plot is saved to plot_lcc
-    loss_plot(history, plot_loc, nc, save_wandb=False)
-
-    return model
 
 def frame_traj_model_auc(model, testdict):
     """
@@ -262,7 +277,8 @@ def frame_traj_model_auc(model, testdict):
     """
 
     # Note that this return ious as a prob 
-    test_auc_frame, remove_list = ped_auc_to_frame_auc_data(model, testdict)
+    #test_auc_frame, remove_list = ped_auc_to_frame_auc_data(model, testdict)
+    test_auc_frame, remove_list, y_pred_per_human = ped_auc_to_frame_auc_data(model, testdict)
     
     if test_auc_frame == 'not possible':
         quit()
@@ -286,12 +302,42 @@ def frame_traj_model_auc(model, testdict):
     wandb_name = ['rocs', 'roc_curve']
     roc_plot(y_true,y_pred, plot_loc, nc,wandb_name)
     print(remove_list.shape)
+
+    # Quick_test = {}
+    # Quick_test['x'] =  test_auc_frame['x'][0:25000,:] 
+    # Quick_test['y'] = test_auc_frame['y'][0:25000] 
+    # this helper function is suppose to plot resu
+
+    # uncomment to plot video frames
+    # helper_TP_TN_FP_FN(testdict, model, test_auc_frame)
+
+    # this is for plotting indivual people make into a func
+   
     
+
 
     #### Per bounding box
     nc_per_human = nc.copy()
     nc_per_human[0] = loc['nc']['date'] + '_per_bounding_box'
-    y_pred_per_human = iou_as_probability(testdict, model)
+    # y_pred_per_human = iou_as_probability(testdict, model)
+
+    abnormal_index = np.where(testdict['abnormal'] == 1)
+    normal_index = np.where(testdict['abnormal'] == 0)
+
+    # Uncomment to make iou plots
+    ################################################
+    plot_iou(   prob_iou = y_pred_per_human[abnormal_index[0]],
+                xlabel ='Detected Abnormal Pedestrains ',
+                ped_type = 'abnormal_ped',
+                plot_loc = plot_loc,
+                nc = nc_per_human)
+
+    plot_iou(   prob_iou = y_pred_per_human[normal_index[0]],
+                xlabel ='Detected Normal Pedestrains ',
+                ped_type = 'normal_ped',
+                plot_loc = plot_loc,
+                nc = nc_per_human)
+    ###################################################
 
     y_true_per_human = testdict['abnormal']
     #####################################################################
@@ -299,9 +345,10 @@ def frame_traj_model_auc(model, testdict):
     roc_plot(y_true_per_human, y_pred_per_human, plot_loc, nc_per_human, wandb_name)
 
 
-def helper_TP_TN_FP_TN(datadict, traj_model, ped):
+def helper_TP_TN_FP_FN(datadict, traj_model, ped):
 
     """
+    This uses function in the TP_TN_FP_FN file for plotting
     datadict: 
     traj_model: lstm, etc
     ped: dict with x is two columns contains predictions, indices
@@ -309,14 +356,13 @@ def helper_TP_TN_FP_TN(datadict, traj_model, ped):
     """
   
 
-    print('removed ped length x: {}'.format( len( removed_ped['x'] ) ) )
-    print('removed ped length y: {}'.format( len( removed_ped['y'] ) ) )
     # seperates them into TP. TN, FP, FN
-    y_pred = bm_model.predict(removed_ped['x'][:,0])
 
-    conf_dict = seperate_misclassifed_examples( y_pred = y_pred,
-                                                indices = removed_ped['x'][:,1],
-                                                test_y = removed_ped['y'],
+    # Note that y_pred should not be threshold yet, granted if it is no
+    # error cuz would change by threshold again assuming using same threshold 
+    conf_dict = seperate_misclassifed_examples( y_pred = ped['x'][:,0],
+                                                indices = ped['x'][:,1],
+                                                test_y = ped['y'],
                                                 threshold=0.5
                                                 )
 
@@ -559,6 +605,78 @@ def make_dir(dir_list):
                                                                 *dir_list) ) )
 
 
+def trouble_shot(testdict):
+
+    # This is helping me plot the data from tlbr -> xywh -> tlbr
+    ped_loc = loc['visual_trajectory_list'].copy()
+    frame = 304
+    ped_id = 6
+    # loc_videos = loc['data_load'][exp['data']]['test_vid']
+    
+
+    # Note I need to delete this as this file
+    # is  the file with the saved bbox overlapped on top of it
+    loc_videos = "/mnt/roahm/users/akanu/projects/Deep-SORT-YOLOv4/tensorflow2.0/deep-sort-yolov4/output_deepsort/st/test_vid/01_0026_st_output_test_tracker.avi"
+    
+    
+    
+    # ped_loc[-1] =  '01_0026'+ '_' + '{}'.format(frame)+ '_' + '{}'.format(ped_id)
+    # make_dir(ped_loc)
+    # pic_loc = join(     os.path.dirname(os.getcwd()),
+    #                     *ped_loc
+    #                     )
+    person_seq = ind_seq_dict(testdict, '01_0026', frame,  ped_id) # this is a slow search I would think
+
+
+
+    # plot_sequence(  person_seq, max1, min1,
+    #                 '01_0026.txt',
+    #                 pic_loc = pic_loc,
+    #                 loc_videos = loc_videos,
+    #                 xywh= True
+    #                 )
+
+    # Now I'm looking directly at the tlbr file and not changing anything
+    ped_loc = loc['visual_trajectory_list'].copy()
+
+    ped_loc[-1] =  '01_0026'+ '_' + '{}'.format(frame)+ '_' + '{}'.format(ped_id) + '_from_video_tracker_overlay_gt'
+    make_dir(ped_loc)
+    pic_loc = join(     os.path.dirname(os.getcwd()),
+                        *ped_loc
+                        )
+    loc_temp =  "/mnt/roahm/users/akanu/projects/anomalous_pred/output_deepsort/st/test_txt/01_0026.txt"
+    data_temp = pd.read_csv(loc_temp, ' ' )
+
+
+    gt = []
+    for i, j in zip(person_seq['frame_x'], person_seq['id_x']):
+        # print(i)
+        # print(j)
+        p = data_temp[(data_temp['Frame_Number'] == i) &  (data_temp['Person_ID']==j)]
+        print(p.values)
+        gt.append(p.values[0])
+
+    gt = np.array(gt)
+
+    print(gt)
+
+    person_gt = {}
+    person_gt['x_ppl_box'] = gt[:, 3:7]
+    person_gt['frame_ppl_id'] = np.append(gt[:,0].reshape(-1,1), gt[:,1].reshape(-1,1), axis=1) # delete later not needed once otuer changes 
+    person_gt['frame_x'] = gt[:,0].reshape(-1,1)
+    person_gt['frame_y'] = frame
+    # quit()
+    plot_sequence(  person_gt, 
+                    max1, 
+                    min1,
+                    '01_0026.txt',
+                    pic_loc = pic_loc,
+                    loc_videos = loc_videos,
+                    xywh= False
+                    )
+
+
+
 def main():
     # To-Do add input argument for when loading 
     load_lstm_model = True
@@ -601,17 +719,20 @@ def main():
                             '{}_{}_{}_{}_{}.h5'.format(*nc)
                             )
         print(model_path)
-        lstm_model = tf.keras.models.load_model(    model_path,  
-                                                    custom_objects = {'loss':'mse'} , 
-                                                    compile=True
-                                                    )
+        # lstm_model = tf.keras.models.load_model(    model_path,  
+        #                                             custom_objects = {'loss':'mse'} , 
+        #                                             compile=True
+        #                                             )
     else:
         # returning model right now but might change that in future and load instead
         lstm_model = lstm_train(traindict)
 
 
     # classifer_train(traindict, testdict, lstm_model)
-    frame_traj_model_auc(lstm_model, testdict)
+    # frame_traj_model_auc(lstm_model, testdict)
+     
+
+    trouble_shot(testdict)
 
 
 
@@ -638,7 +759,7 @@ def main():
 
 
 if __name__ == '__main__':
-    print('GPU is on: {}'.format(gpu_check() ) )
+    # print('GPU is on: {}'.format(gpu_check() ) )
 
     main()
 

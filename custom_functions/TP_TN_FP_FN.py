@@ -45,10 +45,10 @@ def seperate_misclassifed_examples(y_pred,indices, test_y, threshold=0.5):
             # This one is for TP
             TP.append(map_index)
 
-    print(TN)
-    print(FP)
-    print(FN)
-    print(TP)
+    # print(TN)
+    # print(FP)
+    # print(FN)
+    # print(TP)
 
     index['TN'] = np.array([int(i) for i in TN])
     index['TP'] = np.array([int(i) for i in TP])
@@ -228,11 +228,11 @@ def cycle_through_videos(model, data, max1, min1,pic_loc, loc_videos, xywh=False
                         pred_frame = frame.copy()   # this is the image
                         both_frame = frame.copy()   # this is the image
 
-                        # Ground Truth
-                        cv2.rectangle(gt_frame, (int(y_fr_act[0]), int(y_fr_act[1])), (int(y_fr_act[2]), int(y_fr_act[3])),(0,255,0), 2)
+                        # # Ground Truth
+                        # cv2.rectangle(gt_frame, (int(y_fr_act[0]), int(y_fr_act[1])), (int(y_fr_act[2]), int(y_fr_act[3])),(0,255,0), 2)
 
-                        # Predicted
-                        cv2.rectangle(pred_frame, (int(y_fr_pred[0]), int(y_fr_pred[1])), (int(y_fr_pred[2]), int(y_fr_pred[3])),(0,255,255), 2)
+                        # # Predicted
+                        # cv2.rectangle(pred_frame, (int(y_fr_pred[0]), int(y_fr_pred[1])), (int(y_fr_pred[2]), int(y_fr_pred[3])),(0,255,255), 2)
 
                         # Combined frame
                         cv2.rectangle(both_frame, (int(y_fr_act[0]), int(y_fr_act[1])), (int(y_fr_act[2]), int(y_fr_act[3])),(0,255,0), 2)
@@ -243,8 +243,8 @@ def cycle_through_videos(model, data, max1, min1,pic_loc, loc_videos, xywh=False
                         vid_str_info = vid_key[:-4] + '___' + str(i) + '__' + str(id_per)
                         # vid_str_info has video number, frame number, person_Id
 
-                        cv2.imwrite( os.path.join(pic_loc, vid_str_info + '_gt.jpg'), gt_frame)
-                        cv2.imwrite( os.path.join(pic_loc, vid_str_info + '_pred.jpg'), pred_frame)
+                        # cv2.imwrite( os.path.join(pic_loc, vid_str_info + '_gt.jpg'), gt_frame)
+                        # cv2.imwrite( os.path.join(pic_loc, vid_str_info + '_pred.jpg'), pred_frame)
                         cv2.imwrite( os.path.join(pic_loc, vid_str_info + '_both.jpg'), both_frame)
 
 

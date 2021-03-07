@@ -1,4 +1,6 @@
-import numpy 
+import numpy as np
+import os
+import cv2
 
 def ind_seq(data, video, frame):
     """
@@ -21,16 +23,43 @@ def ind_seq(data, video, frame):
     found_index_of_frame = np.where(frames==frame)
 
     
-    for key in data.keys()
-
+    for key in data.keys():
         output[key] = data[key][found_index_of_frame]
 
     
     return output
 
+def ind_seq_dict(data, video, frame, id):
+    """
+    This can sort dict directly. Note this is not compute
+    """
+    vid_loc = data['video_file'].reshape(-1,1) #videos locations
+    frame_loc = data['frame_y'].reshape(-1,1) # frame locations
+    id_y = data['id_y'].reshape(-1,1)
+    vid_frame_id_y = []
+    for i,j,k in zip(vid_loc, frame_loc, id_y):
+        vid_frame_id_y.append( str(i[0]) + '_' + str(j[0])  + '_' + str(k[0]))
+    
+    # found1_index = np.where(vid_frame_id_y == '{}.txt'.format(video) + '_' + '{}'.format(frame) + '_' + '{}'.format(id))
+    
+    i = 0
+    find = '{}.txt'.format(video) + '_' + '{}'.format(frame) + '_' + '{}'.format(id)
+    for j in vid_frame_id_y:
+        if j == find:
+            found_index = i 
+        else:
+            i += 1
+    output = {}
+    for key in data.keys():
+        output[key] = data[key][found_index]
+
+    return output
+
+
     
 
-def plot_sequence(model, one_ped_seq, max1, min1, vid_key,pic_loc, loc_videos, xywh=False):
+# def plot_sequence(model, one_ped_seq, max1, min1, vid_key,pic_loc, loc_videos, xywh=False):
+def plot_sequence(one_ped_seq, max1, min1, vid_key,pic_loc, loc_videos, xywh=False):
     """
     This will plot the sequences of the of one pedestrain
     Not computially efficent if you want to plot lots of pedestrain
@@ -44,19 +73,28 @@ def plot_sequence(model, one_ped_seq, max1, min1, vid_key,pic_loc, loc_videos, x
                     type and/or can input generic location to allow for
                     plotting all videos at the same sort_TP_TN_FP_FN_by_vid_n_frame
     """
-
+    data = one_ped_seq
     x_input = data['x_ppl_box']
     # x_scal,y_scal = norm_train_max_min(data_dict = data, max1 = max1,min1 =min1)
-    last_frame = data['frame_ppl_id'][-1,-2,0]
+    # last_frame = data['frame_ppl_id'][-1,-2,0]
+    last_frame = data['frame_y']
+    # last_frame = data['frame_x'][-1]
 
     
 
-    next_frame_index, j, frame_count = 0, 0, 0
+    # next_frame_index, j, frame_count = 0, 0, 0
 
-    loc_vid = os.path.join(loc_videos, vid_key[:-4]+ '.avi')
+    # Need to make sure I have video path
+    next_frame_index, j = 0, 0
+    #NEED TO UNCOMMENT
+    loc_vid = loc_videos  # COMMENT THIS FOR GENERAL APPROACH
+    # loc_vid = os.path.join(loc_videos, vid_key[:-4]+ '.avi')
     video_capture = cv2.VideoCapture(loc_vid)
 
     # there could be information lost here
+    # print('X input while in xywh')
+    # print(x_input)
+
     if xywh:
         x_input[:,0]  =  x_input[:,0]  -  x_input[:,2]/2
         x_input[:,1]  =  x_input[:,1]  -  x_input[:,3]/2 # Now we are at tlwh
@@ -64,28 +102,40 @@ def plot_sequence(model, one_ped_seq, max1, min1, vid_key,pic_loc, loc_videos, x
 
 
     x_input = x_input.squeeze()
+    # print('X_input after converted into tlbr')
+    # print(x_input)
+
     frame_ppl = data['frame_ppl_id'].squeeze()
 
-
     for i in range(0, last_frame+1):
+        # goes through each frame of the video
         ret, frame = video_capture.read()
+        
         if i == frame_ppl[j,0 ]: #finds the frames
             while i == frame_ppl[j,0]:
 
                 x_box = x_input[j]
+                print(x_box)
                 id1 = frame_ppl[j,1]
 
-                input_frame = frame.copy()
+                # input_frame = frame.copy()
+                gt_frame = frame.copy()
+
                 # Since camera is statiornay I can plot other bbox as well on same video
                 # Input Data
-                cv2.rectangle(gt_frame, (int(x_box[0]), int(x_box[1])), (int(x_box[2]), int(x_box[3])),(0,255,0), 2)
+
+
+                # NEED TO UNCOMMENT
+                # cv2.rectangle(gt_frame, (int(x_box[0]), int(x_box[1])), (int(x_box[2]), int(x_box[3])),(0,255,0), 2)
+                cv2.rectangle(gt_frame, (int(x_box[0]), int(x_box[1])), (int(x_box[2]), int(x_box[3])),(0,255,255), 2) # yellow
+                
                 # Need to change This
                 vid_str_info = vid_key[:-4] + '___' + str(i) + '__' + str(id1)
-                cv2.imwrite( os.path.join(pic_loc, vid_str_info + '_input.jpg'), both_frame)
+                cv2.imwrite( os.path.join(pic_loc, vid_str_info + '_input.jpg'), gt_frame)
                 
-                frame_count += 1
+                # frame_count += 1
                 next_frame_index += 1
                 j = next_frame_index
                 
-                if j == size:
+                if j == last_frame:
                     break

@@ -1,4 +1,3 @@
- 
 from load_data import norm_train_max_min
 import numpy as np
 import cv2

@@ -1,3 +1,8 @@
+"""
+This will contain more than just metrics plots
+"""
+
+
 from matplotlib import pyplot as plt
 from os.path import join
 from config import hyparams, loc
@@ -111,3 +116,24 @@ def roc_plot(y_true, y_pred, plot_loc, nc, wandb_name):
 
 
 
+def plot_iou(prob_iou,xlabel, ped_type, plot_loc, nc):
+    """
+    envisioned this to show how the abnormal pedestrains iou look
+    prob_iou: this is the prob iou
+    xlabel: xlabel for plot
+    ped_type: 'normal_ped' , abnormal_ped
+    """
+    fig,ax = plt.subplots(nrows=1, ncols=1)
+    ax.plot(np.arange(0,len(prob_iou)), prob_iou, '.' )
+    ax.plot(np.arange(0,len(prob_iou)), 0.5*np.ones([1, len(prob_iou)]), '-b', label='midpoint' )
+    ax.plot(np.arange(0,len(prob_iou)), np.mean(prob_iou)*np.ones([1, len(prob_iou)]), '-r', label='mean + {:.4f}'.format(np.mean(prob_iou)) )
+    ax.legend()
+    plt.xlabel(xlabel)
+    plt.ylabel('Probability (1-IOU)')
+
+
+    img_path = join( plot_loc, 
+            '{}_{}_{}_{}_{}_{}.jpg'.format(
+            *nc, ped_type
+            ))
+    fig.savefig(img_path)
