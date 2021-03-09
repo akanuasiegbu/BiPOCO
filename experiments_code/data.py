@@ -89,7 +89,7 @@ def data_binary(traindict, testdict, lstm, max1, min1):
                                 min1 = min1
                                 )
 
-    iou = compute_iou(x,y,lstm)
+    iou = compute_iou(x,y, max1, min1, lstm)
     
     # Note that indices returned are in same order
     # as testdict unshuffled
@@ -151,7 +151,7 @@ def data_binary(traindict, testdict, lstm, max1, min1):
                                     min1 = min1
                                     )
 
-        iou = compute_iou(x, y ,lstm)
+        iou = compute_iou(x, y , max1, min1, lstm)
 
 
         # Note training_set_from_lstm has iou in first column

@@ -31,7 +31,7 @@ def seperate_misclassifed_examples(y_pred,indices, test_y, threshold=0.5):
 
     # Key here is that the indices for the test data points
     # are on the second row
-    for gt,pred,map_index in zip (test_y,y_pred,indices):
+    for gt,pred,map_index in zip (test_y.reshape(-1),y_pred,indices):
         if gt == False and pred == False:
             # This is for TN
             TN.append(map_index)

@@ -223,5 +223,5 @@ def norm_train_max_min(data, max1, min1, undo_norm=False):
         # If data comes in here it should be in the same 
         # format as Boxes function output partially 
         xx = (data['x_ppl_box'] - min1)/(max1 - min1)
-        yy = (data['y_ppl_box'] - min1)/(max1-min1)
+        yy = (data['y_ppl_box'] - min1)/(max1 - min1)
         return xx,yy

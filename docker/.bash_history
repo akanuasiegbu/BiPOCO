@@ -1462,3 +1462,323 @@ python main.py
 python main.py 
 clear
 python main.py 
+clear
+ls
+cd ..
+ls
+exit
+clear
+cd experiments_code/
+ls
+clear
+ls
+python main.py 
+clear
+python main.py 
+python main.py 
+clear
+ls
+python main.py 
+python main.py 
+python main.py 
+python -m pdb  main.py 
+clear
+python main.py 
+clear
+clear
+python main.py 
+clear
+ls
+clear
+clear
+clear
+ls
+clear
+cexit
+exot
+exit
+c;ear
+clear
+ls
+exit
+exit
+exit
+clear
+ls
+clear
+clear
+ls
+cd experiments_code/
+clear
+ls
+ls
+ls
+python main.py 
+python main.py 
+ls
+python main.py 
+python main.py 
+python main.py 
+clear
+ls
+python main.py 
+python main.py 
+clear
+ls
+python main.py 
+clear
+ls
+python main.py 
+python main.py 
+c;ear
+clear
+ls
+python main.py 
+clear
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+clear
+python main.py 
+clear
+python main.py 
+clear
+clear
+python main.py 
+python main.py 
+clear
+python main.py 
+clear
+python main.py 
+clear
+ls
+ls
+cd ..
+;s
+ls
+cd output_deepsort/
+ls
+cd st
+ls
+rm -r train_txt/
+rm -r train_vid/
+ls
+ks
+ls
+clear
+ls
+cd ..
+ls
+clear
+ls
+cd experiments_code/
+ls
+python main.py 
+clear
+python main.py 
+clear
+ls
+python main.py 
+python main.py 
+clear
+exit
+clear
+clear
+ls
+cd ex[
+cd experiments_code/
+ls
+python main.py 
+clear
+exit
+clear
+clear
+clear
+ls
+clear
+clear
+ls
+cd experiments_code/
+ls
+python main.py 
+clear
+ls
+clear
+ls
+python main.py 
+clear
+python main.py 
+clear
+exi
+exit
+ls
+cd experiments_code/
+s
+ls
+clear
+python main.py 
+clear
+clear
+ls
+python main.py 
+python main.py 
+python main.py 
+clear
+python main.py 
+clear
+ls
+python -m pdb main.py 
+clear
+clear
+ls
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+clear
+exit
+clear
+ls
+cd experiments_code/
+ls
+python main.py 
+clear
+exit
+ls
+cd experiments_code/
+ls
+python main.py 
+clear
+ls
+clear
+ls
+python main.py 
+python main.py 
+python main.py 
+python -m pdb main.py 
+clear
+python -m pdb main.py 
+python main.py 
+clear
+ls
+python main.py 
+exit
+cd expeexit
+exit
+clear
+cd experiments_code/
+ls
+python main.py 
+clear
+python main.py 
+python -m pdb main.py 
+python main.py 
+clear
+lcs
+ls
+clear
+python main.py 
+clear
+python main.py 
+clear
+python main.py 
+clear
+python main.py 
+python main.py 
+clear
+python main.py 
+python main.py 
+clear
+python main.py 
+clear
+python main.py 
+clear
+python main.py 
+clear
+ls
+cd experiments_code/
+python main.py 
+python main.py 
+python main.py 
+clear
+ls
+clear
+ls
+python main.py 
+clear
+clear
+ls
+exit
+cd experiments_code/
+ls
+python main.py 
+clear
+python main.py 
+python main.py 
+cd experiments_code/
+python main.py 
+clear
+exit
+clear
+ks
+ls
+cd experiments_code/
+python main.py 
+exit
+clear
+cd experiments_code/
+python mamin
+python main.py 
+clear
+python main.py 
+python main.py 
+clear
+python main.py 
+clear
+python main.py 
+clear
+clear
+clear
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+clear
+python main.py 
+python main.py 
+python -m pdb main.py 
+python main.py 
+clear
+python main.py 
+clear
+python main.py 
+clear
+python main.py 
+clear
+python main.py 
+clear
+clear
+python main.py 
+clear
+ls
+python main.py 
+clear
+python main.py 
+clear
+python main.py 
+ls
+clear
+ls
+python main.py 
+clear
+python main.py 
+clear
+exit
+clear
+cd experiments_code/
+ls
+exit

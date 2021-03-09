@@ -2,6 +2,7 @@ import numpy as np
 from math import floor
 from custom_metrics import bb_intersection_over_union, bb_intersection_over_union_np
 from coordinate_change import xywh_tlbr, tlbr_xywh
+from load_data import norm_train_max_min
 
 
 
@@ -56,7 +57,7 @@ def return_indices(data, seed, abnormal_split):
     # return [train_abn_indices, train_n_indices, test_abn_indices, test_n_indices]
     return indices
 
-def compute_iou(x,y,model):
+def compute_iou(x,y, max1, min1, model):
     """
     This function takes in input x and y 
     that is unnormed. It then normilized x and y. 
@@ -69,8 +70,19 @@ def compute_iou(x,y,model):
     """
 
     predicted_bb = model.predict(x)
-    iou = bb_intersection_over_union_np(    xywh_tlbr(predicted_bb),
-                                            xywh_tlbr(y))
+    # predicted_bb_unorm = norm_train_max_min(xywh_tlbr(predicted_bb), max1, min1, True)
+    # gt_bb_unorm = norm_train_max_min(xywh_tlbr(y), max1, min1, True)
+
+    predicted_bb_unorm = norm_train_max_min(predicted_bb, max1, min1, True)
+    predicted_bb_unorm_tlbr = xywh_tlbr(predicted_bb_unorm)
+
+    gt_bb_unorm = norm_train_max_min(y, max1, min1, True)
+    gt_bb_unorm_tlbr = xywh_tlbr(gt_bb_unorm)
+
+
+
+    iou = bb_intersection_over_union_np(    predicted_bb_unorm_tlbr,
+                                            gt_bb_unorm_tlbr )
     return np.squeeze(iou)
 
 

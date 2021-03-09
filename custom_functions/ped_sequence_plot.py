@@ -127,7 +127,11 @@ def plot_sequence(one_ped_seq, max1, min1, vid_key,pic_loc, loc_videos, xywh=Fal
 
                 # NEED TO UNCOMMENT
                 # cv2.rectangle(gt_frame, (int(x_box[0]), int(x_box[1])), (int(x_box[2]), int(x_box[3])),(0,255,0), 2)
-                cv2.rectangle(gt_frame, (int(x_box[0]), int(x_box[1])), (int(x_box[2]), int(x_box[3])),(0,255,255), 2) # yellow
+                # cv2.rectangle(gt_frame, (int(x_box[0]), int(x_box[1])), (int(x_box[2]), int(x_box[3])),(0,255,255), 2) # yellow
+                
+                # use for input data
+                cv2.rectangle(gt_frame, (int(x_box[0]), int(x_box[1])), (int(x_box[2]), int(x_box[3])),(255,255,255), 2) # white
+
                 
                 # Need to change This
                 vid_str_info = vid_key[:-4] + '___' + str(i) + '__' + str(id1)

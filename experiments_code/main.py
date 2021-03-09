@@ -130,7 +130,7 @@ def iou_as_probability(testdict, model):
                                 min1 = min1
                                 )
 
-    iou = compute_iou(x, y, model)
+    iou = compute_iou(x, y, max1, min1,  model)
     iou_prob =  1 - iou
     return  iou_prob
 
@@ -309,7 +309,10 @@ def frame_traj_model_auc(model, testdict):
     # this helper function is suppose to plot resu
 
     # uncomment to plot video frames
-    # helper_TP_TN_FP_FN(testdict, model, test_auc_frame)
+    # print("Number of abnormal people after maxed {}".format(sum(test_auc_frame['y'])))
+    print("Number of abnormal people after maxed {}".format(len(np.where(test_auc_frame['y'] == 1 )[0] ) ))
+
+    helper_TP_TN_FP_FN(testdict, model, test_auc_frame)
 
     # this is for plotting indivual people make into a func
    
@@ -366,6 +369,13 @@ def helper_TP_TN_FP_FN(datadict, traj_model, ped):
                                                 threshold=0.5
                                                 )
 
+    
+    print('length of  TP {} '.format(len(conf_dict['TP'])))
+    print('length of  TN {} '.format(len(conf_dict['TN'])))
+    print('length of  FP {} '.format(len(conf_dict['FP'])))
+    print('length of  FN {} '.format(len(conf_dict['FN'])))
+    # quit()
+    
     # what am I actually returning
     TP_TN_FP_FN, boxes_dict = sort_TP_TN_FP_FN_by_vid_n_frame(datadict, conf_dict )
 
@@ -605,46 +615,114 @@ def make_dir(dir_list):
                                                                 *dir_list) ) )
 
 
-def trouble_shot(testdict):
+def trouble_shot(testdict, model):
 
     # This is helping me plot the data from tlbr -> xywh -> tlbr
     ped_loc = loc['visual_trajectory_list'].copy()
-    frame = 304
-    ped_id = 6
+    frame = 1032
+    ped_id = 80
+    
+    vid = '01'
     # loc_videos = loc['data_load'][exp['data']]['test_vid']
     
 
     # Note I need to delete this as this file
     # is  the file with the saved bbox overlapped on top of it
-    loc_videos = "/mnt/roahm/users/akanu/projects/Deep-SORT-YOLOv4/tensorflow2.0/deep-sort-yolov4/output_deepsort/st/test_vid/01_0026_st_output_test_tracker.avi"
+    # loc_videos = "/mnt/roahm/users/akanu/projects/Deep-SORT-YOLOv4/tensorflow2.0/deep-sort-yolov4/output_deepsort/st/test_vid/01_0026_st_output_test_tracker.avi"
+
+
+    # Video
+
+    # loc_videos = "/mnt/roahm/users/akanu/projects/anomalous_pred/output_deepsort/st/test_vid/{}_st_output_test.avi".format(vid)
+    # loc_videos = "/mnt/roahm/users/akanu/projects/anomalous_pred/output_deepsort/avenue/test_vid/{}_output_yolo_test.avi".format(vid)
+    loc_videos = "/mnt/roahm/users/akanu/dataset/Anomaly/Avenue_Dataset/testing_videos/{}.avi".format(vid)
+
+
+
     
     
-    
-    # ped_loc[-1] =  '01_0026'+ '_' + '{}'.format(frame)+ '_' + '{}'.format(ped_id)
-    # make_dir(ped_loc)
-    # pic_loc = join(     os.path.dirname(os.getcwd()),
-    #                     *ped_loc
-    #                     )
-    person_seq = ind_seq_dict(testdict, '01_0026', frame,  ped_id) # this is a slow search I would think
-
-
-
-    # plot_sequence(  person_seq, max1, min1,
-    #                 '01_0026.txt',
-    #                 pic_loc = pic_loc,
-    #                 loc_videos = loc_videos,
-    #                 xywh= True
-    #                 )
-
-    # Now I'm looking directly at the tlbr file and not changing anything
-    ped_loc = loc['visual_trajectory_list'].copy()
-
-    ped_loc[-1] =  '01_0026'+ '_' + '{}'.format(frame)+ '_' + '{}'.format(ped_id) + '_from_video_tracker_overlay_gt'
+    ped_loc[-1] =  '{}'.format(vid) + '_' + '{}'.format(frame)+ '_' + '{}'.format(ped_id)
     make_dir(ped_loc)
     pic_loc = join(     os.path.dirname(os.getcwd()),
                         *ped_loc
                         )
-    loc_temp =  "/mnt/roahm/users/akanu/projects/anomalous_pred/output_deepsort/st/test_txt/01_0026.txt"
+
+
+    test_auc_frame, remove_list, y_pred_per_human = ped_auc_to_frame_auc_data(model, testdict)
+    temp_dict = {}
+    for i in testdict.keys():
+        indices = np.array(test_auc_frame['x'][:,1], dtype=int)
+        temp_dict[i] = testdict[i][indices]
+
+
+
+    # person_seq = ind_seq_dict(testdict, '{}'.format(vid), frame,  ped_id) # this is a slow search I would think
+    person_seq = ind_seq_dict(temp_dict, '{}'.format(vid), frame,  ped_id) # this is a slow search I would think
+    
+    # test_auc_frame, remove_list, y_pred_per_human = ped_auc_to_frame_auc_data(model, testdict)
+
+    print('in xywh coordinate')
+    print(person_seq['x_ppl_box'])
+    xx, yy = norm_train_max_min(person_seq, max1, min1, undo_norm=False)
+    xx = np.expand_dims(xx, axis=0)
+    yy = np.expand_dims(yy, axis=0)
+
+    bbox_pred_norm = model.predict(xx)
+    print('bbox_pred_norm {}'.format(xywh_tlbr(bbox_pred_norm)))
+    print('bb gt {}'.format(xywh_tlbr(yy)))
+
+
+    # I still want to see what it looks like in the normaized coordinates to know
+    # if it should change
+    iou_norm = bb_intersection_over_union_np(   xywh_tlbr(bbox_pred_norm),
+                                                xywh_tlbr(yy)
+                                            )
+    print('iou in normilized coordinate {}'.format(iou_norm))
+    
+  
+
+    
+
+    bbox_pred = norm_train_max_min(bbox_pred_norm, max1, min1, undo_norm=True)
+    iou_unorm = bb_intersection_over_union_np(  xywh_tlbr(bbox_pred),
+                                                xywh_tlbr(np.expand_dims(person_seq['y_ppl_box'], axis=0) )
+                                                )
+                                        
+    print('bbox_pred in standard coordinates {}'.format(xywh_tlbr(bbox_pred)))
+    print('bbox gt {}'.format(xywh_tlbr(np.expand_dims(person_seq['y_ppl_box'], axis=0))) )
+    print('iou not normalized  which is correct{}'.format(iou_unorm))
+    
+    # see vid frame i
+    print('vid:{} frame:{} id:{}'.format(vid, frame, ped_id))
+    print('abnormal indictor {}'.format(person_seq['abnormal']))
+
+
+    plot_sequence(  person_seq,
+                    max1,
+                    min1,
+                    '{}.txt'.format(vid),
+                    pic_loc = pic_loc,
+                    loc_videos = loc_videos,
+                    xywh= True
+                    )
+    quit()
+    # print('should see this rn if quit works')
+
+
+    # Now I'm looking directly at the tlbr file and not changing anything
+    ped_loc = loc['visual_trajectory_list'].copy()
+
+    ped_loc[-1] =  '{}'.format(vid) + '_' + '{}'.format(frame)+ '_' + '{}'.format(ped_id) + '_from_video_tracker'
+
+    #from_video_tracker_overlay_gt_corrected_first
+    make_dir(ped_loc)
+    pic_loc = join(     os.path.dirname(os.getcwd()),
+                        *ped_loc
+                        )
+    loc_temp =  "/mnt/roahm/users/akanu/projects/anomalous_pred/output_deepsort/avenue/test_txt/{}.txt".format(vid)
+    # loc_temp = "/mnt/roahm/users/akanu/projects/Deep-SORT-YOLOv4/tensorflow2.0/deep-sort-yolov4/output_deepsort/st/test_txt/01_0026_first.txt"
+
+    # loc_temp = "/mnt/roahm/users/akanu/projects/Deep-SORT-YOLOv4/tensorflow2.0/deep-sort-yolov4/output_deepsort/st/test_txt/01_0026_corrected_first.txt"
     data_temp = pd.read_csv(loc_temp, ' ' )
 
 
@@ -666,28 +744,73 @@ def trouble_shot(testdict):
     person_gt['frame_x'] = gt[:,0].reshape(-1,1)
     person_gt['frame_y'] = frame
     # quit()
+
+    print('in tlbr coordinate')
+    print(person_gt['x_ppl_box'])
+
+    # quit()
     plot_sequence(  person_gt, 
                     max1, 
                     min1,
-                    '01_0026.txt',
+                    '{}.txt'.format(vid),
                     pic_loc = pic_loc,
                     loc_videos = loc_videos,
                     xywh= False
                     )
 
 
+def check_bbox():
+
+    # Not small one
+    # temp_box = [[296,152,310,192],
+    #             [300, 152,312,188],
+    #             [303,152,314,183],
+    #             [306,152,316,179]]
+
+    # Note in this case br is not spatially correct
+    temp_box = [[334,152,331,143],
+                [337,152,333,139],
+                [340,152,334,135],
+                [347,152,338,126]]
+    temp_box = np.array(temp_box)
+    print('before tlbr coord')
+    print(temp_box)
+
+    # converts tlbr to xywh
+    temp_box[:,2] = np.abs(temp_box[:,2] - temp_box[:,0] )
+    temp_box[:,3] = np.abs(temp_box[:,3] - temp_box[:,1])
+
+    temp_box[:,0] = temp_box[:,0] + temp_box[:,2]/2
+    temp_box[:,1] = temp_box[:,1] + temp_box[:,3]/2
+
+    # converts xywh to tlbr
+    temp_box[:,0]  =  temp_box[:,0]  -  temp_box[:,2]/2
+    temp_box[:,1]  =  temp_box[:,1]  -  temp_box[:,3]/2 # Now we are at tlwh
+    temp_box[:,2:] =  temp_box[:,:2] +  temp_box[:,2:]
+
+    print('after going tlbr to xywh to tlbr')
+    print(temp_box)
 
 def main():
+    
+
+
+    
+    # check_bbox()
+    # quit()
+
+
+
     # To-Do add input argument for when loading 
-    load_lstm_model = True
-    special_load = True # go back and clean up with command line inputs
+    load_lstm_model = False
+    special_load = False # go back and clean up with command line inputs
     model_loc = join(   os.path.dirname(os.getcwd()),
                         *loc['model_path_list']
                         ) # create save link
     # 01_07_2021_lstm_network_xywh_hr-st_20
     
     nc = [  #loc['nc']['date'],
-            '12_18_2020',
+            '03_08_2021',
             loc['nc']['model_name'],
             loc['nc']['data_coordinate_out'],
             loc['nc']['dataset_name'],
@@ -700,9 +823,12 @@ def main():
 
     # This is a temp solution, permant is to make function normalize function
     global max1, min1
-    max1 = traindict['x_ppl_box'].max()
-    min1 = traindict['x_ppl_box'].min()
+    max1 = traindict['x_ppl_box'].max() if traindict['y_ppl_box'].max() <= traindict['x_ppl_box'].max() else traindict['y_ppl_box'].max()
+    min1 = traindict['x_ppl_box'].min() if traindict['y_ppl_box'].min() >= traindict['x_ppl_box'].min() else traindict['y_ppl_box'].min()
     
+    # trouble_shot(testdict)
+
+    #  Note I don't need a model to do trobule shot code
 
 
     if load_lstm_model:        
@@ -711,18 +837,19 @@ def main():
             #                             'results_all_datasets/experiment_3_1/saved_model/01_07_2021_lstm_network_xywh_avenue_20.h5'
             #                             )
 
-            model_path = os.path.join( os.path.dirname(os.getcwd()),
-                                        'results_all_datasets/experiment_3_1/saved_model/12_18_2020_lstm_network_xywh_st_20.h5'
-                                        )
+            # model_path = os.path.join( os.path.dirname(os.getcwd()),
+            #                             'results_all_datasets/experiment_3_1/saved_model/12_18_2020_lstm_network_xywh_st_20.h5'
+            #                             )
+            pass
         else:
             model_path = os.path.join(  model_loc,
                             '{}_{}_{}_{}_{}.h5'.format(*nc)
                             )
         print(model_path)
-        # lstm_model = tf.keras.models.load_model(    model_path,  
-        #                                             custom_objects = {'loss':'mse'} , 
-        #                                             compile=True
-        #                                             )
+        lstm_model = tf.keras.models.load_model(    model_path,  
+                                                    custom_objects = {'loss':'mse'} , 
+                                                    compile=True
+                                                    )
     else:
         # returning model right now but might change that in future and load instead
         lstm_model = lstm_train(traindict)
@@ -732,7 +859,9 @@ def main():
     # frame_traj_model_auc(lstm_model, testdict)
      
 
-    trouble_shot(testdict)
+    # trouble_shot(testdict,lstm_model)
+
+    # quit()
 
 
 
@@ -760,6 +889,7 @@ def main():
 
 if __name__ == '__main__':
     # print('GPU is on: {}'.format(gpu_check() ) )
+
 
     main()
 
