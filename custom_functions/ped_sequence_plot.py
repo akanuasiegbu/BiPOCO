@@ -107,7 +107,8 @@ def plot_sequence(one_ped_seq, max1, min1, vid_key,pic_loc, loc_videos, xywh=Fal
 
     frame_ppl = data['frame_ppl_id'].squeeze()
 
-    for i in range(0, last_frame+1):
+    # for i in range(0, last_frame+1):
+    for i in range(0, last_frame):
         # goes through each frame of the video
         ret, frame = video_capture.read()
         

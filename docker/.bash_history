@@ -1782,3 +1782,98 @@ clear
 cd experiments_code/
 ls
 exit
+clear
+ls
+nvidia-smi
+clear
+ls
+python
+clear
+ls
+python experiments_code/
+python man
+cd experiments_code/
+ls
+python main.py 
+python main.py 
+ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss
+clear
+python main.py 
+clear
+python main.py 
+nvidia-smo
+nvidia-smi
+clear
+cd experiments_code/
+ls
+python main.py 
+clear
+python main.py 
+python main.py 
+clear
+python main.py 
+clear
+python main.py 
+clear
+nvidia-smi
+clear
+ls
+cd experiments_code/
+ls
+python main.py 
+python main.py 
+python main.py 
+clear
+python main.py 
+clear
+ls
+cd custom_functions/
+ls
+clear
+ls
+cd ..
+ls
+cd results_all_datasets/
+ls
+cd experiment_
+cd  experiment_tra
+cd experiment_traj_model/
+ls
+cd visual_trajectory/
+ls
+cd 01_95_8
+ls
+python
+ls
+pwd
+clear
+cd ..
+cd ..
+cd ..
+cd ..
+ls
+cd experiments_code/
+python main.py 
+clear
+python main.py 
+clear
+python main.py 
+python main.py 
+ls
+cd ..
+cd experiments_code/
+;s
+ls
+pwd
+cd ..
+ls
+cd results_all_datasets/
+ls
+cd experiment_
+cd experiment_traj_model/
+ls
+cd visual_trajectory/
+ls
+cd  07_209_5
+pwd
+clear

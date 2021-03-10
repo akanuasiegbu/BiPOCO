@@ -89,7 +89,7 @@ def Boxes(loc_files, txt_names, time_steps, pad ='pre', to_xywh = False):
     find_split = 0
 
     # Tells me how many in sequence was short.
-    # Do I want to go back and count for train and test seperatly
+    # Do I want to go back and count for train and test separately
     short_len = 0
 
 #     datadict = OrderedDict()

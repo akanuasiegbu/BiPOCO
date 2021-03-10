@@ -33,6 +33,8 @@ from models import lstm_network, binary_network
 import wandb
 from custom_functions.ped_sequence_plot import ind_seq_dict, plot_sequence
 
+from custom_functions.convert_frames_to_videos import convert_spec_frames_to_vid
+
 def gpu_check():
     """
     return: True if gpu amount is greater than 1
@@ -222,24 +224,26 @@ def ped_auc_to_frame_auc_data(model, testdict, test_bin=None):
                 #     index = np.arange(0,len(y_pred) )
                 #     temp = np.delete(index, rand)
                 #     # would need to check for if len(y_pred )==1
-                    
-                # else:
-                temp = np.where(y_pred != np.max(y_pred))[0]
-                
-                remove_list_temp.append(same_vid_frame[temp])
+        
 
             else:
                 same_vid_frame = np.where(unique_inverse == i )[0]
                 # print('same_vid_frame {}'.format(same_vid_frame))
                 # print('vid_frame :{}'.format(vid_frame[same_vid_frame]))
-
                 y_pred = model.predict(test_bin['x'][:,0][same_vid_frame])
                 # find max y_pred input other indices to remove list
-                
-                temp = np.where(y_pred != np.max(y_pred))[0]
 
+            # This saves it for both cases below  
+            max_loc = np.where( y_pred == np.max(y_pred))[0]
+            if len(max_loc) > 1:
+                temp_1 = max_loc[1:]
+                temp_2 = np.where(y_pred != np.max(y_pred))[0]
+                remove_list_temp.append(same_vid_frame[temp_1])
+                remove_list_temp.append(same_vid_frame[temp_2])
+            else:
+                temp = np.where(y_pred != np.max(y_pred))[0]
                 remove_list_temp.append(same_vid_frame[temp])
-                
+                    
             # print('y_pred :{}'.format(y_pred))
             # print('removed elements {}'.format(temp))
             # print('*'*20)
@@ -619,10 +623,10 @@ def trouble_shot(testdict, model):
 
     # This is helping me plot the data from tlbr -> xywh -> tlbr
     ped_loc = loc['visual_trajectory_list'].copy()
-    frame = 1032
-    ped_id = 80
+    frame = 670
+    ped_id = 61
     
-    vid = '01'
+    vid = '04'
     # loc_videos = loc['data_load'][exp['data']]['test_vid']
     
 
@@ -649,6 +653,7 @@ def trouble_shot(testdict, model):
 
 
     test_auc_frame, remove_list, y_pred_per_human = ped_auc_to_frame_auc_data(model, testdict)
+    
     temp_dict = {}
     for i in testdict.keys():
         indices = np.array(test_auc_frame['x'][:,1], dtype=int)
@@ -705,8 +710,8 @@ def trouble_shot(testdict, model):
                     loc_videos = loc_videos,
                     xywh= True
                     )
+    print('should see this rn if quit works')
     quit()
-    # print('should see this rn if quit works')
 
 
     # Now I'm looking directly at the tlbr file and not changing anything
@@ -798,11 +803,21 @@ def main():
     
     # check_bbox()
     # quit()
+    vid_name = '04_670_61'
+    image_loc = '/home/akanu/results_all_datasets/experiment_traj_model/visual_trajectory/{}'.format(vid_name)
+    save_vid_loc = loc['visual_trajectory_list']
+    save_vid_loc[-1] = 'short_generated_videos'
 
+    make_dir(save_vid_loc)
+    save_vid_loc = join(     os.path.dirname(os.getcwd()),
+                            *save_vid_loc
+                            )
+    convert_spec_frames_to_vid(loc = image_loc, save_vid_loc = save_vid_loc, vid_name = vid_name  )
 
+    quit()
 
     # To-Do add input argument for when loading 
-    load_lstm_model = False
+    load_lstm_model = True
     special_load = False # go back and clean up with command line inputs
     model_loc = join(   os.path.dirname(os.getcwd()),
                         *loc['model_path_list']
@@ -859,7 +874,7 @@ def main():
     # frame_traj_model_auc(lstm_model, testdict)
      
 
-    # trouble_shot(testdict,lstm_model)
+    trouble_shot(testdict,lstm_model)
 
     # quit()
 

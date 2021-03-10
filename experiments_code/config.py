@@ -5,7 +5,7 @@ exp = { '1': False,
         '3_1': False,
         '3_2': False,
         # want an adaptive model saved based on arch size for model_loc
-        'data': 'st', #st, avenue,hr-st
+        'data': 'avenue', #st, avenue,hr-st
         }
 
 hyparams = {
