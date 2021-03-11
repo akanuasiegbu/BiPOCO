@@ -22,15 +22,17 @@ def data_lstm(train_file, test_file):
     traindict = Boxes(  loc['files_train'], 
                         loc['txt_train'],
                         hyparams['frames'],
+                        exp['data_consecutive'], 
                         'pre', 
-                        hyparams['to_xywh'] 
+                        hyparams['to_xywh'],
                         )
 
     testdict = Boxes(   loc['files_test'], 
                         loc['txt_test'],
                         hyparams['frames'], 
+                        exp['data_consecutive'],
                         'pre',
-                        hyparams['to_xywh']
+                        hyparams['to_xywh'],
                         )
                         
     return traindict, testdict

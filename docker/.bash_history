@@ -1877,3 +1877,67 @@ ls
 cd  07_209_5
 pwd
 clear
+clear
+ls
+python
+python 
+python main
+clear
+python main
+python main
+python
+ls
+cd experiments_code/
+ls
+python main.py 
+python main.py 
+clear
+python main.py 
+python main.py 
+clear
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+exit() exit
+exit
+python main.py 
+cd experiments_code/
+python main.py 
+python main.py 
+exit
+clear
+ls
+exit
+clear
+ls
+cd experiments_code/
+python
+clear
+python main.py 
+clear
+python main.py 
+exit
+clear
+cd experiments_code/
+python main.py 
+clear
+ls
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+CLEAR
+clear
+python main.py 
+clear
+python main.py 
+python main.py 
+python main.py 
+clear
+exit

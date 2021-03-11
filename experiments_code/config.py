@@ -6,7 +6,9 @@ exp = { '1': False,
         '3_2': False,
         # want an adaptive model saved based on arch size for model_loc
         'data': 'avenue', #st, avenue,hr-st
+        'data_consecutive': True
         }
+
 
 hyparams = {
     'epochs':350,
@@ -71,13 +73,24 @@ now = datetime.datetime.now()
 date = now.strftime("%m_%d_%Y")
 time = now.strftime("%H:%M:%S")
 
+if exp['data_consecutive']:
+    model_path_list = ['results_all_datasets', 'experiment_{}'.format(name_exp), 'saved_model_consecutive']
+    metrics_path_list = ['results_all_datasets', 'experiment_{}'.format(name_exp), 'metrics_plot_consecutive']
+    visual_trajectory_list = ['results_all_datasets', 'experiment_{}'.format(name_exp), 'visual_trajectory_consecutive', '{}_{}_{}'.format(date, exp['data'], time)]
+
+else:
+    model_path_list = ['results_all_datasets', 'experiment_{}'.format(name_exp), 'saved_model']
+    metrics_path_list ['results_all_datasets', 'experiment_{}'.format(name_exp), 'metrics_plot']
+    visual_trajectory_list = ['results_all_datasets', 'experiment_{}'.format(name_exp), 'visual_trajectory', '{}_{}_{}'.format(date, exp['data'], time)]
+
+
 loc =  {
     # if I'm running a test where don't want to save anything
     # how do I do that. Maybe move them to tmp
     
-    'model_path_list': ['results_all_datasets', 'experiment_{}'.format(name_exp), 'saved_model'],
-    'metrics_path_list': ['results_all_datasets', 'experiment_{}'.format(name_exp), 'metrics_plot'], 
-    'visual_trajectory_list': ['results_all_datasets', 'experiment_{}'.format(name_exp), 'visual_trajectory', '{}_{}_{}'.format(date, exp['data'], time)],
+    'model_path_list': model_path_list,
+    'metrics_path_list': metrics_path_list, 
+    'visual_trajectory_list': visual_trajectory_list,
     
     'nc':{
         'model_name': 'lstm_network',

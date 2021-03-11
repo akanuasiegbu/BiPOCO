@@ -623,10 +623,10 @@ def trouble_shot(testdict, model):
 
     # This is helping me plot the data from tlbr -> xywh -> tlbr
     ped_loc = loc['visual_trajectory_list'].copy()
-    frame = 670
-    ped_id = 61
+    frame = 209
+    ped_id = 5
     
-    vid = '04'
+    vid = '07'
     # loc_videos = loc['data_load'][exp['data']]['test_vid']
     
 
@@ -652,17 +652,17 @@ def trouble_shot(testdict, model):
                         )
 
 
-    test_auc_frame, remove_list, y_pred_per_human = ped_auc_to_frame_auc_data(model, testdict)
+    # test_auc_frame, remove_list, y_pred_per_human = ped_auc_to_frame_auc_data(model, testdict)
     
-    temp_dict = {}
-    for i in testdict.keys():
-        indices = np.array(test_auc_frame['x'][:,1], dtype=int)
-        temp_dict[i] = testdict[i][indices]
+    # temp_dict = {}
+    # for i in testdict.keys():
+    #     indices = np.array(test_auc_frame['x'][:,1], dtype=int)
+    #     temp_dict[i] = testdict[i][indices]
 
 
 
-    # person_seq = ind_seq_dict(testdict, '{}'.format(vid), frame,  ped_id) # this is a slow search I would think
-    person_seq = ind_seq_dict(temp_dict, '{}'.format(vid), frame,  ped_id) # this is a slow search I would think
+    person_seq = ind_seq_dict(testdict, '{}'.format(vid), frame,  ped_id) # this is a slow search I would think
+    # person_seq = ind_seq_dict(temp_dict, '{}'.format(vid), frame,  ped_id) # this is a slow search I would think
     
     # test_auc_frame, remove_list, y_pred_per_human = ped_auc_to_frame_auc_data(model, testdict)
 
@@ -796,13 +796,7 @@ def check_bbox():
     print('after going tlbr to xywh to tlbr')
     print(temp_box)
 
-def main():
-    
-
-
-    
-    # check_bbox()
-    # quit()
+def gen_vid():
     vid_name = '04_670_61'
     image_loc = '/home/akanu/results_all_datasets/experiment_traj_model/visual_trajectory/{}'.format(vid_name)
     save_vid_loc = loc['visual_trajectory_list']
@@ -814,8 +808,16 @@ def main():
                             )
     convert_spec_frames_to_vid(loc = image_loc, save_vid_loc = save_vid_loc, vid_name = vid_name  )
 
-    quit()
 
+def main():
+    
+
+
+    
+    # check_bbox()
+    # quit()
+
+ 
     # To-Do add input argument for when loading 
     load_lstm_model = True
     special_load = False # go back and clean up with command line inputs
@@ -836,6 +838,18 @@ def main():
                                         loc['data_load'][exp['data']]['test_file']
                                         )
 
+
+    frame = 67
+    ped_id = 8
+    
+    vid = '15'
+    print('vid:{} frame:{} id:{}'.format(vid, frame, ped_id))
+
+    person_seq = ind_seq_dict(testdict, '{}'.format(vid), frame,  ped_id) # this is a slow search I would think
+    # print('{}'.format(len(traindict['abnormal'])))
+    quit()
+
+  
     # This is a temp solution, permant is to make function normalize function
     global max1, min1
     max1 = traindict['x_ppl_box'].max() if traindict['y_ppl_box'].max() <= traindict['x_ppl_box'].max() else traindict['y_ppl_box'].max()
@@ -887,9 +901,6 @@ def main():
     Why do I need an initial bias for last layer. I think I got idea
     from google. But is it advantagous.
     https://www.tensorflow.org/tutorials/structured_data/imbalanced_data
-
-    2)  Looks like I can save the hyprmas file as well in a txt file.
-        Might be useful might not be
 
 
 

@@ -52,7 +52,7 @@ def Files_Load(train_file,test_file):
 
 
 
-def Boxes(loc_files, txt_names, time_steps, pad ='pre', to_xywh = False):
+def Boxes(loc_files, txt_names, time_steps,data_consecutive, pad ='pre', to_xywh = False ):
     """
     This file process the bounding box data and creates a numpy array that
     can be put into a tensor
@@ -112,12 +112,34 @@ def Boxes(loc_files, txt_names, time_steps, pad ='pre', to_xywh = False):
             person_seq_len = len(temp_box)
             # To split the frame and id to seperate code this is where I would make
             # initial change
+
+
             temp_frame_id = data[data['Person_ID'] == num ]['Frame_Number Person_ID'.split()].values
             abnormal_frame_ped = data[data['Person_ID'] == num]['anomaly'].values
             if person_seq_len > time_steps:
+                # checks that data is sequenced correctly
+                fix = temp_frame_id[:,0]
+                cons_check = np.argsort(fix) == np.arange(0, len(fix), 1)
+                if not np.all(cons_check):
+                    print('Data not ordered for correct indexing /n sort data')
+                    quit()
+                    
                 for i in range(0, person_seq_len - time_steps):
-                    temp_person_box = temp_box[i:(i+time_steps)]
                     temp_fr_person_id = temp_frame_id[i:(i+time_steps+1)]
+                    
+
+                    x_frames = temp_fr_person_id[:-1,0]
+                    y_frame = temp_fr_person_id[-1,0]
+                    x_and_y = temp_fr_person_id[:,0]
+
+                    if data_consecutive:
+                        # This ensures that data inputted is from consecutive frames 
+                        check_seq = np.cumsum(x_and_y) == np.cumsum(np.arange(y_frame -time_steps, y_frame + 1, 1))
+                        if not np.all(check_seq):
+                            continue
+                    
+                    temp_person_box = temp_box[i:(i+time_steps)]
+                   
 
                     x_ppl_box.append(temp_person_box)
                     y_ppl_box.append(temp_box[i+time_steps])
@@ -126,7 +148,7 @@ def Boxes(loc_files, txt_names, time_steps, pad ='pre', to_xywh = False):
                     assert temp_fr_person_id.shape  == (time_steps+1,2), print(temp_fr_person_id.shape)
 
                     frame_ppl_id.append(temp_fr_person_id)
-                    frame_x.append(temp_fr_person_id[:-1,0])
+                    frame_x.append(x_frames)
                     frame_y.append(temp_fr_person_id[-1,0])
                     id_x.append(temp_fr_person_id[:-1,1])
                     id_y.append(temp_fr_person_id[-1,1])
