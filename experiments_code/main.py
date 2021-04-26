@@ -23,7 +23,7 @@ from TP_TN_FP_FN import *
 
 # Data Info
 from data import data_lstm, tensorify, data_binary
-from load_data import norm_train_max_min
+from load_data import norm_train_max_min, load_pkl
 from load_data_binary import compute_iou
 # Plots
 from metrics_plot import *
@@ -31,7 +31,7 @@ from metrics_plot import *
 # Models
 from models import lstm_network, binary_network
 import wandb
-from custom_functions.ped_sequence_plot import ind_seq_dict, plot_sequence
+from custom_functions.ped_sequence_plot import ind_seq_dict, plot_sequence, plot_frame
 
 from custom_functions.convert_frames_to_videos import convert_spec_frames_to_vid
 
@@ -125,14 +125,25 @@ def iou_as_probability(testdict, model):
     """ 
     # model here is lstm model
     # need to normalize because lstm expects normalized
-    x,y = norm_train_max_min(   testdict,
-                                # max1 = hyparams['max'],
-                                # min1 = hyparams['min']
-                                max1 = max1,
-                                min1 = min1
-                                )
+    if model =='bitrap':
+        y = testdict['y_ppl_box'] # this is the gt 
+        gt_bb_unorm_tlbr = xywh_tlbr(np.squeeze(y))
+        predicted_bb_unorm_tlbr = xywh_tlbr(testdict['pred_trajs'])
+        iou = bb_intersection_over_union_np(    predicted_bb_unorm_tlbr,
+                                                gt_bb_unorm_tlbr )
+        # need to squeeze to index correctly 
+        iou = np.squeeze(iou)
 
-    iou = compute_iou(x, y, max1, min1,  model)
+    else:
+        x,y = norm_train_max_min(   testdict,
+                                    # max1 = hyparams['max'],
+                                    # min1 = hyparams['min']
+                                    max1 = max1,
+                                    min1 = min1
+                                    )
+
+        iou = compute_iou(x, y, max1, min1,  model)
+
     iou_prob =  1 - iou
     return  iou_prob
 
@@ -216,6 +227,7 @@ def ped_auc_to_frame_auc_data(model, testdict, test_bin=None):
         for i in repeat_inverse_id:
             # find all same vid and frame
             if not test_bin:
+                print(i)
                 same_vid_frame = np.where(unique_inverse == i)[0]
                 # Note that this is treating iou_as_prob
                 y_pred = iou_prob[same_vid_frame]
@@ -316,7 +328,7 @@ def frame_traj_model_auc(model, testdict):
     # print("Number of abnormal people after maxed {}".format(sum(test_auc_frame['y'])))
     print("Number of abnormal people after maxed {}".format(len(np.where(test_auc_frame['y'] == 1 )[0] ) ))
 
-    helper_TP_TN_FP_FN(testdict, model, test_auc_frame)
+    # helper_TP_TN_FP_FN(testdict, model, test_auc_frame)
 
     # this is for plotting indivual people make into a func
    
@@ -333,17 +345,44 @@ def frame_traj_model_auc(model, testdict):
 
     # Uncomment to make iou plots
     ################################################
+
     plot_iou(   prob_iou = y_pred_per_human[abnormal_index[0]],
                 xlabel ='Detected Abnormal Pedestrains ',
                 ped_type = 'abnormal_ped',
                 plot_loc = plot_loc,
-                nc = nc_per_human)
+                nc = nc_per_human
+                )
 
     plot_iou(   prob_iou = y_pred_per_human[normal_index[0]],
                 xlabel ='Detected Normal Pedestrains ',
                 ped_type = 'normal_ped',
                 plot_loc = plot_loc,
-                nc = nc_per_human)
+                nc = nc_per_human
+                )
+
+
+    abnormal_index_frame = np.where(test_auc_frame['y'] == 1)
+    normal_index_frame = np.where(test_auc_frame['y'] == 0)
+
+
+
+
+    plot_iou(   prob_iou = test_auc_frame['x'][abnormal_index_frame[0], 0],
+                xlabel ='Detected Abnormal Pedestrains ',
+                ped_type = 'abnormal_ped_frame',
+                plot_loc = plot_loc,
+                nc = nc_per_human
+                )
+
+    plot_iou(   prob_iou = test_auc_frame['x'][normal_index_frame[0], 0],
+                xlabel ='Detected Normal Pedestrains ',
+                ped_type = 'normal_ped_frame',
+                plot_loc = plot_loc,
+                nc = nc_per_human
+                )
+
+
+    
     ###################################################
 
     y_true_per_human = testdict['abnormal']
@@ -623,10 +662,11 @@ def trouble_shot(testdict, model):
 
     # This is helping me plot the data from tlbr -> xywh -> tlbr
     ped_loc = loc['visual_trajectory_list'].copy()
-    frame = 209
-    ped_id = 5
+    frame = 1025
+    ped_id = 67
     
-    vid = '07'
+    # vid = '07_0009'
+    vid = '09'
     # loc_videos = loc['data_load'][exp['data']]['test_vid']
     
 
@@ -640,6 +680,7 @@ def trouble_shot(testdict, model):
     # loc_videos = "/mnt/roahm/users/akanu/projects/anomalous_pred/output_deepsort/st/test_vid/{}_st_output_test.avi".format(vid)
     # loc_videos = "/mnt/roahm/users/akanu/projects/anomalous_pred/output_deepsort/avenue/test_vid/{}_output_yolo_test.avi".format(vid)
     loc_videos = "/mnt/roahm/users/akanu/dataset/Anomaly/Avenue_Dataset/testing_videos/{}.avi".format(vid)
+    # loc_videos = '/mnt/roahm/users/akanu/projects/Deep-SORT-YOLOv4/tensorflow2.0/deep-sort-yolov4/input_video/st_test/{}.avi'.format(vid)
 
 
 
@@ -693,7 +734,7 @@ def trouble_shot(testdict, model):
                                                 xywh_tlbr(np.expand_dims(person_seq['y_ppl_box'], axis=0) )
                                                 )
                                         
-    print('bbox_pred in standard coordinates {}'.format(xywh_tlbr(bbox_pred)))
+    print('bbox_pred in standard coordinates predicted {}'.format(xywh_tlbr(bbox_pred)))
     print('bbox gt {}'.format(xywh_tlbr(np.expand_dims(person_seq['y_ppl_box'], axis=0))) )
     print('iou not normalized  which is correct{}'.format(iou_unorm))
     
@@ -701,7 +742,7 @@ def trouble_shot(testdict, model):
     print('vid:{} frame:{} id:{}'.format(vid, frame, ped_id))
     print('abnormal indictor {}'.format(person_seq['abnormal']))
 
-
+    # quit()
     plot_sequence(  person_seq,
                     max1,
                     min1,
@@ -710,6 +751,8 @@ def trouble_shot(testdict, model):
                     loc_videos = loc_videos,
                     xywh= True
                     )
+
+    gen_vid('{}_{}_{}'.format(vid, frame, ped_id))
     print('should see this rn if quit works')
     quit()
 
@@ -796,9 +839,9 @@ def check_bbox():
     print('after going tlbr to xywh to tlbr')
     print(temp_box)
 
-def gen_vid():
-    vid_name = '04_670_61'
-    image_loc = '/home/akanu/results_all_datasets/experiment_traj_model/visual_trajectory/{}'.format(vid_name)
+def gen_vid(vid_name):
+    # vid_name = '04_670_61'
+    image_loc = '/home/akanu/results_all_datasets/experiment_traj_model/visual_trajectory_consecutive/{}'.format(vid_name)
     save_vid_loc = loc['visual_trajectory_list']
     save_vid_loc[-1] = 'short_generated_videos'
 
@@ -808,16 +851,21 @@ def gen_vid():
                             )
     convert_spec_frames_to_vid(loc = image_loc, save_vid_loc = save_vid_loc, vid_name = vid_name  )
 
+    
 
 def main():
     
 
-
+    # frame_based_plot()
+    global max1, min1
+    max1 = None
+    min1 = None
+    pkldict = load_pkl()
+    frame_traj_model_auc('bitrap',pkldict)
     
-    # check_bbox()
-    # quit()
+    quit()
 
- 
+
     # To-Do add input argument for when loading 
     load_lstm_model = True
     special_load = False # go back and clean up with command line inputs
@@ -827,7 +875,7 @@ def main():
     # 01_07_2021_lstm_network_xywh_hr-st_20
     
     nc = [  #loc['nc']['date'],
-            '03_08_2021',
+            '03_11_2021',
             loc['nc']['model_name'],
             loc['nc']['data_coordinate_out'],
             loc['nc']['dataset_name'],
@@ -839,21 +887,12 @@ def main():
                                         )
 
 
-    frame = 67
-    ped_id = 8
-    
-    vid = '15'
-    print('vid:{} frame:{} id:{}'.format(vid, frame, ped_id))
-
-    person_seq = ind_seq_dict(testdict, '{}'.format(vid), frame,  ped_id) # this is a slow search I would think
-    # print('{}'.format(len(traindict['abnormal'])))
-    quit()
-
   
     # This is a temp solution, permant is to make function normalize function
-    global max1, min1
-    max1 = traindict['x_ppl_box'].max() if traindict['y_ppl_box'].max() <= traindict['x_ppl_box'].max() else traindict['y_ppl_box'].max()
-    min1 = traindict['x_ppl_box'].min() if traindict['y_ppl_box'].min() >= traindict['x_ppl_box'].min() else traindict['y_ppl_box'].min()
+    
+    # global max1, min1
+    # max1 = traindict['x_ppl_box'].max() if traindict['y_ppl_box'].max() <= traindict['x_ppl_box'].max() else traindict['y_ppl_box'].max()
+    # min1 = traindict['x_ppl_box'].min() if traindict['y_ppl_box'].min() >= traindict['x_ppl_box'].min() else traindict['y_ppl_box'].min()
     
     # trouble_shot(testdict)
 
@@ -885,10 +924,10 @@ def main():
 
 
     # classifer_train(traindict, testdict, lstm_model)
-    # frame_traj_model_auc(lstm_model, testdict)
+    frame_traj_model_auc(lstm_model, testdict)
      
 
-    trouble_shot(testdict,lstm_model)
+    # trouble_shot(testdict,lstm_model)
 
     # quit()
 
@@ -903,8 +942,8 @@ def main():
     https://www.tensorflow.org/tutorials/structured_data/imbalanced_data
 
 
-
     4)  create a testing lstm. This would mean I need to return the model
+
         of lstm_train. Or more robustly just read saved model instead.
         Problem is if I'm running a test where don't want to save anything
         how do I do that. Maybe move them to tmp

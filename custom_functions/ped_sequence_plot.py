@@ -144,3 +144,72 @@ def plot_sequence(one_ped_seq, max1, min1, vid_key,pic_loc, loc_videos, xywh=Fal
                 
                 if j == last_frame:
                     break
+
+
+
+
+
+def plot_frame(gt_boxes, pred_boxes, vid_key,pic_loc, loc_videos, last_frame):
+
+    """
+    pred_boxes and gt_boxes
+    """
+    
+
+    
+
+    # Need to make sure I have video path
+
+    next_frame_index, j = 0, 0
+    #NEED TO UNCOMMENT
+    loc_vid = loc_videos  # COMMENT THIS FOR GENERAL APPROACH
+    # loc_vid = os.path.join(loc_videos, vid_key[:-4]+ '.avi')
+    video_capture = cv2.VideoCapture(loc_vid)
+
+
+
+    # for i in range(0, last_frame+1):
+    for i in range(0, last_frame+1):
+        # goes through each frame of the video
+        ret, frame = video_capture.read()
+        
+        if i == last_frame: #finds the frames
+
+
+                # input_frame = frame.copy()
+                gt_frame = frame.copy()
+
+                # Since camera is statiornay I can plot other bbox as well on same video
+                # Input Data
+
+                # for gt_bbox in gt_boxes:
+                #     cv2.rectangle(gt_frame, (int(gt_bbox[0]), int(gt_bbox[1])), (int(gt_bbox[2]), int(gt_bbox[3])),(0,255,0), 2)
+
+                # for pred_box in pred_boxes:
+                #     cv2.rectangle(gt_frame, (int(pred_box[0]), int(pred_box[1])), (int(pred_box[2]), int(pred_box[3])),(0,255,255), 2) # yellow
+                #     cv2.putText(gt_frame, str(pred_box[-1]),(int(pred_box[0]), int(pred_box[1] -20)),0, 5e-3 * 200, (0,255,0),2)
+
+                for gt_bbox, pred_box in zip(gt_boxes, pred_boxes):
+                    cv2.rectangle(gt_frame, (int(gt_bbox[0]), int(gt_bbox[1])), (int(gt_bbox[2]), int(gt_bbox[3])),(0,255,0), 2)
+
+                    cv2.rectangle(gt_frame, (int(pred_box[0]), int(pred_box[1])), (int(pred_box[2]), int(pred_box[3])),(0,255,255), 2) # yellow
+                    cv2.putText(gt_frame, str(pred_box[-2]),(int(pred_box[0]), int(pred_box[1] -20)),0, 5e-3 * 200, (0,255,0),2)
+                    cv2.putText(gt_frame, str(pred_box[-1]),(int(pred_box[2] - 25), int(pred_box[3] + 30)),0, 5e-3 * 200, (0,255,255),2)
+
+
+
+                
+                # use for input data
+                # cv2.rectangle(gt_frame, (int(x_box[0]), int(x_box[1])), (int(x_box[2]), int(x_box[3])),(255,255,255), 2) # white
+
+                
+                # Need to change This
+                vid_str_info = vid_key + '___{}'.format(i)
+                cv2.imwrite( os.path.join(pic_loc, vid_str_info + '_input.jpg'), gt_frame)
+                
+                # frame_count += 1
+                next_frame_index += 1
+                j = next_frame_index
+                
+                if j == last_frame:
+                    break

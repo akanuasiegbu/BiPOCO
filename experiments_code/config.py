@@ -6,7 +6,8 @@ exp = { '1': False,
         '3_2': False,
         # want an adaptive model saved based on arch size for model_loc
         'data': 'avenue', #st, avenue,hr-st
-        'data_consecutive': True
+        'data_consecutive': True,
+        'model_name': 'bitrap_640_360', #lstm_network, bitrap
         }
 
 
@@ -15,7 +16,7 @@ hyparams = {
     'batch_size': 32,
     'buffer_size': 10000,
  
-    'frames': 20,
+    'frames': 5,
 
     'to_xywh':True, # This is assuming file is in tlbr format
     # 'max':913.0, # wonder better way to pick
@@ -76,12 +77,17 @@ time = now.strftime("%H:%M:%S")
 if exp['data_consecutive']:
     model_path_list = ['results_all_datasets', 'experiment_{}'.format(name_exp), 'saved_model_consecutive']
     metrics_path_list = ['results_all_datasets', 'experiment_{}'.format(name_exp), 'metrics_plot_consecutive']
-    visual_trajectory_list = ['results_all_datasets', 'experiment_{}'.format(name_exp), 'visual_trajectory_consecutive', '{}_{}_{}'.format(date, exp['data'], time)]
+    visual_trajectory_list = ['results_all_datasets', 'experiment_{}'.format(name_exp), 'visual_trajectory_consecutive', '{}_{}_{}_{}'.format(date, exp['data'], time, hyparams['frames'])]
+    
+    if exp['model_name'] == 'bitrap' or exp['model_name'] == 'bitrap_640_360' or exp['model_name'] == 'bitrap_1080_1020':
+         model_path_list = ['results_all_datasets', 'experiment_{}'.format(name_exp), 'saved_model_consecutive_bitrap']
+         metrics_path_list = ['results_all_datasets', 'experiment_{}'.format(name_exp), 'metrics_plot_consecutive_bitrap']
+         visual_trajectory_list = ['results_all_datasets', 'experiment_{}'.format(name_exp), 'visual_trajectory_consecutive_bitrap', '{}_{}_{}_{}'.format(date, exp['data'], time, hyparams['frames'])]
 
 else:
     model_path_list = ['results_all_datasets', 'experiment_{}'.format(name_exp), 'saved_model']
     metrics_path_list ['results_all_datasets', 'experiment_{}'.format(name_exp), 'metrics_plot']
-    visual_trajectory_list = ['results_all_datasets', 'experiment_{}'.format(name_exp), 'visual_trajectory', '{}_{}_{}'.format(date, exp['data'], time)]
+    visual_trajectory_list = ['results_all_datasets', 'experiment_{}'.format(name_exp), 'visual_trajectory', '{}_{}_{}_{}'.format(date, exp['data'], time, hyparams['frames'])]
 
 
 loc =  {
@@ -93,10 +99,10 @@ loc =  {
     'visual_trajectory_list': visual_trajectory_list,
     
     'nc':{
-        'model_name': 'lstm_network',
+        'model_name': exp['model_name'],
         'model_name_binary_classifer': 'binary_network',
         'data_coordinate_out': 'xywh',
-        'dataset_name': exp['data'], # avenue, st                   ################# ________________________________________________________________________________________________________________________________--
+        'dataset_name': exp['data'], # avenue, st             
         'date': date,
         },    # is nc the best way to propate and save things as same name
     # Might want to automatically  create a new folder with model arch saved

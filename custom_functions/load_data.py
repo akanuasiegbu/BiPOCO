@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from keras.preprocessing.sequence import pad_sequences
 import os
+import pickle
 # from collections import OrderedDict
 # from tensorflow.python.ops import math_ops
 # does change show
@@ -49,6 +50,59 @@ def Files_Load(train_file,test_file):
     locations['txt_test'] = box_test_txt
 
     return locations
+
+# def load_pkl(loc_files ):
+def load_pkl():
+    
+    data_loc = '/home/akanu/output_bitrap/avenue/gaussian_avenue_640_360.pkl'
+    temp, datadict = {}, {}
+    
+    with open(data_loc, 'rb') as f:
+        data = pickle.load(f)
+    # outputs = { 'X_global': all_X_globals, 'video_file': all_video_files,'abnormal':  all_abnormal,
+    #                         'id_x':all_id_x, 'id_y': all_id_y , 'frame_x':all_frame_x, 'frame_y':all_frame_y,
+    #                         'pred_trajs': all_pred_trajs, 'gt_trajs':all_gt_trajs,'distributions':distribution}
+    # # creates empty list
+    for key in data.keys():
+        if key == 'distributions':
+            continue
+        
+        temp[key] = []
+        datadict[key] = 0
+    
+    # adds data
+    for key in temp.keys():
+        data_keyed = data[key]
+
+        for data_elem in data_keyed:
+            if key == 'pred_trajs':
+                temp[key].append(data_elem[0][0]) # picking one of the 20 right here
+            elif key == 'video_file':
+                temp[key].append('{:02d}.txt'.format(data_elem))
+            else:
+                temp[key].append(data_elem)
+
+    # puts data in array
+    for key in temp.keys():
+        print(key)
+        datadict[key] = np.array(temp[key])
+
+    temp = None #clears temp array
+    
+    #  rename keys
+    datadict['x_ppl_box'] = datadict.pop('X_global')
+    datadict['y_ppl_box'] = datadict.pop('gt_trajs')
+
+    # add frame_ppl_id key
+    frame_ppl_id = []
+    for i,j,k,l in zip(data['frame_x'], datadict['frame_y'], datadict['id_x'], datadict['id_y']):
+        frame = np.append(i,j)
+        ids = np.append(k,l)
+
+        frame_ppl_id.append( np.column_stack((frame, ids)) )
+
+    datadict['frame_ppl_id'] = np.array(frame_ppl_id)
+    return datadict
 
 
 

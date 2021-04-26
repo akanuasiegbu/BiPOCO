@@ -1941,3 +1941,251 @@ python main.py
 python main.py 
 clear
 exit
+clear
+ls
+cd experiments_code/
+ls
+python main.py 
+EXIT
+exit
+cd experiments_code/
+python main.py 
+exit
+clear
+cd experiments_code/
+ls
+python main.py 
+clear
+python main.py 
+python main.py 
+python main.py 
+clear
+python main.py 
+cd experiments_code/
+s
+python main.py 
+clear
+clear
+python main.py 
+cd experiments_code/
+python main.py 
+clear
+ls
+cd experiments_code/
+ls
+cd metrics_plot.py 
+ls
+clear
+ls
+clear
+python main.py 
+cd experiments_code/
+;s
+ls
+python main.py 
+clear
+cd experiments_code/
+;s
+python main.py 
+clear
+python main.py 
+clear
+ls
+cd experiments_code/
+ls
+python main.py 
+exit
+clear
+cd experiments_code/
+ls
+python main.py 
+clear
+ls
+ls
+ls
+python main.py 
+clear
+python main.py 
+clear
+ls
+python main.py 
+clear
+python main.py 
+clear
+python main.py 
+python
+python main.py 
+clear
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+clear
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+clear
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+clear
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+clear
+python main.py 
+lear
+clear
+python main.py 
+python main.py 
+clear
+python main.py 
+python main.py 
+clear
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+clear
+python main.py 
+python main.py 
+python main.py 
+clear
+clear
+ls
+clear
+;s
+python main.py 
+ckar
+clear
+ls
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+celar
+clear
+python main.py 
+python main.py 
+python main.py 
+cd experiments_code/
+clear
+ls
+python main.py 
+clear
+ls
+cd experiments_code/
+ls
+python main.py 
+clear
+python main.py 
+exit
+nvidia-smi
+clear
+ls
+cd experiments_code/
+sls
+ls
+python -m pdb main.py 
+python  main.py 
+cd ..
+ls
+cd output_bitrap/
+ls
+cd avenue/
+;s
+ls
+pwd
+clear
+ls
+cd ..
+;s
+cd ..
+cd experiments_code/
+;s
+ls
+clear
+ls
+python main.py 
+python main.py 
+python main.py 
+python -m pdb main.py 
+ls
+python main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python main.py 
+python main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python main.py 
+python -m pdb main.py 
+ls
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+clear
+clear
+ls
+cd experiments_code/
+python main.py 
+python main.py 
+python -m pdb main.py 
+python main.py 
+python main.py 
+python -m pdb main.py 
+cd ..
+ls
+cd output_bitrap/
+ls
+cd avenue/
+ls
+pwd
+ls
+cd ..
+ls
+cd ..
+ls
+python
+exit
+nvidia-smio
+nvidia-smiexit() exit
+clear
+ls
+nvidia-smi
+cd experiments_code/
+ls
+python -m pdb main.py 
+python -m pdb main.py 
+clear
+ls
+cd experiments_code/
+;s
+ls
+python main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+clear
+ls
+python main.py 
+python main.py 
+clear
+python main.py 
