@@ -54,7 +54,7 @@ def Files_Load(train_file,test_file):
 # def load_pkl(loc_files ):
 def load_pkl():
     
-    data_loc = '/home/akanu/output_bitrap/avenue/gaussian_avenue_640_360.pkl'
+    data_loc = '/home/akanu/output_bitrap/avenue/gaussian_avenue_640_360_trained_normal_data.pkl'
     temp, datadict = {}, {}
     
     with open(data_loc, 'rb') as f:
@@ -84,14 +84,14 @@ def load_pkl():
 
     # puts data in array
     for key in temp.keys():
-        print(key)
+        # print(key)
         datadict[key] = np.array(temp[key])
 
     temp = None #clears temp array
     
     #  rename keys
     datadict['x_ppl_box'] = datadict.pop('X_global')
-    datadict['y_ppl_box'] = datadict.pop('gt_trajs')
+    datadict['y_ppl_box'] = datadict.pop('gt_trajs').reshape(-1,4)
 
     # add frame_ppl_id key
     frame_ppl_id = []
@@ -106,7 +106,7 @@ def load_pkl():
 
 
 
-def Boxes(loc_files, txt_names, time_steps,data_consecutive, pad ='pre', to_xywh = False ):
+def Boxes(loc_files, txt_names, time_steps,data_consecutive, pad ='pre', to_xywh = False, testing= False ):
     """
     This file process the bounding box data and creates a numpy array that
     can be put into a tensor
@@ -117,6 +117,7 @@ def Boxes(loc_files, txt_names, time_steps,data_consecutive, pad ='pre', to_xywh
     loc_files: List that contains that has text files save
     txt_names: Txt file names. For visualization process
     time_step: Sequence length input. Also known as frames looked at for input
+    data_consecutive: ensure that input and output pedestrains are in consecutive frames
     pad: inputs 'pre' or 'post'. supplments short data with ones in front
     to_xywh: if given file is in tlbr and want to convert to xywb
 
@@ -130,15 +131,14 @@ def Boxes(loc_files, txt_names, time_steps,data_consecutive, pad ='pre', to_xywh
 
     abnormal: tells you wheather the frame is abnormal or not
 
-    Potential fixes:
-        Come back and seperate frame video and person id to make cleaner
+    testing: tells if loading testing txt files or training
     """
     #intilization 
-    x_ppl_box, y_ppl_box, frame_ppl_id, video_file, abnormal = [], [], [], [],[]  #Has bounding box locations inside
+    x_ppl_box, y_ppl_box, frame_ppl_id, video_file = [], [], [], [] #Has bounding box locations inside
+    abnormal_gt, abnormal_ped = [] , []
     frame_x, frame_y, id_x, id_y = [], [], [], []
 
     #For splitting process
-    split_train_test = 0
     split = 0
     find_split = 0
 
@@ -146,7 +146,7 @@ def Boxes(loc_files, txt_names, time_steps,data_consecutive, pad ='pre', to_xywh
     # Do I want to go back and count for train and test separately
     short_len = 0
 
-#     datadict = OrderedDict()
+
     datadict = {}
 
     for loc, txt_name in zip(loc_files, txt_names):
@@ -169,7 +169,21 @@ def Boxes(loc_files, txt_names, time_steps,data_consecutive, pad ='pre', to_xywh
 
 
             temp_frame_id = data[data['Person_ID'] == num ]['Frame_Number Person_ID'.split()].values
-            abnormal_frame_ped = data[data['Person_ID'] == num]['anomaly'].values
+
+            ###########################################################
+            # If regenerate training data, and then retrain I can simply this
+            # Block
+            if testing: 
+                # Have this here because I changed anomaly to abnormal_ped
+                # And did not want to retrain on same data.
+                # So currently testing data has slightly different format
+                # different column title and additional column (abnormal_gt)
+                # For training we know abnormal_gt is 0 because training is normal
+                abnormal_frame_ped = data[data['Person_ID'] == num]['abnormal_ped'].values
+                abnormal_gt_frame = data[data['Person_ID'] == num]['abnormal_gt'].values
+            else:
+                abnormal_frame_ped = data[data['Person_ID'] == num]['anomaly'].values
+            ###################################################################
             if person_seq_len > time_steps:
                 # checks that data is sequenced correctly
                 fix = temp_frame_id[:,0]
@@ -209,7 +223,11 @@ def Boxes(loc_files, txt_names, time_steps,data_consecutive, pad ='pre', to_xywh
 
 
                     video_file.append(txt_name)
-                    abnormal.append(abnormal_frame_ped[i+time_steps]) #Finds if predicted frame is abnormal
+                    abnormal_ped.append(abnormal_frame_ped[i+time_steps]) #Finds if predicted frame is abnormal
+                    if testing:
+                        abnormal_gt.append(abnormal_gt_frame[i+time_steps])
+                    else:
+                        abnormal_gt.append(0)
 
             elif person_seq_len == 1:
                 # want it to skip loop
@@ -231,7 +249,7 @@ def Boxes(loc_files, txt_names, time_steps,data_consecutive, pad ='pre', to_xywh
             #     frame_ppl_id.append(temp_fr_person_id[0:time_steps+1,:])
             #
             #     video_file.append(txt_name)
-            #     abnormal.append(abnormal_frame_ped[-1]) #Finds if predicted frame is abnormal
+            #     abnormal_ped.append(abnormal_frame_ped[-1]) #Finds if predicted frame is abnormal
 
             else:
                 print('error')
@@ -247,7 +265,8 @@ def Boxes(loc_files, txt_names, time_steps,data_consecutive, pad ='pre', to_xywh
     datadict['y_ppl_box'] = np.array(y_ppl_box)
     datadict['frame_ppl_id'] = np.array(frame_ppl_id) # delete later not needed once otuer changes 
     datadict['video_file'] = np.array(video_file)
-    datadict['abnormal'] = np.array(abnormal, dtype=np.int8)
+    datadict['abnormal_ped'] = np.array(abnormal_ped, dtype=np.int8)
+    datadict['abnormal_gt_frame'] = np.array(abnormal_gt, dtype=np.int8)
     datadict['id_x'] = np.array(id_x)
     datadict['id_y'] = np.array(id_y)
     datadict['frame_x'] = np.array(frame_x)
@@ -257,8 +276,8 @@ def Boxes(loc_files, txt_names, time_steps,data_consecutive, pad ='pre', to_xywh
 
 
 def test_split_norm_abnorm(testdict):
-    abnormal_index = np.nonzero(testdict['abnormal'])
-    normal_index = np.where(testdict['abnormal'] == 0)
+    abnormal_index = np.nonzero(testdict['abnormal_ped'])
+    normal_index = np.where(testdict['abnormal_ped'] == 0)
     normal_dict = {}
     abnormal_dict = {}
 

@@ -77,7 +77,7 @@ def sort_TP_TN_FP_FN_by_vid_n_frame(testdict, conf_dict ):
 
     return:
         TP_TN_FP_FN: indices split up into specifc videos
-        boxes_dict: testdict data parased and split up into specicfic videos
+        boxes_dict: testdict data parsed and split up into specific videos
                     and into confusion matrix keys
                     Right before last level key next keys contain 
                     x_ppl_box, y_ppl_box, video_file,
@@ -88,6 +88,9 @@ def sort_TP_TN_FP_FN_by_vid_n_frame(testdict, conf_dict ):
     boxes_dict = {}
 
     for conf_key in conf_dict.keys():
+        if len(conf_dict[conf_key]) == 0:
+            continue
+
         # Need to seperate by video first
         # First line is the index of a specfic confusion matrix value
         # Those index map back to testdict unsorted
@@ -128,7 +131,7 @@ def sort_TP_TN_FP_FN_by_vid_n_frame(testdict, conf_dict ):
     return TP_TN_FP_FN,boxes_dict
 
 
-def cycle_through_videos(model, data, max1, min1,pic_loc, loc_videos, xywh=False):
+def cycle_through_videos(model,both, data, max1, min1,pic_loc, loc_videos, xywh=False):
     """
     NOTE: this function does not plot trajectories, it just plots
            the predicted next step from the given trajactory.
@@ -138,6 +141,7 @@ def cycle_through_videos(model, data, max1, min1,pic_loc, loc_videos, xywh=False
     A error might occur its probably because of data keys
 
     model: Note that this should be lstm model
+    both: both both bitrap and lstm predicted
     data: Should contain dictornay keys to different videos. Each video
            should have same dictornay keys  'x_ppl_box' 'y_ppl_box'
                'video_file' 'abnormal'
@@ -159,40 +163,35 @@ def cycle_through_videos(model, data, max1, min1,pic_loc, loc_videos, xywh=False
 #             print(vid_key)
             # Need to specifc folder location inside of loop
             vid_data = data[vid_key]
-            x_scal,y_scal = norm_train_max_min(data= vid_data, max1 = max1,min1 =min1, undo_norm=False)
-            ## Sorting
-            # size = len(vid_data['frame_ppl_id'])
-            size = len(vid_data['id_x'])
-            # frame = []
-            # for i in range(0,size):
-            #     #sort index by frames
-            #     # I go to last element because I Combined
-            #     # the x and y frame and person id into one matrix
-            #     frame.append(vid_data['frame_ppl_id'][i,-1,0])
-            #     # frame.append(vid_data['frame_y'])
-            # frame = np.array(frame)
+            # FOR SORTING
             frame = np.array( vid_data['frame_y'] )
             sort_index = frame.argsort()
+            
+            if model == 'bitrap':
+                y_pred = vid_data['pred_trajs'][sort_index]
+            else:
+                x_scal,y_scal = norm_train_max_min(data= vid_data, max1 = max1,min1 =min1, undo_norm=False)
+                x_scal,y_scal = x_scal[sort_index], y_scal[sort_index]
+                y_scal_pred = model.predict(x_scal)
+                y_pred = norm_train_max_min(data=y_scal_pred, max1 = max1,min1 =min1,undo_norm=True)
+                if both:
+                    y_pred_bitrap = vid_data['pred_trajs'][sort_index]
+            ## Sorting
+            # size = len(vid_data['frame_ppl_id'])
+            
+            
             ## Sorting
 
-            x_scal,y_scal = x_scal[sort_index] ,y_scal[sort_index]
+            size = len(vid_data['id_x'])
             frame_y = vid_data['frame_y'][sort_index]
             frame_x = vid_data['frame_x'][sort_index]
             id_x = vid_data['id_x'][sort_index]
             id_y  = vid_data['id_y'][sort_index]
             # frame_ppl = vid_data['frame_ppl_id'][sort_index]
-            y_true = vid_data['y_ppl_box'][sort_index] # not normailized
-            print(vid_key)
-            # print(frame_ppl.shape)
-            # print(frame_ppl[:20,-1,0])
-#             print(frame_ppl[:20,-1,1])
-
-
-#             frame_count += frame_ppl.shape[0]
-#             print(frame_count)
-            y_scal_pred = model.predict(x_scal)
-            y_pred = norm_train_max_min(data=y_scal_pred, max1 = max1,min1 =min1,undo_norm=True)
-
+            y_true = vid_data['y_ppl_box'][sort_index].reshape(-1,4) # not normailized
+            
+            
+    
             # last_frame = frame_ppl[-1,-1, 0]
             last_frame = frame_y[-1]
             next_frame_index, j = 0, 0
@@ -203,13 +202,18 @@ def cycle_through_videos(model, data, max1, min1,pic_loc, loc_videos, xywh=False
             # there could be information lost here
             # Converts xywh frame to tlbr frame for plotting
             if xywh:
-                y_pred[:,0] = y_pred[:,0] - y_pred[:,2]/2
-                y_pred[:,1] = y_pred[:,1] - y_pred[:,3]/2 # Now we are at tlwh
+                y_pred[:,0] =  y_pred[:,0] - y_pred[:,2]/2
+                y_pred[:,1] =  y_pred[:,1] - y_pred[:,3]/2 # Now we are at tlwh
                 y_pred[:,2:] = y_pred[:,:2] + y_pred[:,2:]
 
-                y_true[:,0] = y_true[:,0] - y_true[:,2]/2
-                y_true[:,1] = y_true[:,1] - y_true[:,3]/2 # Now we are at tlwh
+                y_true[:,0] =  y_true[:,0] - y_true[:,2]/2
+                y_true[:,1] =  y_true[:,1] - y_true[:,3]/2 # Now we are at tlwh
                 y_true[:,2:] = y_true[:,:2] + y_true[:,2:]
+
+                if both:
+                    y_pred_bitrap[:,0] =  y_pred_bitrap[:,0] - y_pred_bitrap[:,2]/2
+                    y_pred_bitrap[:,1] =  y_pred_bitrap[:,1] - y_pred_bitrap[:,3]/2 # Now we are at tlwh
+                    y_pred_bitrap[:,2:] = y_pred_bitrap[:,:2] + y_pred_bitrap[:,2:]
 
 
             for i in range(0, last_frame+1):
@@ -221,6 +225,8 @@ def cycle_through_videos(model, data, max1, min1,pic_loc, loc_videos, xywh=False
 
                         y_fr_act = y_true[j]
                         y_fr_pred = y_pred[j]
+                        if both:
+                            y_fr_pred_bitrap = y_pred_bitrap[j]
                         # id1 = frame_ppl[j,-1,1]
                         id_per = id_y[j]
 
@@ -236,8 +242,13 @@ def cycle_through_videos(model, data, max1, min1,pic_loc, loc_videos, xywh=False
 
                         # Combined frame
                         cv2.rectangle(both_frame, (int(y_fr_act[0]), int(y_fr_act[1])), (int(y_fr_act[2]), int(y_fr_act[3])),(0,255,0), 2)
-                        cv2.rectangle(both_frame, (int(y_fr_pred[0]), int(y_fr_pred[1])), (int(y_fr_pred[2]), int(y_fr_pred[3])),(0,255,255), 2)
+                        if model == 'bitrap':
+                            cv2.rectangle(both_frame, (int(y_fr_pred[0]), int(y_fr_pred[1])), (int(y_fr_pred[2]), int(y_fr_pred[3])),(255,0, 0), 2)
+                        else:
+                            cv2.rectangle(both_frame, (int(y_fr_pred[0]), int(y_fr_pred[1])), (int(y_fr_pred[2]), int(y_fr_pred[3])),(0,255,255), 2)
 
+                        if both:
+                            cv2.rectangle(both_frame, (int(y_fr_pred_bitrap[0]), int(y_fr_pred_bitrap[1])), (int(y_fr_pred_bitrap[2]), int(y_fr_pred_bitrap[3])),(255,0,0), 2)
 
                         # Need to change This
                         vid_str_info = vid_key[:-4] + '___' + str(i) + '__' + str(id_per)

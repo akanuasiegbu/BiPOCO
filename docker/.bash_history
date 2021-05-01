@@ -2189,3 +2189,147 @@ python main.py
 python main.py 
 clear
 python main.py 
+c;ear
+clear
+ls
+cd experiments_code/
+ls
+python main.py 
+python -m pdb main.py 
+python main.py 
+python -m pdb main.py 
+ls
+python -m pdb main.py 
+python main.py 
+clear
+ls
+cd experiments_code/
+ls
+python main.py 
+python -m pdb main.py 
+python main.py 
+python -m pdb main.py 
+clezr
+clear
+ls
+clear
+ls
+clear
+ls
+ls
+python main.py 
+cd ..
+ls
+cd experiments_code/
+ls
+clear
+python main
+python main.py 
+python main.py 
+cd /home/akanu/results_all_datasets/experiment_traj_model/saved_model_consecutive/
+ls
+ls
+python main
+cd ~
+ls
+cd experiments_code/
+python main.py 
+exit
+nvidia-smi
+exit
+nvidia-smi
+clear
+cd experiments_code/
+python main.py 
+python main.py 
+python -m pdb main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+exit
+clear
+ls
+cd experiments_code/
+ls
+ls
+ls
+clear
+ls
+clear
+python -m pdb main.py 
+python -m pdb main.py 
+clear
+ls
+nvida-smi
+nvidia-smi
+clear
+python main.py 
+python main.py 
+python main.py 
+clear
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+exit
+clear
+ls
+cd ex
+cd experiments_code/
+ls
+python main.py 
+ls
+clear
+ls
+clear
+ls
+cd ..
+cd ~
+ls
+cd ..
+ls
+cd akanu/
+ls
+cd experiments_code/
+;s
+ls
+python main.py 
+clear
+python -m pdb main.py 
+who
+clear
+ls
+cd experiments_code/
+python main.py 
+nvidia-smi
+exit
+nvidia-smi
+clear
+ls
+cd experiments_code/
+ls
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+c;ear
+clear
+ls
+cd experiments_code/
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python -m pdb main.py 
+clear
+python main.py 
+python main.py 

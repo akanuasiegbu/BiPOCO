@@ -227,7 +227,6 @@ def ped_auc_to_frame_auc_data(model, testdict, test_bin=None):
         for i in repeat_inverse_id:
             # find all same vid and frame
             if not test_bin:
-                print(i)
                 same_vid_frame = np.where(unique_inverse == i)[0]
                 # Note that this is treating iou_as_prob
                 y_pred = iou_prob[same_vid_frame]
@@ -280,7 +279,7 @@ def frame_traj_model_auc(model, testdict):
 
     # Note that this return ious as a prob 
     #test_auc_frame, remove_list = ped_auc_to_frame_auc_data(model, testdict)
-    test_auc_frame, remove_list, y_pred_per_human = ped_auc_to_frame_auc_data(model, testdict)
+    test_auc_frame, remove_list, y_pred_per_human = ped_auc_to_frame_auc_data('bitrap', testdict)
     
     if test_auc_frame == 'not possible':
         quit()
@@ -305,16 +304,29 @@ def frame_traj_model_auc(model, testdict):
     roc_plot(y_true,y_pred, plot_loc, nc,wandb_name)
     print(remove_list.shape)
 
-    # Quick_test = {}
-    # Quick_test['x'] =  test_auc_frame['x'][0:25000,:] 
-    # Quick_test['y'] = test_auc_frame['y'][0:25000] 
-    # this helper function is suppose to plot resu
 
     # uncomment to plot video frames
     # print("Number of abnormal people after maxed {}".format(sum(test_auc_frame['y'])))
     print("Number of abnormal people after maxed {}".format(len(np.where(test_auc_frame['y'] == 1 )[0] ) ))
 
-    # helper_TP_TN_FP_FN(testdict, model, test_auc_frame)
+    # helper_TP_TN_FP_FN( datadict = testdict, 
+    #                     traj_model = model, 
+    #                     ped = test_auc_frame, 
+    #                     both=True
+    #                     )
+
+    # FOR PLOTTING ALL THE DATA
+    test_auc_frame_all = {}
+    iou_prob_per_person = np.append(y_pred_per_human.reshape(-1,1), np.arange(0,len(y_pred_per_human)).reshape(-1,1), axis=1)
+    test_auc_frame_all['x'] = iou_prob_per_person
+    test_auc_frame_all['y'] = testdict['abnormal_ped'].reshape(-1,1) 
+
+
+    helper_TP_TN_FP_FN( datadict = testdict, 
+                        traj_model = model, 
+                        ped = test_auc_frame_all, 
+                        both=True
+                        )
 
     # this is for plotting indivual people make into a func
    
@@ -326,8 +338,8 @@ def frame_traj_model_auc(model, testdict):
     nc_per_human[0] = loc['nc']['date'] + '_per_bounding_box'
     # y_pred_per_human = iou_as_probability(testdict, model)
 
-    abnormal_index = np.where(testdict['abnormal'] == 1)
-    normal_index = np.where(testdict['abnormal'] == 0)
+    abnormal_index = np.where(testdict['abnormal_ped'] == 1)
+    normal_index = np.where(testdict['abnormal_ped'] == 0)
 
     # Uncomment to make iou plots
     ################################################
@@ -371,13 +383,13 @@ def frame_traj_model_auc(model, testdict):
     
     ###################################################
 
-    y_true_per_human = testdict['abnormal']
+    y_true_per_human = testdict['abnormal_ped']
     #####################################################################
     # Might have a problem here in wandb if tried running and saving 
     roc_plot(y_true_per_human, y_pred_per_human, plot_loc, nc_per_human, wandb_name)
 
 
-def helper_TP_TN_FP_FN(datadict, traj_model, ped):
+def helper_TP_TN_FP_FN(datadict, traj_model, ped, both):
 
     """
     This uses function in the TP_TN_FP_FN file for plotting
@@ -385,6 +397,7 @@ def helper_TP_TN_FP_FN(datadict, traj_model, ped):
     traj_model: lstm, etc
     ped: dict with x is two columns contains predictions, indices
          y contains the ground truth information 
+    both: plot bitrap and lstm model on top of each other
     """
   
 
@@ -428,7 +441,7 @@ def helper_TP_TN_FP_FN(datadict, traj_model, ped):
 
     for conf_key in boxes_dict.keys():
         pic_loc_conf_key =  join(pic_loc, conf_key)
-        cycle_through_videos(traj_model, boxes_dict[conf_key], max1, min1, pic_loc_conf_key, loc_videos, xywh=True)
+        cycle_through_videos(traj_model, both, boxes_dict[conf_key], max1, min1, pic_loc_conf_key, loc_videos, xywh=True)
 
 
 
@@ -444,24 +457,29 @@ def make_dir(dir_list):
                                                                 *dir_list) ) )
 
 
-def trouble_shot(testdict, model):
+# def trouble_shot(testdict, model, frame, ped_id, vid):
+def plot_traj_gen_traj_vid(testdict, model):
+    """
+    testdict: the dict
+    model: model to look at
+    frame: frame number of interest (note assuming that we see the final frame first and)
+            then go back and plot traj (int)
+    ped_id: pedestrain id (int)
+    vid: video number (string)
+
+    """
 
     # This is helping me plot the data from tlbr -> xywh -> tlbr
     ped_loc = loc['visual_trajectory_list'].copy()
-    frame = 1025
-    ped_id = 67
+    frame = 517
+    ped_id = 11
     
     # vid = '07_0009'
-    vid = '09'
+    vid = '02'
     # loc_videos = loc['data_load'][exp['data']]['test_vid']
     
 
-    # Note I need to delete this as this file
-    # is  the file with the saved bbox overlapped on top of it
-    # loc_videos = "/mnt/roahm/users/akanu/projects/Deep-SORT-YOLOv4/tensorflow2.0/deep-sort-yolov4/output_deepsort/st/test_vid/01_0026_st_output_test_tracker.avi"
-
-
-    # Video
+    # Video to select ,not using config file to give freedom to select
 
     # loc_videos = "/mnt/roahm/users/akanu/projects/anomalous_pred/output_deepsort/st/test_vid/{}_st_output_test.avi".format(vid)
     # loc_videos = "/mnt/roahm/users/akanu/projects/anomalous_pred/output_deepsort/avenue/test_vid/{}_output_yolo_test.avi".format(vid)
@@ -493,40 +511,41 @@ def trouble_shot(testdict, model):
     
     # test_auc_frame, remove_list, y_pred_per_human = ped_auc_to_frame_auc_data(model, testdict)
 
-    print('in xywh coordinate')
-    print(person_seq['x_ppl_box'])
-    xx, yy = norm_train_max_min(person_seq, max1, min1, undo_norm=False)
-    xx = np.expand_dims(xx, axis=0)
-    yy = np.expand_dims(yy, axis=0)
+    # print('in xywh coordinate')
+    # print(person_seq['x_ppl_box'])
+    # xx, yy = norm_train_max_min(person_seq, max1, min1, undo_norm=False)
+    # xx = np.expand_dims(xx, axis=0)
+    # yy = np.expand_dims(yy, axis=0)
 
-    bbox_pred_norm = model.predict(xx)
-    print('bbox_pred_norm {}'.format(xywh_tlbr(bbox_pred_norm)))
-    print('bb gt {}'.format(xywh_tlbr(yy)))
+    # bbox_pred_norm = model.predict(xx)
+    # print('bbox_pred_norm {}'.format(xywh_tlbr(bbox_pred_norm)))
+    # print('bb gt {}'.format(xywh_tlbr(yy)))
 
 
     # I still want to see what it looks like in the normaized coordinates to know
     # if it should change
-    iou_norm = bb_intersection_over_union_np(   xywh_tlbr(bbox_pred_norm),
-                                                xywh_tlbr(yy)
-                                            )
-    print('iou in normilized coordinate {}'.format(iou_norm))
+    # iou_norm = bb_intersection_over_union_np(   xywh_tlbr(bbox_pred_norm),
+    #                                             xywh_tlbr(yy)
+    #                                         )
+    # print('iou in normilized coordinate {}'.format(iou_norm))
     
   
 
     
 
-    bbox_pred = norm_train_max_min(bbox_pred_norm, max1, min1, undo_norm=True)
+    # bbox_pred = norm_train_max_min(bbox_pred_norm, max1, min1, undo_norm=True)
+    bbox_pred = np.expand_dims(person_seq['pred_trajs'], axis=0)
     iou_unorm = bb_intersection_over_union_np(  xywh_tlbr(bbox_pred),
                                                 xywh_tlbr(np.expand_dims(person_seq['y_ppl_box'], axis=0) )
                                                 )
                                         
-    print('bbox_pred in standard coordinates predicted {}'.format(xywh_tlbr(bbox_pred)))
-    print('bbox gt {}'.format(xywh_tlbr(np.expand_dims(person_seq['y_ppl_box'], axis=0))) )
+    # print('bbox_pred in standard coordinates predicted {}'.format(xywh_tlbr(bbox_pred)))
+    # print('bbox gt {}'.format(xywh_tlbr(np.expand_dims(person_seq['y_ppl_box'], axis=0))) )
     print('iou not normalized  which is correct{}'.format(iou_unorm))
     
-    # see vid frame i
+    # # see vid frame i
     print('vid:{} frame:{} id:{}'.format(vid, frame, ped_id))
-    print('abnormal indictor {}'.format(person_seq['abnormal']))
+    print('abnormal indictor {}'.format(person_seq['abnormal_ped']))
 
     # quit()
     plot_sequence(  person_seq,
@@ -538,64 +557,16 @@ def trouble_shot(testdict, model):
                     xywh= True
                     )
 
-    gen_vid('{}_{}_{}'.format(vid, frame, ped_id))
+    gen_vid(vid_name = '{}_{}_{}'.format(vid, frame, ped_id),pic_loc = pic_loc, frame_rate = 1)
     print('should see this rn if quit works')
     quit()
 
 
-    # Now I'm looking directly at the tlbr file and not changing anything
-    ped_loc = loc['visual_trajectory_list'].copy()
+   
 
-    ped_loc[-1] =  '{}'.format(vid) + '_' + '{}'.format(frame)+ '_' + '{}'.format(ped_id) + '_from_video_tracker'
-
-    #from_video_tracker_overlay_gt_corrected_first
-    make_dir(ped_loc)
-    pic_loc = join(     os.path.dirname(os.getcwd()),
-                        *ped_loc
-                        )
-    loc_temp =  "/mnt/roahm/users/akanu/projects/anomalous_pred/output_deepsort/avenue/test_txt/{}.txt".format(vid)
-    # loc_temp = "/mnt/roahm/users/akanu/projects/Deep-SORT-YOLOv4/tensorflow2.0/deep-sort-yolov4/output_deepsort/st/test_txt/01_0026_first.txt"
-
-    # loc_temp = "/mnt/roahm/users/akanu/projects/Deep-SORT-YOLOv4/tensorflow2.0/deep-sort-yolov4/output_deepsort/st/test_txt/01_0026_corrected_first.txt"
-    data_temp = pd.read_csv(loc_temp, ' ' )
-
-
-    gt = []
-    for i, j in zip(person_seq['frame_x'], person_seq['id_x']):
-        # print(i)
-        # print(j)
-        p = data_temp[(data_temp['Frame_Number'] == i) &  (data_temp['Person_ID']==j)]
-        print(p.values)
-        gt.append(p.values[0])
-
-    gt = np.array(gt)
-
-    print(gt)
-
-    person_gt = {}
-    person_gt['x_ppl_box'] = gt[:, 3:7]
-    person_gt['frame_ppl_id'] = np.append(gt[:,0].reshape(-1,1), gt[:,1].reshape(-1,1), axis=1) # delete later not needed once otuer changes 
-    person_gt['frame_x'] = gt[:,0].reshape(-1,1)
-    person_gt['frame_y'] = frame
-    # quit()
-
-    print('in tlbr coordinate')
-    print(person_gt['x_ppl_box'])
-
-    # quit()
-    plot_sequence(  person_gt, 
-                    max1, 
-                    min1,
-                    '{}.txt'.format(vid),
-                    pic_loc = pic_loc,
-                    loc_videos = loc_videos,
-                    xywh= False
-                    )
-
-
-def gen_vid(vid_name):
+def gen_vid(vid_name, pic_loc, frame_rate):
     # vid_name = '04_670_61'
-    image_loc = '/home/akanu/results_all_datasets/experiment_traj_model/visual_trajectory_consecutive/{}'.format(vid_name)
+    # image_loc = '/home/akanu/results_all_datasets/experiment_traj_model/visual_trajectory_consecutive/{}'.format(vid_name)
     save_vid_loc = loc['visual_trajectory_list']
     save_vid_loc[-1] = 'short_generated_videos'
 
@@ -603,22 +574,20 @@ def gen_vid(vid_name):
     save_vid_loc = join(     os.path.dirname(os.getcwd()),
                             *save_vid_loc
                             )
-    convert_spec_frames_to_vid(loc = image_loc, save_vid_loc = save_vid_loc, vid_name = vid_name  )
+    convert_spec_frames_to_vid( loc = pic_loc, 
+                                save_vid_loc = save_vid_loc, 
+                                vid_name = vid_name, frame_rate = frame_rate )
 
     
 
 def main():
     
 
-    # frame_based_plot()
-    global max1, min1
-    max1 = None
-    min1 = None
-    pkldict = load_pkl()
-    frame_traj_model_auc('bitrap',pkldict)
-    
-    quit()
+    traindict, testdict = data_lstm(    loc['data_load'][exp['data']]['train_file'],
+                                        loc['data_load'][exp['data']]['test_file']
+                                        )
 
+    quit()
 
     # To-Do add input argument for when loading 
     load_lstm_model = True
@@ -626,27 +595,21 @@ def main():
     model_loc = join(   os.path.dirname(os.getcwd()),
                         *loc['model_path_list']
                         ) # create save link
-    # 01_07_2021_lstm_network_xywh_hr-st_20
+    
     
     nc = [  #loc['nc']['date'],
             '03_11_2021',
-            loc['nc']['model_name'],
+            # loc['nc']['model_name'],
+            'lstm_network',
             loc['nc']['data_coordinate_out'],
             loc['nc']['dataset_name'],
             hyparams['frames'],
             ] # Note that frames is the sequence input
 
-    traindict, testdict = data_lstm(    loc['data_load'][exp['data']]['train_file'],
-                                        loc['data_load'][exp['data']]['test_file']
-                                        )
 
 
   
-    # This is a temp solution, permant is to make function normalize function
-    
-    # global max1, min1
-    # max1 = traindict['x_ppl_box'].max() if traindict['y_ppl_box'].max() <= traindict['x_ppl_box'].max() else traindict['y_ppl_box'].max()
-    # min1 = traindict['x_ppl_box'].min() if traindict['y_ppl_box'].min() >= traindict['x_ppl_box'].min() else traindict['y_ppl_box'].min()
+    # This is a temp solution, perm is to make function normalize function
     
     # trouble_shot(testdict)
 
@@ -676,33 +639,26 @@ def main():
         # returning model right now but might change that in future and load instead
         lstm_model = lstm_train(traindict)
 
+    #Load Data
+    pkldict = load_pkl()
+    traindict, testdict = data_lstm(    loc['data_load'][exp['data']]['train_file'],
+                                        loc['data_load'][exp['data']]['test_file']
+                                        )
+    global max1, min1
+    max1 = traindict['x_ppl_box'].max() if traindict['y_ppl_box'].max() <= traindict['x_ppl_box'].max() else traindict['y_ppl_box'].max()
+    min1 = traindict['x_ppl_box'].min() if traindict['y_ppl_box'].min() >= traindict['x_ppl_box'].min() else traindict['y_ppl_box'].min()
+    
+    # frame_traj_model_auc(lstm_model, pkldict)
+     # Note would need to change mode inside frame_traj
+
 
     # classifer_train(traindict, testdict, lstm_model)
-    frame_traj_model_auc(lstm_model, testdict)
+    # frame_traj_model_auc(lstm_model, testdict)
      
 
-    # trouble_shot(testdict,lstm_model)
+    plot_traj_gen_traj_vid(pkldict,lstm_model)
 
-    # quit()
-
-
-
-    ## To_DO:
-    """"
-    1)  Fix the wandb saved metrics plots,
-        make config file more consistent with how wandb should be call
-    Why do I need an initial bias for last layer. I think I got idea
-    from google. But is it advantagous.
-    https://www.tensorflow.org/tutorials/structured_data/imbalanced_data
-
-
-    4)  create a testing lstm. This would mean I need to return the model
-
-        of lstm_train. Or more robustly just read saved model instead.
-        Problem is if I'm running a test where don't want to save anything
-        how do I do that. Maybe move them to tmp
-
-    """
+    
 
 
 

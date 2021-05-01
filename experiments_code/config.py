@@ -80,7 +80,7 @@ if exp['data_consecutive']:
     visual_trajectory_list = ['results_all_datasets', 'experiment_{}'.format(name_exp), 'visual_trajectory_consecutive', '{}_{}_{}_{}'.format(date, exp['data'], time, hyparams['frames'])]
     
     if exp['model_name'] == 'bitrap' or exp['model_name'] == 'bitrap_640_360' or exp['model_name'] == 'bitrap_1080_1020':
-         model_path_list = ['results_all_datasets', 'experiment_{}'.format(name_exp), 'saved_model_consecutive_bitrap']
+         model_path_list = ['results_all_datasets', 'experiment_{}'.format(name_exp), 'saved_model_consecutive']
          metrics_path_list = ['results_all_datasets', 'experiment_{}'.format(name_exp), 'metrics_plot_consecutive_bitrap']
          visual_trajectory_list = ['results_all_datasets', 'experiment_{}'.format(name_exp), 'visual_trajectory_consecutive_bitrap', '{}_{}_{}_{}'.format(date, exp['data'], time, hyparams['frames'])]
 

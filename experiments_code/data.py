@@ -19,20 +19,22 @@ def data_lstm(train_file, test_file):
 
     # returns a dict file
     loc = Files_Load(train_file,test_file)
-    traindict = Boxes(  loc['files_train'], 
-                        loc['txt_train'],
-                        hyparams['frames'],
-                        exp['data_consecutive'], 
-                        'pre', 
-                        hyparams['to_xywh'],
+    traindict = Boxes(  loc_files = loc['files_train'], 
+                        txt_names = loc['txt_train'],
+                        time_steps = hyparams['frames'],
+                        data_consecutive = exp['data_consecutive'], 
+                        pad = 'pre', 
+                        to_xywh = hyparams['to_xywh'],
+                        testing = False
                         )
 
-    testdict = Boxes(   loc['files_test'], 
-                        loc['txt_test'],
-                        hyparams['frames'], 
-                        exp['data_consecutive'],
-                        'pre',
-                        hyparams['to_xywh'],
+    testdict = Boxes(   loc_files = loc['files_test'], 
+                        txt_names = loc['txt_test'],
+                        time_steps = hyparams['frames'], 
+                        data_consecutive = exp['data_consecutive'],
+                        pad = 'pre',
+                        to_xywh = hyparams['to_xywh'],
+                        testing = True
                         )
                         
     return traindict, testdict

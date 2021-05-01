@@ -7,7 +7,7 @@ def pedsort(datadict):
     and save result into another dict. Makes function moduluar
 
     datadict: dict with input keys 'x_ppl_box', 'y_ppl_box', 'frame_ppl_id'
-              'video_file', 'abnormal'. Same keys as loaded in load_data.py
+              'video_file', 'abnormal_ped', 'abnormal_gt_frame'. Same keys as loaded in load_data.py
     ped: Returned dict containing ped bounding boxes for unique tracking id's
     """
 

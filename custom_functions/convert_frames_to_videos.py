@@ -14,10 +14,11 @@ import cv2
 
 
 
-def convert_spec_frames_to_vid(loc, save_vid_loc, vid_name):
+def convert_spec_frames_to_vid(loc, save_vid_loc, vid_name, frame_rate):
     """
     loc : Directory that is looked at. 
     save_vid_loc : Directory that video is saved too
+    frame_rate: frame rate for produced video
     """
     all_frames = []
     # loop over all the images in the folder
@@ -30,7 +31,7 @@ def convert_spec_frames_to_vid(loc, save_vid_loc, vid_name):
         size = (width, height)
         all_frames.append(img)
 
-    out = cv2.VideoWriter( join(save_vid_loc, '{}.avi'.format(vid_name)), cv2.VideoWriter_fourcc(*'DIVX'), 4, size)
+    out = cv2.VideoWriter( join(save_vid_loc, '{}.avi'.format(vid_name)), cv2.VideoWriter_fourcc(*'DIVX'), frame_rate, size)
 
     for i in range(0,len(all_frames)):
         out.write(all_frames[i])

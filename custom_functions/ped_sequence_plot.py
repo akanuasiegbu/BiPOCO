@@ -29,7 +29,7 @@ def ind_seq(data, video, frame):
     
     return output
 
-def ind_seq_dict(data, video, frame, id):
+def ind_seq_dict(data, video, frame, idx):
     """
     This can sort dict directly. Note this is not compute
     """
@@ -43,7 +43,7 @@ def ind_seq_dict(data, video, frame, id):
     # found1_index = np.where(vid_frame_id_y == '{}.txt'.format(video) + '_' + '{}'.format(frame) + '_' + '{}'.format(id))
     
     i = 0
-    find = '{}.txt'.format(video) + '_' + '{}'.format(frame) + '_' + '{}'.format(id)
+    find = '{}.txt'.format(video) + '_' + '{}'.format(frame) + '_' + '{}'.format(idx)
     for j in vid_frame_id_y:
         if j == find:
             found_index = i 
@@ -178,16 +178,6 @@ def plot_frame(gt_boxes, pred_boxes, vid_key,pic_loc, loc_videos, last_frame):
 
                 # input_frame = frame.copy()
                 gt_frame = frame.copy()
-
-                # Since camera is statiornay I can plot other bbox as well on same video
-                # Input Data
-
-                # for gt_bbox in gt_boxes:
-                #     cv2.rectangle(gt_frame, (int(gt_bbox[0]), int(gt_bbox[1])), (int(gt_bbox[2]), int(gt_bbox[3])),(0,255,0), 2)
-
-                # for pred_box in pred_boxes:
-                #     cv2.rectangle(gt_frame, (int(pred_box[0]), int(pred_box[1])), (int(pred_box[2]), int(pred_box[3])),(0,255,255), 2) # yellow
-                #     cv2.putText(gt_frame, str(pred_box[-1]),(int(pred_box[0]), int(pred_box[1] -20)),0, 5e-3 * 200, (0,255,0),2)
 
                 for gt_bbox, pred_box in zip(gt_boxes, pred_boxes):
                     cv2.rectangle(gt_frame, (int(gt_bbox[0]), int(gt_bbox[1])), (int(gt_bbox[2]), int(gt_bbox[3])),(0,255,0), 2)
