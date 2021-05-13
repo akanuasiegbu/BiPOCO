@@ -54,7 +54,8 @@ def Files_Load(train_file,test_file):
 # def load_pkl(loc_files ):
 def load_pkl():
     
-    data_loc = '/home/akanu/output_bitrap/avenue/gaussian_avenue_640_360_trained_normal_data.pkl'
+    # data_loc = '/home/akanu/output_bitrap/avenue/gaussian_avenue_640_360_trained_normal_data.pkl'
+    data_loc = '/home/akanu/output_bitrap/avenue/gaussian_avenue_in_5_out_5.pkl'
     temp, datadict = {}, {}
     
     with open(data_loc, 'rb') as f:
@@ -76,7 +77,11 @@ def load_pkl():
 
         for data_elem in data_keyed:
             if key == 'pred_trajs':
-                temp[key].append(data_elem[0][0]) # picking one of the 20 right here
+                # Might need to figure out a way to fix this here
+                preds = []
+                for pred in data_elem:
+                    preds.append(pred[0])
+                temp[key].append(np.array(preds).reshape(-1,4) ) # picking one of the 20 right here
             elif key == 'video_file':
                 temp[key].append('{:02d}.txt'.format(data_elem))
             else:
@@ -91,7 +96,7 @@ def load_pkl():
     
     #  rename keys
     datadict['x_ppl_box'] = datadict.pop('X_global')
-    datadict['y_ppl_box'] = datadict.pop('gt_trajs').reshape(-1,4)
+    datadict['y_ppl_box'] = datadict.pop('gt_trajs') #.reshape(-1,4)
 
     # add frame_ppl_id key
     frame_ppl_id = []
@@ -106,7 +111,7 @@ def load_pkl():
 
 
 
-def Boxes(loc_files, txt_names, time_steps,data_consecutive, pad ='pre', to_xywh = False, testing= False ):
+def Boxes(loc_files, txt_names, input_seq, pred_seq,data_consecutive, pad ='pre', to_xywh = False, testing= False ):
     """
     This file process the bounding box data and creates a numpy array that
     can be put into a tensor
@@ -117,6 +122,8 @@ def Boxes(loc_files, txt_names, time_steps,data_consecutive, pad ='pre', to_xywh
     loc_files: List that contains that has text files save
     txt_names: Txt file names. For visualization process
     time_step: Sequence length input. Also known as frames looked at for input
+    input_seq: number of sequences that are inputted
+    pred_seq: number of sequences predicted from the input
     data_consecutive: ensure that input and output pedestrains are in consecutive frames
     pad: inputs 'pre' or 'post'. supplments short data with ones in front
     to_xywh: if given file is in tlbr and want to convert to xywb
@@ -135,7 +142,7 @@ def Boxes(loc_files, txt_names, time_steps,data_consecutive, pad ='pre', to_xywh
     """
     #intilization 
     x_ppl_box, y_ppl_box, frame_ppl_id, video_file = [], [], [], [] #Has bounding box locations inside
-    abnormal_gt, abnormal_ped = [] , []
+    abnormal_gt, abnormal_ped_pred, abnormal_ped_input = [] , [], []
     frame_x, frame_y, id_x, id_y = [], [], [], []
 
     #For splitting process
@@ -169,7 +176,8 @@ def Boxes(loc_files, txt_names, time_steps,data_consecutive, pad ='pre', to_xywh
 
 
             temp_frame_id = data[data['Person_ID'] == num ]['Frame_Number Person_ID'.split()].values
-
+            temp_frame_all = data[data['Person_ID'] == num ]['Frame_Number'].values
+            temp_id_all = data[data['Person_ID'] == num ]['Person_ID'].values
             ###########################################################
             # If regenerate training data, and then retrain I can simply this
             # Block
@@ -184,72 +192,136 @@ def Boxes(loc_files, txt_names, time_steps,data_consecutive, pad ='pre', to_xywh
             else:
                 abnormal_frame_ped = data[data['Person_ID'] == num]['anomaly'].values
             ###################################################################
-            if person_seq_len > time_steps:
-                # checks that data is sequenced correctly
+
+            if person_seq_len >= (input_seq + pred_seq):
+    
+                # checks that frames are loaded sequentially to begin with
+                # Meaning that frame 1, frame 2, frame 3,....
                 fix = temp_frame_id[:,0]
                 cons_check = np.argsort(fix) == np.arange(0, len(fix), 1)
-                if not np.all(cons_check):
-                    print('Data not ordered for correct indexing /n sort data')
-                    quit()
+                assert np.all(cons_check) == True, print('Frames are not ordered correctly /n sort data')
+
                     
-                for i in range(0, person_seq_len - time_steps):
-                    temp_fr_person_id = temp_frame_id[i:(i+time_steps+1)]
+                    
+                for i in range(0, person_seq_len - input_seq - pred_seq + 1):
+                # for i in range(0, person_seq_len - input_seq):
+    
                     
 
-                    x_frames = temp_fr_person_id[:-1,0]
-                    y_frame = temp_fr_person_id[-1,0]
-                    x_and_y = temp_fr_person_id[:,0]
+                    start_input = i
+                    end_input = i + input_seq
+                    end_output = i + input_seq + pred_seq
+                
+                    
+                    temp_fr_person_id = temp_frame_id[start_input:end_output]
+
+                    x_and_y = temp_frame_all[start_input:end_output]
+
 
                     if data_consecutive:
                         # This ensures that data inputted is from consecutive frames 
-                        check_seq = np.cumsum(x_and_y) == np.cumsum(np.arange(y_frame -time_steps, y_frame + 1, 1))
+                        first_frame_input = temp_frame_all[start_input]
+                        proposed_last_output = temp_frame_all[start_input] + input_seq + pred_seq
+                        check_seq = np.cumsum(x_and_y) == np.cumsum(np.arange(first_frame_input, proposed_last_output, 1))
                         if not np.all(check_seq):
                             continue
                     
-                    temp_person_box = temp_box[i:(i+time_steps)]
+                    #input seq frame and pred seq frames
+                    x_frames = temp_frame_all[start_input:end_input]
+                    y_frames = temp_frame_all[end_input:end_output]
+
+                    # input seq id and pred seq id
+                    x_ids = temp_id_all[start_input:end_input]
+                    y_ids = temp_id_all[end_input:end_output]
+
+
+                    temp_input_box = temp_box[start_input:end_input]
+                    temp_pred_box = temp_box[end_input:end_output]
+                    
+                    assert temp_input_box.shape == (input_seq,4)
+                    assert temp_pred_box.shape == (pred_seq,4)
+                    # temp_person_box = temp_box[i:(i+time_steps)]
                    
 
-                    x_ppl_box.append(temp_person_box)
-                    y_ppl_box.append(temp_box[i+time_steps])
-
-                    assert temp_person_box.shape == (time_steps,4)
-                    assert temp_fr_person_id.shape  == (time_steps+1,2), print(temp_fr_person_id.shape)
+                    x_ppl_box.append(temp_input_box)
+                    y_ppl_box.append(temp_pred_box)
 
                     frame_ppl_id.append(temp_fr_person_id)
                     frame_x.append(x_frames)
-                    frame_y.append(temp_fr_person_id[-1,0])
-                    id_x.append(temp_fr_person_id[:-1,1])
-                    id_y.append(temp_fr_person_id[-1,1])
+                    frame_y.append(y_frames)
 
+                    id_x.append(x_ids)
+                    id_y.append(y_ids)
 
-                    video_file.append(txt_name)
-                    abnormal_ped.append(abnormal_frame_ped[i+time_steps]) #Finds if predicted frame is abnormal
+                    video_file.append(txt_name) # Load one file at a time so this works
+                    
+                    abnormal_ped_input.append(abnormal_frame_ped[start_input:end_input])
+                    abnormal_ped_pred.append(abnormal_frame_ped[end_input:end_output]) #Finds if predicted frame is abnormal
+
                     if testing:
-                        abnormal_gt.append(abnormal_gt_frame[i+time_steps])
+                        # abnormal_gt.append(abnormal_gt_frame[i+time_steps])
+                        abnormal_gt.append(abnormal_gt_frame[end_input:end_output])
                     else:
-                        abnormal_gt.append(0)
+                        abnormal_gt.append(np.zeros([pred_seq,1]))
 
             elif person_seq_len == 1:
                 # want it to skip loop
                 continue
             # This would add noise to data
-            elif person_seq_len <= time_steps:
+            elif person_seq_len < input_seq + pred_seq:
                 continue
-            #     temp_person_box_unpad = temp_box
-            #     temp_fr_person_id_unpad = temp_frame_id
-            #     temp_person_box = pad_sequences(temp_person_box_unpad.T, maxlen = time_steps+1, padding = pad).T
-            #     temp_fr_person_id = pad_sequences(temp_fr_person_id_unpad.T,  maxlen = time_steps+1, padding = pad).T
-            #
-            #     assert temp_person_box.shape == (time_steps+1,4)
-            #     assert temp_fr_person_id.shape  == (time_steps+1,2)
-            #
-            #     x_ppl_box.append(temp_person_box[0:time_steps,:])
-            #     y_ppl_box.append(temp_person_box[time_steps,:])
-            #
-            #     frame_ppl_id.append(temp_fr_person_id[0:time_steps+1,:])
-            #
-            #     video_file.append(txt_name)
-            #     abnormal_ped.append(abnormal_frame_ped[-1]) #Finds if predicted frame is abnormal
+
+                
+                # x_and_y = temp_frame_all
+
+
+                # if data_consecutive:
+                #     # This ensures that data inputted is from consecutive frames 
+                #     first_frame_input = temp_frame_all[0]
+                #     proposed_last_output = temp_frame_all[start_input] + person_seq_len
+                #     check_seq = np.cumsum(x_and_y) == np.cumsum(np.arange(first_frame_input, proposed_last_output, 1))
+                #     if not np.all(check_seq):
+                #         continue
+
+                # temp_person_box_pad = pad_sequences(temp_box.T, maxlen = input_seq + pred_seq, padding = pad).T
+                # temp_frame_all_pad = pad_sequences(temp_frame_all.T,  maxlen = input_seq + pred_seq, padding = pad).T
+                # temp_id_all_pad = pad_sequences(temp_id_all.T,  maxlen = input_seq + pred_seq, padding = pad).T
+                
+                # temp_fr_person_id_pad = pad_sequences(temp_frame_id.T,  maxlen = input_seq + pred_seq, padding = pad).T
+                # abnormal_frame_ped_pad = pad_sequences(abnormal_frame_ped.T,  maxlen = input_seq + pred_seq, padding = pad).T
+                # abnormal_gt_frame_pad = pad_sequences(abnormal_gt_frame.T,  maxlen = input_seq + pred_seq, padding = pad).T
+
+                # # Indexing
+                # start_input = 0
+                # end_input = 0 + input_seq
+                # end_output = 0 + input_seq + pred_seq
+                
+                # # input frames and predicted frames if frame 
+                # x_frames = temp_frame_all_pad[start_input:end_input]
+                # y_frames = temp_frame_all_pad[end_input:end_output]
+
+                # # input ids and predicted ids are set to zero
+                # # would be able to sort them outd
+
+                
+                # x_ids = temp_id_all_pad[start_input:end_input]
+                # y_ids = temp_id_all_pad[end_input:end_output]
+
+                # x_ppl_box.append(temp_person_box_pad[start_input:end_input,:])
+                # y_ppl_box.append(temp_person_box_pad[end_input:end_output,:])
+            
+                # frame_ppl_id.append(temp_fr_person_id_pad[start_input:end_output,:])
+
+                # frame_x.append(x_frames)
+                # frame_y.append(y_frames)
+
+                # id_x.append(x_ids)
+                # id_y.append(y_ids)
+            
+                # video_file.append(txt_name)
+                # abnormal_ped.append(abnormal_frame_ped_pad[end_input:end_output]) #Finds if predicted frame is abnormal
+
+                # abnormal_gt.append(abnormal_gt_frame_pad[end_input:end_output])
 
             else:
                 print('error')
@@ -265,7 +337,8 @@ def Boxes(loc_files, txt_names, time_steps,data_consecutive, pad ='pre', to_xywh
     datadict['y_ppl_box'] = np.array(y_ppl_box)
     datadict['frame_ppl_id'] = np.array(frame_ppl_id) # delete later not needed once otuer changes 
     datadict['video_file'] = np.array(video_file)
-    datadict['abnormal_ped'] = np.array(abnormal_ped, dtype=np.int8)
+    datadict['abnormal_ped_input'] = np.array(abnormal_ped_input, dtype=np.int8)
+    datadict['abnormal_ped_pred'] = np.array(abnormal_ped_pred, dtype=np.int8)
     datadict['abnormal_gt_frame'] = np.array(abnormal_gt, dtype=np.int8)
     datadict['id_x'] = np.array(id_x)
     datadict['id_y'] = np.array(id_y)
@@ -276,8 +349,8 @@ def Boxes(loc_files, txt_names, time_steps,data_consecutive, pad ='pre', to_xywh
 
 
 def test_split_norm_abnorm(testdict):
-    abnormal_index = np.nonzero(testdict['abnormal_ped'])
-    normal_index = np.where(testdict['abnormal_ped'] == 0)
+    abnormal_index = np.nonzero(testdict['abnormal_ped_pred'])
+    normal_index = np.where(testdict['abnormal_ped_pred'] == 0)
     normal_dict = {}
     abnormal_dict = {}
 

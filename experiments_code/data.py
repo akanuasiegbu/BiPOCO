@@ -21,7 +21,8 @@ def data_lstm(train_file, test_file):
     loc = Files_Load(train_file,test_file)
     traindict = Boxes(  loc_files = loc['files_train'], 
                         txt_names = loc['txt_train'],
-                        time_steps = hyparams['frames'],
+                        input_seq = hyparams['input_seq'],
+                        pred_seq = hyparams['pred_seq'],
                         data_consecutive = exp['data_consecutive'], 
                         pad = 'pre', 
                         to_xywh = hyparams['to_xywh'],
@@ -30,7 +31,8 @@ def data_lstm(train_file, test_file):
 
     testdict = Boxes(   loc_files = loc['files_test'], 
                         txt_names = loc['txt_test'],
-                        time_steps = hyparams['frames'], 
+                        input_seq = hyparams['input_seq'],
+                        pred_seq = hyparams['pred_seq'], 
                         data_consecutive = exp['data_consecutive'],
                         pad = 'pre',
                         to_xywh = hyparams['to_xywh'],

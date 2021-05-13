@@ -13,7 +13,7 @@ from os.path import join
 # Is hyperparameters and saving files config file
 from config import hyparams, loc, exp
 # Design intent
-# But hyparas as constants that can be called anywhere
+ # But hyparas as constants that can be called anywhere
 # I only want to call loc here and not anywhere else
 
 ## Might delete havent used yet
@@ -34,6 +34,7 @@ import wandb
 from custom_functions.ped_sequence_plot import ind_seq_dict, plot_sequence, plot_frame
 
 from custom_functions.convert_frames_to_videos import convert_spec_frames_to_vid
+
 
 def gpu_check():
     """
@@ -127,7 +128,8 @@ def iou_as_probability(testdict, model):
     # need to normalize because lstm expects normalized
     if model =='bitrap':
         y = testdict['y_ppl_box'] # this is the gt 
-        gt_bb_unorm_tlbr = xywh_tlbr(np.squeeze(y))
+        # gt_bb_unorm_tlbr = xywh_tlbr(np.squeeze(y))
+        gt_bb_unorm_tlbr = xywh_tlbr(y)
         predicted_bb_unorm_tlbr = xywh_tlbr(testdict['pred_trajs'])
         iou = bb_intersection_over_union_np(    predicted_bb_unorm_tlbr,
                                                 gt_bb_unorm_tlbr )
@@ -147,19 +149,44 @@ def iou_as_probability(testdict, model):
     iou_prob =  1 - iou
     return  iou_prob
 
+def anomaly_metric(prob, metric, vid_loc, frame_loc, person_id, abnormal_gt):
+    
+    vid_frame = np.append(vid_loc, frame_loc, axis=1)
+    vid_frame_person = np.append(vid_frame, person_id, axis =1)
+
+    unique, unique_inverse, unique_counts = np.unique(vid_frame_person, axis=0, return_inverse=True, return_counts=True)
+
+    repeat_inverse_id = np.where(unique_counts>1)[0]
+
+
+    calc_prob, frame, vid, id_y, gt_abnormal = [], [], [], [], []
+    for i in repeat_inverse_id:
+        same_vid_frame_person = np.where(unique_inverse == i)[0]
+
+        
+        if metric == 'avg':
+            calc_prob.append(np.mean(prob[same_vid_frame_person]))
+
+        if metric == 'max':
+            calc_prob.append(np.max(prob[same_vid_frame_person]))
+
+        frame.append(vid_frame_person[same_vid_frame_person[0]][1])
+        vid.append(vid_frame_person[same_vid_frame_person[0]][0])
+        id_y.append(vid_frame_person[same_vid_frame_person[0]][2])
+        gt_abnormal.append(abnormal_gt[same_vid_frame_person[0]])
+
+    
+    calc_prob = np.array(calc_prob).reshape(-1,1)
+    frame = np.array(frame).reshape(-1,1)
+    vid = np.array(vid).reshape(-1,1)
+    gt_abnormal = np.array(gt_abnormal).reshape(-1,1)
+
+    return calc_prob, frame, vid, gt_abnormal
+
 def ped_auc_to_frame_auc_data(model, testdict, test_bin=None):
     """
     Note that this does not explictly calcuate frame auc
     but removes select points to reduce to frame AUC data.
-
-    # To do 
-    Function will need to be appended to add the 3_2 method.
-    When normal data can be drawn from the training set.
-    Would expect percentage of data removed to decrease
-    # To do
-    could make more computailly efficent by
-    returning iou_prob in this function for prob per human of
-    being abnormal
 
     testdict: From orginal data test dict
     test_bin: binary classifer test dict
@@ -173,19 +200,26 @@ def ped_auc_to_frame_auc_data(model, testdict, test_bin=None):
     if not test_bin:
         # calc iou prob
         iou_prob = iou_as_probability(testdict, model)
-
-        #############################
-        # comment out after listening
-
-       
-
-        #############################
         
-        # since test dict was not shuffled lets created index
-        test_index = np.arange(0, len(testdict['abnormal']), 1)
-        
-        vid_loc = testdict['video_file'].reshape(-1,1) #videos locations
+        vid_loc = []
+        temp_vid_loc = testdict['video_file'].reshape(-1,1) #videos locations
+        for vid in temp_vid_loc:
+            vid_loc.append(np.repeat(vid,testdict['y_ppl_box'].shape[1]))
+
+        person_id = testdict['id_y'].reshape(-1,1) # frame locations
+        vid_loc = np.array(vid_loc).reshape(-1,1)
         frame_loc = testdict['frame_y'].reshape(-1,1) # frame locations
+        abnormal_gt_frame = testdict['abnormal_gt_frame'].reshape(-1,1)
+
+        iou_prob = iou_prob.reshape(-1,1)
+        iou_prob, frame_loc, vid_loc, abnormal_gt_frame_metric = anomaly_metric(    iou_prob, 
+                                                                                    'avg', 
+                                                                                    vid_loc,
+                                                                                    frame_loc,
+                                                                                    person_id,
+                                                                                    abnormal_gt_frame)
+
+        test_index = np.arange(0, len(abnormal_gt_frame_metric), 1)
     
     else:
         test_bin_index = test_bin['x'][:,1]
@@ -259,7 +293,12 @@ def ped_auc_to_frame_auc_data(model, testdict, test_bin=None):
         if not test_bin:
             iou_prob_per_person = np.append(iou_prob.reshape(-1,1), test_index.reshape(-1,1), axis=1)
             test_auc_frame['x'] = np.delete( iou_prob_per_person, remove_list, axis = 0 )
-            test_auc_frame['y'] = np.delete(testdict['abnormal'].reshape(-1,1) , remove_list, axis=0)
+            test_auc_frame['y'] = np.delete(abnormal_gt_frame_metric, remove_list, axis = 0)
+            test_auc_frame['x_pred_per_human'] = iou_prob
+            test_auc_frame['y_pred_per_human'] = abnormal_gt_frame_metric
+             
+            # test_auc_frame['y'] = np.delete(testdict['abnormal_gt_frame'].reshape(-1,1) , remove_list, axis=0)
+            # test_auc_frame['abnormal_ped_pred'] = np.delete(testdict['abnormal_ped_pred'].reshape(-1,1) , remove_list, axis=0)
         else:
             test_auc_frame['x'] = np.delete(test_bin['x'], remove_list, axis=0)
             test_auc_frame['y'] = np.delete(test_bin['y'], remove_list, axis=0)
@@ -268,7 +307,7 @@ def ped_auc_to_frame_auc_data(model, testdict, test_bin=None):
 
         y_pred_per_human = iou_prob
 
-    return test_auc_frame, remove_list, y_pred_per_human
+    return test_auc_frame, remove_list
 
 
 def frame_traj_model_auc(model, testdict):
@@ -278,8 +317,8 @@ def frame_traj_model_auc(model, testdict):
     """
 
     # Note that this return ious as a prob 
-    #test_auc_frame, remove_list = ped_auc_to_frame_auc_data(model, testdict)
-    test_auc_frame, remove_list, y_pred_per_human = ped_auc_to_frame_auc_data('bitrap', testdict)
+    test_auc_frame, remove_list = ped_auc_to_frame_auc_data('bitrap', testdict)
+    # test_auc_frame, remove_list, y_pred_per_human = ped_auc_to_frame_auc_data('bitrap', testdict)
     
     if test_auc_frame == 'not possible':
         quit()
@@ -315,18 +354,18 @@ def frame_traj_model_auc(model, testdict):
     #                     both=True
     #                     )
 
-    # FOR PLOTTING ALL THE DATA
-    test_auc_frame_all = {}
-    iou_prob_per_person = np.append(y_pred_per_human.reshape(-1,1), np.arange(0,len(y_pred_per_human)).reshape(-1,1), axis=1)
-    test_auc_frame_all['x'] = iou_prob_per_person
-    test_auc_frame_all['y'] = testdict['abnormal_ped'].reshape(-1,1) 
+    # # FOR PLOTTING ALL THE DATA
+    # test_auc_frame_all = {}
+    # iou_prob_per_person = np.append(y_pred_per_human.reshape(-1,1), np.arange(0,len(y_pred_per_human)).reshape(-1,1), axis=1)
+    # test_auc_frame_all['x'] = iou_prob_per_person
+    # test_auc_frame_all['y'] = testdict['abnormal_ped_pred'].reshape(-1,1) 
 
 
-    helper_TP_TN_FP_FN( datadict = testdict, 
-                        traj_model = model, 
-                        ped = test_auc_frame_all, 
-                        both=True
-                        )
+    # helper_TP_TN_FP_FN( datadict = testdict, 
+    #                     traj_model = model, 
+    #                     ped = test_auc_frame_all, 
+    #                     both=True
+    #                     )
 
     # this is for plotting indivual people make into a func
    
@@ -338,20 +377,24 @@ def frame_traj_model_auc(model, testdict):
     nc_per_human[0] = loc['nc']['date'] + '_per_bounding_box'
     # y_pred_per_human = iou_as_probability(testdict, model)
 
-    abnormal_index = np.where(testdict['abnormal_ped'] == 1)
-    normal_index = np.where(testdict['abnormal_ped'] == 0)
+    # abnormal_index = np.where(testdict['abnormal_ped_pred'] == 1)
+    # normal_index = np.where(testdict['abnormal_ped_pred'] == 0)
+    
+    abnormal_index = np.where(test_auc_frame['y_pred_per_human'] == 1)
+    normal_index = np.where(test_auc_frame['y_pred_per_human'] == 0)
+
 
     # Uncomment to make iou plots
     ################################################
 
-    plot_iou(   prob_iou = y_pred_per_human[abnormal_index[0]],
+    plot_iou(   prob_iou = test_auc_frame['x_pred_per_human'][abnormal_index[0]],
                 xlabel ='Detected Abnormal Pedestrains ',
                 ped_type = 'abnormal_ped',
                 plot_loc = plot_loc,
                 nc = nc_per_human
                 )
 
-    plot_iou(   prob_iou = y_pred_per_human[normal_index[0]],
+    plot_iou(   prob_iou = test_auc_frame['x_pred_per_human'][normal_index[0]],
                 xlabel ='Detected Normal Pedestrains ',
                 ped_type = 'normal_ped',
                 plot_loc = plot_loc,
@@ -383,7 +426,9 @@ def frame_traj_model_auc(model, testdict):
     
     ###################################################
 
-    y_true_per_human = testdict['abnormal_ped']
+    # y_true_per_human = testdict['abnormal_ped_pred']
+    y_true_per_human = test_auc_frame['y_pred_per_human']
+    y_pred_per_human = test_auc_frame['x_pred_per_human']
     #####################################################################
     # Might have a problem here in wandb if tried running and saving 
     roc_plot(y_true_per_human, y_pred_per_human, plot_loc, nc_per_human, wandb_name)
@@ -545,7 +590,7 @@ def plot_traj_gen_traj_vid(testdict, model):
     
     # # see vid frame i
     print('vid:{} frame:{} id:{}'.format(vid, frame, ped_id))
-    print('abnormal indictor {}'.format(person_seq['abnormal_ped']))
+    print('abnormal indictor {}'.format(person_seq['abnormal_ped_pred']))
 
     # quit()
     plot_sequence(  person_seq,
@@ -571,7 +616,7 @@ def gen_vid(vid_name, pic_loc, frame_rate):
     save_vid_loc[-1] = 'short_generated_videos'
 
     make_dir(save_vid_loc)
-    save_vid_loc = join(     os.path.dirname(os.getcwd()),
+    save_vid_loc = join(    os.path.dirname(os.getcwd()),
                             *save_vid_loc
                             )
     convert_spec_frames_to_vid( loc = pic_loc, 
@@ -583,11 +628,6 @@ def gen_vid(vid_name, pic_loc, frame_rate):
 def main():
     
 
-    traindict, testdict = data_lstm(    loc['data_load'][exp['data']]['train_file'],
-                                        loc['data_load'][exp['data']]['test_file']
-                                        )
-
-    quit()
 
     # To-Do add input argument for when loading 
     load_lstm_model = True
@@ -641,14 +681,16 @@ def main():
 
     #Load Data
     pkldict = load_pkl()
-    traindict, testdict = data_lstm(    loc['data_load'][exp['data']]['train_file'],
-                                        loc['data_load'][exp['data']]['test_file']
-                                        )
-    global max1, min1
-    max1 = traindict['x_ppl_box'].max() if traindict['y_ppl_box'].max() <= traindict['x_ppl_box'].max() else traindict['y_ppl_box'].max()
-    min1 = traindict['x_ppl_box'].min() if traindict['y_ppl_box'].min() >= traindict['x_ppl_box'].min() else traindict['y_ppl_box'].min()
+    # traindict, testdict = data_lstm(    loc['data_load'][exp['data']]['train_file'],
+    #                                     loc['data_load'][exp['data']]['test_file']
+    #                                     )
+
+
+    # global max1, min1
+    # max1 = traindict['x_ppl_box'].max() if traindict['y_ppl_box'].max() <= traindict['x_ppl_box'].max() else traindict['y_ppl_box'].max()
+    # min1 = traindict['x_ppl_box'].min() if traindict['y_ppl_box'].min() >= traindict['x_ppl_box'].min() else traindict['y_ppl_box'].min()
     
-    # frame_traj_model_auc(lstm_model, pkldict)
+    frame_traj_model_auc(lstm_model, pkldict)
      # Note would need to change mode inside frame_traj
 
 
@@ -656,7 +698,7 @@ def main():
     # frame_traj_model_auc(lstm_model, testdict)
      
 
-    plot_traj_gen_traj_vid(pkldict,lstm_model)
+    # plot_traj_gen_traj_vid(pkldict,lstm_model)
 
     
 

@@ -2333,3 +2333,200 @@ python -m pdb main.py
 clear
 python main.py 
 python main.py 
+exit
+clear
+ls
+cd experiments_code/
+ls
+python -m pdb
+python -m pdb main.py 
+python main.py 
+ls
+clear
+ls
+ls
+clear
+ls
+clear
+ls
+python main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py  
+clear
+ls
+ks
+ls
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+ls
+cd ..
+ls
+python -m pdb main.py 
+cd experiments_code/
+;s
+ls
+python -m pdb main.py 
+python -m pdb main.py 
+clear
+ks
+ls
+cd experiments_code/
+ls
+python -m pdb main.py 
+clear
+ls
+python -m pdb main.py 
+nvidia-smi
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+nvidia-smi
+clear
+python -m pdb main.py 
+python -main.py 
+python main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+nvidia-
+nvidia-smi
+clear
+ls
+cd experiments_code/
+python -m pdb main.py 
+python -m pdb main.py 
+python main.py 
+python -m pdb main.py 
+clear
+ls
+cd experiments_code/
+ls
+python -m pdb main.py 
+clear
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+ls
+exit
+nvidia-smi
+clear
+ls
+cd experiments_code/
+ls
+python -m pdb main.py 
+clear
+ls
+python 
+python -m pdb main.py 
+python -m pdb main.py 
+exit
+nvidia-
+nvidia-smsi
+nvidia-smi
+clear
+ls
+cd experiments_code/
+ls
+python -m pdb main.py 
+clear
+s
+ls
+python -m pdb main.py 
+clear
+ls
+ls
+cd experiments_code/
+ls
+ls
+python -m pdb main.py 
+ckear
+clear
+python -m pdb main.py 
+clear
+ls
+clear
+python -m pdb 653
+python -m pdb  main.py 
+python -m pdb main.py 
+cear
+clear
+s
+ls
+python -m pdb main.py 
+clea
+clear
+python -m pdb main.py 
+python -m pdb main.py 
+python main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+nvidia-smi
+clear
+ls
+clear
+ls
+cd experiments_code/
+ls
+python -m pdb main.py 
+clear
+python -m pdb main.py 
+clear
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+clear
+ls
+ls
+cd docker/
+ls
+cd ~
+ls
+cd experiments_code/
+ls
+python -m pdb main.py b 220
+python -m pdb main.py b 220
+python -m pdb main.py
+clear
+python -m pdb main.py
+python -m pdb main.py
+python -m pdb main.py
+python -m pdb main.py
+python -m pdb main.py
+python -m pdb main.py
+c;ear
+clear
+ls
+nvidia-smi
+clear
+python -m pdb main.py
+cd experiments_code/
+ls
+python -m pdb main.py 
+python main.py 
+clear
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+clear
+ls
+python main.py 
+clear
+ls

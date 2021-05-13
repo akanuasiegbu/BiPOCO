@@ -17,6 +17,8 @@ hyparams = {
     'buffer_size': 10000,
  
     'frames': 5,
+    'input_seq': 5,
+    'pred_seq': 5,
 
     'to_xywh':True, # This is assuming file is in tlbr format
     # 'max':913.0, # wonder better way to pick

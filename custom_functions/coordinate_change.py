@@ -9,10 +9,10 @@ def xywh_tlbr(data):
     Note that input must be of size (1,4) to use
     """
     data = data.astype(float)
-    data[:,0] = data[:,0] - data[:,2]/2
-    data[:,1] = data[:,1] - data[:,3]/2
-    data[:,2] = data[:,0] + data[:,2]
-    data[:,3] = data[:,1] + data[:,3]
+    data[...,0] = data[...,0] - data[...,2]/2
+    data[...,1] = data[...,1] - data[...,3]/2
+    data[...,2] = data[...,0] + data[...,2]
+    data[...,3] = data[...,1] + data[...,3]
 
     return data
 
