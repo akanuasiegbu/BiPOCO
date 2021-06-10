@@ -2530,3 +2530,1081 @@ ls
 python main.py 
 clear
 ls
+exit
+exit
+clear
+ls
+nvidia-
+nvidia-smi
+clear
+ls
+clear
+ls
+cd experiments_code/
+ls
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+clear
+ls
+python -m pdb main.py 
+clear'
+exit
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+clear
+ls
+cd experiments_code/
+ls
+clear
+ls
+python main.py 
+nvidia-
+nvidia-smi
+clear
+clear
+ls
+ls
+cd experiments_code/
+ls
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python main.py 
+exit
+exit
+exit
+exit
+ls
+cd experiments_code/
+ls
+exit
+clear
+;s
+ls
+ls
+cd experiments_code/
+;s
+ls
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+clear
+python -m pdb main.py 
+clear
+python -m pdb main.py 
+clear
+ls
+clear
+ls
+python -m pdb main.py 
+clear
+python -m pdb main.py 
+clear
+nvidia-
+nvidia-smi 
+clear
+ls
+cd experiments_code/
+ls
+python main.py 
+clear
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+clear
+ls
+ls
+clear
+ clear
+ls
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python main.py 
+ython main.py 
+ython main.py 
+python main.py 
+clear
+python main.py 
+python main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python main.py 
+clear
+python main.py 
+clear
+python -m pdb main.py 
+python main.py 
+clear
+ls
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+clear
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+clear
+ls
+ls
+cd experiments_code/
+ls
+nano main.py 
+ls
+ls
+ls
+ls
+python -m pdb main.py 
+python -m pdb main.py 
+clear
+ls
+python main.py 
+python main.py 
+ls
+python main.py 
+python main.py 
+clear
+python main.py 
+python main.py 
+python 
+clear
+ls
+cd experiments_code/
+ls
+python -m pdb main.py 
+clear
+ls
+python -m pdb main.py 
+ls
+cd ..
+ls
+cd experiments_code/
+cd ..
+ls
+cd results_all_datasets/
+ls
+cd experiment_traj_model/
+ls
+cd metrics_plot_consecutive_bitrap/
+ls
+mkdir maxed
+mv 05_20_2021* maxed/
+ls
+clear
+ls
+clear
+python main.py
+ls
+mkdir avg_05_20
+mv 05_20_2021* avg_05_20/
+ls
+mv maxed maxed_05_20
+ls
+cd avg_05_20/
+clear
+ls
+clear
+ls
+cd experiments_code/
+ls
+python main.py 
+python main.py 
+ls
+mkdir avg_05_20_input_20
+ls
+rm avg_05_20_input_20/
+rm -r avg_05_20_input_20/
+ls
+cd ..
+ls
+ls
+clear
+;s
+ls
+;s
+ls
+clear
+ls
+cd experiments_code/
+;s
+ls
+python main.py 
+python main.py 
+clear
+python main.py 
+clear
+ls
+python main.py 
+ls
+python main.py 
+python main.py 
+python main.py 
+clear
+ls
+python main.py 
+python main.py 
+python main.py 
+clear
+;s
+ls
+python main.py 
+clear
+python main.py 
+python main.py 
+python -m pdb main.py 
+python main.py 
+python main.py 
+clear
+python main.py 
+clear
+ls
+cd experiments_code/
+ls
+python -m pdb main.py 
+python -m pdb main.py 
+clear
+python -m pdb main.py 
+clear
+ls
+python -m pdb main.py 
+clear
+python -m pdb main.py 
+clear
+ls
+ls
+ls
+cd experiments_code/
+ls
+ls
+python -m pdb main.py 
+python -m pdb main.py 
+clear
+python main.py 
+python main.py 
+python main.py 
+python -m  pdb main.py 
+clear
+python -m  pdb main.py 
+python -m  pdb main.py 
+clear
+ls
+python main.py 
+python main.py 
+clear
+clear
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+exit
+exot
+exit
+exit
+ckear
+clear
+ls
+cd experiments_code/
+ls
+python -m pdb main.py 
+clear
+ls
+cd experiments_code/
+ls
+python main.py 
+python main.py 
+clear
+ls
+python main.py 
+clear
+python main.py 
+clear
+ls
+python main.py 
+clear
+ls
+clear
+python main.py 
+clear
+ls
+python main.py 
+python -m pdb main.py 
+clear
+ls
+python main.py 
+clear
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+clear
+ls
+cleae
+clear
+ls
+clear
+ls
+python main.py 
+clear
+;s
+ls
+clear
+ls
+clear
+python main.py 
+python main.py 
+python main.py 
+clear
+ls
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+ls
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+ls
+clear
+clear
+ls
+clear
+python main
+cd experiments_code/
+python main.py 
+python main.py 
+python main.py 
+clear
+python main.py 
+clear
+nv
+nvidia-smi
+clear
+ls
+cd experiments_code/
+cd experiments_code/
+ls
+python main.py 
+python main.py 
+clear
+python main.py 
+clear
+python main.py 
+python main.py 
+python main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python main.py 
+clear
+python main.py 
+clear
+;s
+ls
+clear
+ls
+python main.py 
+clear
+ls
+python main.py 
+clear
+python main.py
+python main.py
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+clear
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python -m pdb main.py 
+clear
+python main.py 
+clear
+ls
+cd experiments_code/
+ls
+clear
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+exit
+exit
+clear
+cd experiments_code/
+ls
+clear
+;s
+clear
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+clear
+ls
+python main.py 
+python main.py 
+exit
+clear
+ls
+cd experiments_code/
+ls
+python main.py 
+python main.py 
+clear
+ls
+cd experiments_code/
+ls
+python main.py 
+clear
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python -m pdb main.py 
+clear
+ls
+cd experiments_code/
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+clear
+ls
+clear
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+exit
+cd experiments_code/
+ls
+python main.py 
+clear
+python -m pdb  main.py 
+python -m pdb  main.py 
+python -m pdb  main.py 
+python -m pdb  main.py 
+python -m pdb  main.py 
+b 152
+r
+python -m pdb  main.py 
+python -m pdb  main.py 
+clear
+python main.py 
+exit
+ls
+cd results_all_datasets/
+ls
+cd experiment_traj_model/
+ls
+cd saved_model_consecutive/
+ls
+pwd
+clear
+exit
+exit
+cd experiments_code/
+python main.py 
+python main.py 
+python main.py 
+exit
+cd experiments_code/
+ls
+python main.py 
+cd experiments_code/
+ls
+python main.py 
+cd experiments_code/
+python main.py 
+python main.py 
+python main.py 
+clear
+ls
+cd experiments_code/
+ls
+python main.py 
+ls
+cd experiments_code/
+ls
+python main.py 
+python main.py 
+python main.py 
+cd experiments_code/
+ls
+python main.py 
+python main.py 
+python main.py 
+nvidia-smi
+ls
+cd experiments_code/
+ls
+ls
+clear
+python main.py 
+clear
+;s
+ls
+cd experiments_code/
+clear
+ls
+python -m pdb main.py 
+python -m pdb main.py 
+exit
+clear
+cd experiments_code/
+python
+python main.py 
+python main.py 
+clear
+cd experiments_code/
+ls
+python main.py 
+python main.py 
+clear
+cd experiments_code/
+python main.py 
+python main.py 
+cd experiments_code/
+python main.py 
+python main.py 
+python main.py 
+clear
+ls
+/mnt/roahm/
+ls
+cd  /mnt/roahm/
+clear
+ls
+clear
+cd experiments_code/
+;s
+ls
+cd ..
+ls
+cd custom_functions/
+ls
+python -m pdb frames_to_videos_n_back.py 
+python -m pdb frames_to_videos_n_back.py 
+python -m pdb frames_to_videos_n_back.py 
+ls
+cd custom_functions/
+ls
+python  -m pdb frames_to_videos_n_back.py 
+python  -m pdb frames_to_videos_n_back.py 
+python  -m pdb frames_to_videos_n_back.py 
+python  -m pdb frames_to_videos_n_back.py 
+clear
+clear
+python frames_to_videos_n_back.py 
+clear
+ls
+python frames_to_videos_n_back.py 
+python -m pdb frames_to_videos_n_back.py 
+python frames_to_videos_n_back.py 
+python frames_to_videos_n_back.py 
+python frames_to_videos_n_back.py 
+python frames_to_videos_n_back.py 
+python frames_to_videos_n_back.py 
+python -m pdb frames_to_videos_n_back.py 
+python frames_to_videos_n_back.py 
+clear
+cd experiments_code/
+ls
+pytho -m pdb main.py 
+python -m pdb main.py 
+clear
+ls
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+clear
+ls
+cd experiments_code/
+python -m pdb main.py 
+clear
+ls
+python -m pdb main.py 
+clear
+python -m pdb main.py 
+clear
+ls
+python -m pdb main.py 
+clear
+python -m pdb main.py 
+python -m pdb main.py 
+clear
+ls
+pytho -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+clear
+ls
+python -m pdb main.py 
+clear
+python -m pdb main.py 
+python main.py 
+python main.py 
+python main.py 
+ls
+cd ,,
+cd ~
+ls
+cd results_all_datasets/
+ls
+cd experiment_
+cd experiment_traj_model/
+ls
+clear
+ls
+cd ..
+ls
+cd ~
+ls
+cd experiments_code/
+ls
+python main.py 
+clear
+ls
+python main.py 
+clear
+;s
+ls
+cd experiments_code/
+ls
+python -m pdb main.py 
+exit
+cd experiments_code/
+ls
+python -m pdb main.py 
+ls
+cd ..
+ls
+cd results_all_datasets/
+ls
+cd experiment_
+cd experiment_traj_model/
+ls
+cd metrics_plot_consecutive_bitrap/
+ls
+cd 06_02_2021_l2_max_in_20_out_10/
+ls
+clear
+cd ..
+rmdir 06_02_2021_l2_max_in_20_out_10/
+rm 06_02_2021_l2_max_in_20_out_10/
+rm -06_02_2021_l2_max_in_20_out_10/
+rm -r 06_02_2021_l2_max_in_20_out_10/
+rm -r 06_02_2021_l2_max_in_20_out_10/
+cd ..
+cd ..
+cd ..
+ls
+cd experiments_code/
+;s
+ls
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+clear
+ls
+python main.py 
+clear
+ls
+python main.py 
+python main.py 
+clear
+ls
+cd experiments_code/
+ls
+clear
+ls
+python main.py 
+sudo
+ls
+ls
+cd ..
+ls
+ls
+cd results_all_datasets/
+ls
+cd experiment_
+cd experiment_traj_model/
+ls
+cd metrics_plot_consecutive_bitrap/
+ls
+cd 06_02_2021_l2_avg_in_20_out_10/
+ls
+mkdir 0.1+
+ls
+mv *_0.1* 0.1+/
+ls
+cd 0.1+/
+ls
+cd ..
+ls
+mkdir 0.05+_0.1
+mv *0.05* 0.05+_0.1/
+rmdir 0.05+_0.1/
+cd 0.05+_0.1/
+ls
+exit
+clear
+ls
+clear
+ls
+clear
+ls
+cd experiments_code/
+ls
+python -m pdb main.py  
+python -m pdb main.py 
+ls
+cd ..
+ls
+cd results_all_datasets/
+ls
+cd experiment_traj_model/
+ls
+cd metrics_plot_consecutive_bitrap/
+ls
+rm 06_02_2021_l2_avg_in_20_out_10/
+rm -r 06_02_2021_l2_avg_in_20_out_10/
+clear
+;s
+ls
+cd experiments_code/
+ls
+python main.py 
+exit
+clear
+ls
+cd experiments_code/
+ls
+ls
+python main.py 
+python main.py 
+python -m pdb main.py 
+python main.py 
+python main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+nvidia-
+nvidia-smi 
+clear
+ls
+clear
+l
+ls
+cd experiments_code/
+ls
+ls
+ls
+python -m pdb main.py 
+python main.py 
+python main.py 
+python -m pdb main.py 
+python main.py 
+python main.py 
+exxit
+exit
+clear
+ls
+cd docker/
+ls
+cd ..
+ls
+cd experiments_code/
+ls
+python -m pdb main.py 
+clear
+ls
+clear
+ls
+clear
+;s
+ls
+python main.py 
+python -m pdb main.py 
+clear
+ls
+python -m pdb main.py 
+python -m pdb main.py 
+ls
+python -m pdb main.py 
+python main.py 
+python -m pdb main.py 
+clear
+ls
+python main.py 
+clear
+ls
+python -m pdb main.py 
+python main.py 
+python main.py 
+clear
+ls
+exit
+clear
+ls
+cd experiments_code/
+ls
+clear
+;s
+clear
+;s
+ls
+clear
+ls
+cler
+clear
+ls
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+clear
+clear
+ls
+cd experiments_code/
+ls
+python main.py 
+clear
+ls
+python main.py 
+clear
+ls
+python main.py 
+clear
+ls
+cd experiments_code/
+ls
+python main.py 
+clear
+ls
+cd experiments_code/
+ls
+python combine_timescales.py 
+python combine_timescales.py 
+clear
+ls
+python combine_timescales.py 
+python combine_timescales.py 
+python combine_timescales.py 
+clear
+ls
+clear
+ls
+python combine_timescales.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb combine_timescales.py 
+clear
+ls
+ls
+clear
+ls
+clear
+ls
+clear
+ls
+clear
+ls
+ls
+python combine_timescales.py 
+python -m pdb combine_timescales.py 
+clear
+ls
+python -m pdb combine_timescales.py 
+python -m pdb combine_timescales.py 
+python -m pdb combine_timescales.py 
+python -m pdb combine_timescales.py 
+python -m pdb combine_timescales.py 
+python combine_timescales.py 
+python -m pdb  combine_timescales.py 
+exit
+clear
+ls
+cd experiments_code/
+ls
+ls
+ls
+clear
+ls
+python -m pdb combine_timescales.py 
+python -m pdb combine_timescales.py 
+clear'
+exit
+ls
+exit
+c;lear
+clear
+ls
+ls
+clear
+clear
+ls
+ls
+ls
+clear
+ls
+clear
+clear
+ls
+clear
+ls
+clear
+ls
+clear
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python main.py 
+clear
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+clear
+ls
+clear
+clear
+ls
+cd experiments_code/
+ls
+ls
+clear
+python -m pdb main.py 
+python -m pdb main.py 
+clear
+python -m pdb main.py 
+clear
+python main.py 
+python main.py n
+clear
+python main.py 
+clear
+python main.py 
+python main.py 
+python main.py 
+clear
+python main.py 
+clear
+python main.py 
+clear
+clear
+ls
+cd experiments_code/
+ls
+python -m pdb main.py 
+clear
+;s
+ls
+clea
+clear
+python main.py 
+clear
+python main.py 
+clear
+ls
+cd experiments_code/
+ls
+clear
+python main.py 
+ls
+cd ..
+ls
+cd output_bitrap/
+ls
+cd avenue/
+ls
+cd ..
+ls
+cd ..
+ls
+exit
+ls
+clear
+ls
+clear
+ls
+cd experiments_code/
+ls
+python main.py 
+clear
+python main.py 
+clear
+python main.py 
+clear
+ls
+ls
+ls
+ls
+ls
+clear
+ls
+clear
+clear
+cler
+clear
+ls
+cd ..
+;s
+ls
+cd custom_functions/
+ls
+python -m pdb auc_metrics.py 
+clear
+ls
+python -m pdb auc_metrics.py 
+clear
+ls
+cd experiments_code/
+ls
+cd ..
+ls
+cd custom_functions/
+ls
+clear
+ls
+clear
+ls
+python -m pdb auc_metrics.py 
+clear
+ls
+exit
