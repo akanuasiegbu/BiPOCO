@@ -6,3 +6,4 @@ results_all_datasets
 .bash_history
 output_deepsort
 output_bitrap
+__pycache__

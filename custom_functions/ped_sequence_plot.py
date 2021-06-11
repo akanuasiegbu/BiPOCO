@@ -2,6 +2,7 @@ import numpy as np
 import os
 import cv2
 
+
 def ind_seq(data, video, frame):
     """
     Takes the data and find the video and frame so that 
@@ -203,3 +204,5 @@ def plot_frame(gt_boxes, pred_boxes, vid_key,pic_loc, loc_videos, last_frame):
                 
                 if j == last_frame:
                     break
+
+                

@@ -3608,3 +3608,91 @@ python -m pdb auc_metrics.py
 clear
 ls
 exit
+ls
+cd custom_functions/
+ls
+python -m pdb auc_metrics.py 
+clear
+ls
+python -m pdb auc_metrics.py 
+clear
+ls
+clear
+ls
+ls
+clear
+ls
+clear
+ls
+python -m pdb auc_metrics.py 
+python -m pdb auc_metrics.py 
+clear
+cleAR
+clear
+ls
+python -m pdb auc_metrics.py 
+python auc_metrics.py 
+clear
+ls
+python -m pdb auc_metrics.py 
+python -m pdb auc_metrics.py 
+python -m pdb auc_metrics.py 
+clear
+ls
+clear
+clear
+ls
+ls
+cd ..
+ls
+cd experiments_code/
+ls
+python -m pdb combine_timescales.py 
+exit
+clear
+ls
+cd experiments_code/
+;s
+python -m pdb main.py 
+clear
+ls
+clear
+ls
+cd experiments_code/
+ls
+clear
+ls
+clear
+ls
+clear
+ls
+cd ..
+ls
+cd custom_functions/
+ls
+python -m pdb auc_metrics.py 
+clear
+python -m pdb auc_metrics.py 
+clear
+python -m pdb auc_metrics.py 
+python -m pdb auc_metrics.py 
+python auc_metrics.py 
+python -m pdb  auc_metrics.py 
+python -m pdb  auc_metrics.py 
+python auc_metrics.py 
+cd ..
+ls
+cd experiments_code/
+ls
+python -m pdb main.py 
+clear
+ls
+python -m pdb main.py 
+python main.py 
+python -m pdb main.py 
+clear
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 

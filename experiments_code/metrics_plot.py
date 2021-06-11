@@ -27,7 +27,7 @@ def loss_plot(history, plot_loc, nc, save_wandb):
     plt.xlabel('Epochs')
     plt.ylabel('Loss')
     img_path = join(    plot_loc, 
-                        '{}_loss_{}_{}_{}_{}.jpg'.format(
+                        '{}_loss_{}_{}_{}_{}_{}.jpg'.format(
                         *nc
                         ))
     fig.savefig(img_path)
@@ -95,9 +95,18 @@ def roc_plot(y_true, y_pred, plot_loc, nc, wandb_name):
     ax.legend()
     plt.xlabel('False Positive Rate')
     plt.ylabel('True Positive Rate')
+    plt.title('Input Length {} Output Length {}'.format(hyparams['input_seq'], hyparams['pred_seq']))
+    # index = np.argsort(y_pred, axis =0)
+    # y_true = y_true[index]
+    # print(y_pred[index])
+    # print(y_true[index])
 
+    # print('sum of first half {}'.format(y_true[:int(len(index) *.5)]))
+    # print(fpr)
+    # print(tpr)
+    # print(thresholds)
     img_path = join( plot_loc, 
-                '{}_roc_{}_{}_{}_{}.jpg'.format(
+                '{}_roc_{}_{}_{}_{}_{}.jpg'.format(
                 *nc
                 ))
     fig.savefig(img_path)
@@ -116,7 +125,7 @@ def roc_plot(y_true, y_pred, plot_loc, nc, wandb_name):
 
 
 
-def plot_iou(prob_iou,xlabel, ped_type, plot_loc, nc):
+def plot_iou(prob_iou, gt_label, xlabel, ped_type, plot_loc, nc, ylabel, title, split = False):
     """
     envisioned this to show how the abnormal pedestrains iou look
     prob_iou: this is the prob iou
@@ -124,16 +133,39 @@ def plot_iou(prob_iou,xlabel, ped_type, plot_loc, nc):
     ped_type: 'normal_ped' , abnormal_ped
     """
     fig,ax = plt.subplots(nrows=1, ncols=1)
-    ax.plot(np.arange(0,len(prob_iou)), prob_iou, '.' )
-    ax.plot(np.arange(0,len(prob_iou)), 0.5*np.ones([len(prob_iou),1]), '-b', label='midpoint' )
-    ax.plot(np.arange(0,len(prob_iou)), np.mean(prob_iou)*np.ones([ len(prob_iou), 1]), '-r', label='mean = {:.4f}'.format(np.mean(prob_iou)) )
+    
+    if split == True:
+        abnormal = np.where(gt_label == 1)[0]
+        normal = np.where(gt_label == 0)[0]
+
+        ax.plot(np.arange(0, len(abnormal)), prob_iou[abnormal], '.', color = 'r', label ='abnormal')
+        ax.plot(np.arange(len(abnormal), len(normal)+len(abnormal)), prob_iou[normal], '.', color = 'g',  label = 'normal' )
+    else:
+        if 'Abnormal' in title:
+            color = 'r'
+        elif 'Normal'  in title:
+            color = 'g'
+        else:
+            color = 'k' 
+        ax.plot(np.arange(0,len(prob_iou)), prob_iou, '.', color = color )
+    if 'Standard Deviation' in ylabel:
+        pass
+    else:
+        ax.plot(np.arange(0,len(prob_iou)), 0.5*np.ones([len(prob_iou),1]), '-b', label='midpoint' )
+    ax.plot(np.arange(0,len(prob_iou)), np.mean(prob_iou)*np.ones([ len(prob_iou), 1]), '-k', label='mean = {:.4f}'.format(np.mean(prob_iou)) )
     ax.legend()
     plt.xlabel(xlabel)
-    plt.ylabel('Probability (1-IOU)')
+    plt.ylabel(ylabel)
+    plt.title('{}_{}_{}'.format(title, hyparams['input_seq'], hyparams['pred_seq']))
 
 
     img_path = join( plot_loc, 
-            '{}_{}_{}_{}_{}_{}.jpg'.format(
+            '{}_{}_{}_{}_{}_{}_{}.jpg'.format(
             *nc, ped_type
             ))
     fig.savefig(img_path)
+
+
+
+
+

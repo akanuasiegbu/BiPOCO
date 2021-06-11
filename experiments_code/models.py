@@ -34,9 +34,9 @@ def lstm_network(train_data, val_data, model_loc, nc,  epochs=300):
         lstm_20.add(keras.layers.LSTM(4, return_sequences=True))
         lstm_20.add(keras.layers.LSTM(4, return_sequences=True))
         lstm_20.add(keras.layers.LSTM(4))
-        lstm_20.add(keras.layers.Dense(4))
+        lstm_20.add(keras.layers.Dense(hyparams['pred_seq']*4))
         opt = keras.optimizers.Adam(learning_rate=hyparams['networks']['lstm']['lr'])
-        checkpoint_cb = keras.callbacks.ModelCheckpoint(os.path.join(model_loc, '{}_{}_{}_{}_{}.h5'.format(*nc)),
+        checkpoint_cb = keras.callbacks.ModelCheckpoint(os.path.join(model_loc, '{}_{}_{}_{}_{}_{}.h5'.format(*nc)),
                                                         save_best_only=True)
 
         if hyparams['networks']['lstm']['early_stopping'] == True:

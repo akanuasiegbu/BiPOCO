@@ -68,13 +68,13 @@ def compute_iou(x,y, max1, min1, model):
     y: normed tested data
     model: lstm_model or other model that estimates box loc
     """
-
+    shape =  x.shape
     predicted_bb = model.predict(x)
     # predicted_bb_unorm = norm_train_max_min(xywh_tlbr(predicted_bb), max1, min1, True)
     # gt_bb_unorm = norm_train_max_min(xywh_tlbr(y), max1, min1, True)
 
     predicted_bb_unorm = norm_train_max_min(predicted_bb, max1, min1, True)
-    predicted_bb_unorm_tlbr = xywh_tlbr(predicted_bb_unorm)
+    predicted_bb_unorm_tlbr = xywh_tlbr(predicted_bb_unorm.reshape(shape[0] ,-1,4))
 
     gt_bb_unorm = norm_train_max_min(y, max1, min1, True)
     gt_bb_unorm_tlbr = xywh_tlbr(gt_bb_unorm)

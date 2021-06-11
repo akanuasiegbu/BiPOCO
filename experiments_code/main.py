@@ -8,7 +8,7 @@ from tensorflow.keras.layers import Lambda
 from tensorflow import keras
 import os, sys, time
 from os.path import join
-
+from custom_functions.utils import make_dir
 
 # Is hyperparameters and saving files config file
 from config import hyparams, loc, exp
@@ -33,7 +33,13 @@ from models import lstm_network, binary_network
 import wandb
 from custom_functions.ped_sequence_plot import ind_seq_dict, plot_sequence, plot_frame
 
-from custom_functions.convert_frames_to_videos import convert_spec_frames_to_vid
+# from custom_functions.convert_frames_to_videos import convert_spec_frames_to_vid
+
+from custom_functions.auc_metrics import l2_error, iou_as_probability, anomaly_metric, combine_time
+
+from verify import order_abnormal
+
+from custom_functions.visualizations import plot_frame_from_image, plot_vid
 
 
 def gpu_check():
@@ -85,7 +91,8 @@ def lstm_train(traindict):
             loc['nc']['model_name'],
             loc['nc']['data_coordinate_out'],
             loc['nc']['dataset_name'],
-            hyparams['frames'],
+            hyparams['input_seq'],
+            hyparams['pred_seq']
             ] # Note that frames is the sequence input
 
     # folders not saved by dates
@@ -114,76 +121,7 @@ def lstm_train(traindict):
 
     return model
 
-def iou_as_probability(testdict, model):
-    """
-    Note that to make abnormal definition similar to orgininal definition
-    Need to switch ious because low iou indicates abnormal and high 
-    iou indicate normal
-    testdict: 
-    model: traj prediction model
-    iou_prob: probability where high indicates abnormal pedestrain and low
-              indicates normal pedestrain
-    """ 
-    # model here is lstm model
-    # need to normalize because lstm expects normalized
-    if model =='bitrap':
-        y = testdict['y_ppl_box'] # this is the gt 
-        # gt_bb_unorm_tlbr = xywh_tlbr(np.squeeze(y))
-        gt_bb_unorm_tlbr = xywh_tlbr(y)
-        predicted_bb_unorm_tlbr = xywh_tlbr(testdict['pred_trajs'])
-        iou = bb_intersection_over_union_np(    predicted_bb_unorm_tlbr,
-                                                gt_bb_unorm_tlbr )
-        # need to squeeze to index correctly 
-        iou = np.squeeze(iou)
-
-    else:
-        x,y = norm_train_max_min(   testdict,
-                                    # max1 = hyparams['max'],
-                                    # min1 = hyparams['min']
-                                    max1 = max1,
-                                    min1 = min1
-                                    )
-
-        iou = compute_iou(x, y, max1, min1,  model)
-
-    iou_prob =  1 - iou
-    return  iou_prob
-
-def anomaly_metric(prob, metric, vid_loc, frame_loc, person_id, abnormal_gt):
-    
-    vid_frame = np.append(vid_loc, frame_loc, axis=1)
-    vid_frame_person = np.append(vid_frame, person_id, axis =1)
-
-    unique, unique_inverse, unique_counts = np.unique(vid_frame_person, axis=0, return_inverse=True, return_counts=True)
-
-    repeat_inverse_id = np.where(unique_counts>1)[0]
-
-
-    calc_prob, frame, vid, id_y, gt_abnormal = [], [], [], [], []
-    for i in repeat_inverse_id:
-        same_vid_frame_person = np.where(unique_inverse == i)[0]
-
-        
-        if metric == 'avg':
-            calc_prob.append(np.mean(prob[same_vid_frame_person]))
-
-        if metric == 'max':
-            calc_prob.append(np.max(prob[same_vid_frame_person]))
-
-        frame.append(vid_frame_person[same_vid_frame_person[0]][1])
-        vid.append(vid_frame_person[same_vid_frame_person[0]][0])
-        id_y.append(vid_frame_person[same_vid_frame_person[0]][2])
-        gt_abnormal.append(abnormal_gt[same_vid_frame_person[0]])
-
-    
-    calc_prob = np.array(calc_prob).reshape(-1,1)
-    frame = np.array(frame).reshape(-1,1)
-    vid = np.array(vid).reshape(-1,1)
-    gt_abnormal = np.array(gt_abnormal).reshape(-1,1)
-
-    return calc_prob, frame, vid, gt_abnormal
-
-def ped_auc_to_frame_auc_data(model, testdict, test_bin=None):
+def ped_auc_to_frame_auc_data(model, testdicts, metric, avg_or_max, test_bin=None):
     """
     Note that this does not explictly calcuate frame auc
     but removes select points to reduce to frame AUC data.
@@ -199,27 +137,33 @@ def ped_auc_to_frame_auc_data(model, testdict, test_bin=None):
     """
     if not test_bin:
         # calc iou prob
-        iou_prob = iou_as_probability(testdict, model)
         
-        vid_loc = []
-        temp_vid_loc = testdict['video_file'].reshape(-1,1) #videos locations
-        for vid in temp_vid_loc:
-            vid_loc.append(np.repeat(vid,testdict['y_ppl_box'].shape[1]))
+        if metric == 'iou':
+            prob = iou_as_probability(testdicts, model, max1 = max1, min1= min1)
+        
+        if metric == 'l2':
+            
+            prob = l2_error(testdicts = testdicts, models = model, errortype =hyparams['errortype'], max1=max1,min1= min1)
 
-        person_id = testdict['id_y'].reshape(-1,1) # frame locations
-        vid_loc = np.array(vid_loc).reshape(-1,1)
-        frame_loc = testdict['frame_y'].reshape(-1,1) # frame locations
-        abnormal_gt_frame = testdict['abnormal_gt_frame'].reshape(-1,1)
+        pkldicts = combine_time(testdicts, errortype=hyparams['errortype'], models = 'bitrap')
 
-        iou_prob = iou_prob.reshape(-1,1)
-        iou_prob, frame_loc, vid_loc, abnormal_gt_frame_metric = anomaly_metric(    iou_prob, 
-                                                                                    'avg', 
-                                                                                    vid_loc,
-                                                                                    frame_loc,
-                                                                                    person_id,
-                                                                                    abnormal_gt_frame)
 
-        test_index = np.arange(0, len(abnormal_gt_frame_metric), 1)
+        out = anomaly_metric(   prob, 
+                                avg_or_max,
+                                pred_trajs = pkldicts['pred_trajs'],
+                                gt_box = pkldicts['gt_bbox'], 
+                                vid_loc = pkldicts['vid_loc'],
+                                frame_loc = pkldicts['frame_y'],
+                                person_id = pkldicts['id_y'],
+                                abnormal_gt = pkldicts['abnormal_gt_frame'],
+                                abnormal_person = pkldicts['abnormal_ped_pred'])
+
+        prob = out['prob']
+        vid_loc = out['vid']
+        frame_loc = out['frame']
+        
+        # frame_loc, vid_loc, abnormal_gt_frame_metric, std, std_iou
+        test_index = np.arange(0, len(out['abnormal_gt_frame_metric']), 1)
     
     else:
         test_bin_index = test_bin['x'][:,1]
@@ -242,7 +186,8 @@ def ped_auc_to_frame_auc_data(model, testdict, test_bin=None):
     #  finds where repeats happened and gives id for input
     # into unique_inverse
     
-    repeat_inverse_id = np.where(unique_counts>1)[0]
+    repeat_inverse_id = np.where(unique_counts>1)[0] # this works because removing those greater than 1
+
     
     # Pedestrain AUC equals Frame AUC
     if len(repeat_inverse_id) == 0:
@@ -263,7 +208,7 @@ def ped_auc_to_frame_auc_data(model, testdict, test_bin=None):
             if not test_bin:
                 same_vid_frame = np.where(unique_inverse == i)[0]
                 # Note that this is treating iou_as_prob
-                y_pred = iou_prob[same_vid_frame]
+                y_pred = prob[same_vid_frame]
 
             else:
                 same_vid_frame = np.where(unique_inverse == i )[0]
@@ -272,7 +217,7 @@ def ped_auc_to_frame_auc_data(model, testdict, test_bin=None):
 
             # This saves it for both cases below  
             max_loc = np.where( y_pred == np.max(y_pred))[0]
-            if len(max_loc) > 1:
+            if len(max_loc) > 1: 
                 temp_1 = max_loc[1:]
                 temp_2 = np.where(y_pred != np.max(y_pred))[0]
                 remove_list_temp.append(same_vid_frame[temp_1])
@@ -291,12 +236,21 @@ def ped_auc_to_frame_auc_data(model, testdict, test_bin=None):
         # print(test_bin['x'].shape)
         test_auc_frame = {}
         if not test_bin:
-            iou_prob_per_person = np.append(iou_prob.reshape(-1,1), test_index.reshape(-1,1), axis=1)
-            test_auc_frame['x'] = np.delete( iou_prob_per_person, remove_list, axis = 0 )
-            test_auc_frame['y'] = np.delete(abnormal_gt_frame_metric, remove_list, axis = 0)
-            test_auc_frame['x_pred_per_human'] = iou_prob
-            test_auc_frame['y_pred_per_human'] = abnormal_gt_frame_metric
-             
+            test_auc_frame['x'] = np.delete( prob.reshape(-1,1), remove_list, axis = 0 )
+            test_auc_frame['y'] = np.delete(out['abnormal_gt_frame_metric'], remove_list, axis = 0)
+            test_auc_frame['x_pred_per_human'] = prob.reshape(-1,1)
+            test_auc_frame['y_pred_per_human'] = out['abnormal_gt_frame_metric']
+            test_auc_frame['std_per_frame'] = np.delete(out['std'], remove_list, axis = 0)
+            test_auc_frame['std_per_human'] = out['std']
+            test_auc_frame['index'] = test_index.reshape(-1,1)
+
+            # if hyparams['metric'] == 'iou':
+            test_auc_frame['std_iou_or_l2_per_frame'] = np.delete(out['std_iou_or_l2'], remove_list, axis = 0)
+            test_auc_frame['std_iou_or_l2_per_human'] = out['std_iou_or_l2']
+
+            out_frame = {}
+            for key in out.keys():
+                out_frame[key] = np.delete(out[key], remove_list, axis = 0)
             # test_auc_frame['y'] = np.delete(testdict['abnormal_gt_frame'].reshape(-1,1) , remove_list, axis=0)
             # test_auc_frame['abnormal_ped_pred'] = np.delete(testdict['abnormal_ped_pred'].reshape(-1,1) , remove_list, axis=0)
         else:
@@ -305,44 +259,62 @@ def ped_auc_to_frame_auc_data(model, testdict, test_bin=None):
         # print(test_auc_frame['y'].shape)
         # print(test_auc_frame['x'].shape)
 
-        y_pred_per_human = iou_prob
-
-    return test_auc_frame, remove_list
+    return test_auc_frame, remove_list, out_frame
 
 
-def frame_traj_model_auc(model, testdict):
+def frame_traj_model_auc(model, testdicts, metric, avg_or_max):
     """
     This function is meant to find the frame level based AUC
     model: any trajactory prediction model (would need to check input matches)
+    testdicts: is the input data dict
+    metric: iou or l2 metric
+    avg_or_max: used when looking at same person over frame, for vertical comparssion
     """
 
     # Note that this return ious as a prob 
-    test_auc_frame, remove_list = ped_auc_to_frame_auc_data('bitrap', testdict)
+    test_auc_frame, remove_list, out_frame = ped_auc_to_frame_auc_data(model, testdicts, metric, avg_or_max)
     # test_auc_frame, remove_list, y_pred_per_human = ped_auc_to_frame_auc_data('bitrap', testdict)
+    
     
     if test_auc_frame == 'not possible':
         quit()
     
     # 1 means  abnormal, if normal than iou would be high
     wandb_name = ['rocs', 'roc_curve']
-    y_true = test_auc_frame['y']
-    y_pred = test_auc_frame['x'][:,0]
+    
+    path_list = loc['metrics_path_list'].copy()
+    visual_path = loc['visual_trajectory_list'].copy()
+    for path in [path_list, visual_path]:
+        path.append('{}_{}_{}_in_{}_out_{}'.format(  loc['nc']['date'],
+                                                        metric,
+                                                        avg_or_max, 
+                                                        hyparams['input_seq'], 
+                                                        hyparams['pred_seq'] ) )
+    make_dir(path_list)
+    plot_loc = join( os.path.dirname(os.getcwd()), *path_list )
 
-    make_dir(loc['metrics_path_list'])
-    plot_loc = join(    os.path.dirname(os.getcwd()),
-                        *loc['metrics_path_list']
-                        )    
+    # For visualzing 
+    make_dir(visual_path)
+    visual_plot_loc = join( os.path.dirname(os.getcwd()), *visual_path )
+
     nc = [  loc['nc']['date'] + '_per_frame',
             loc['nc']['model_name'],
             loc['nc']['data_coordinate_out'],
             loc['nc']['dataset_name'],
-            hyparams['frames']
+            hyparams['input_seq'],
+            hyparams['pred_seq']
             ] # Note that frames is the sequence input
+    
 
-    wandb_name = ['rocs', 'roc_curve']
-    roc_plot(y_true,y_pred, plot_loc, nc,wandb_name)
-    print(remove_list.shape)
 
+        # if index_i == 10:
+        #     break
+
+    # This plots the data for visualizations
+    # pic_loc = loc['data_load']['avenue']['pic_loc_test']
+    # plot_vid( out_frame, pic_loc, visual_plot_loc )
+
+    # quit()
 
     # uncomment to plot video frames
     # print("Number of abnormal people after maxed {}".format(sum(test_auc_frame['y'])))
@@ -351,7 +323,9 @@ def frame_traj_model_auc(model, testdict):
     # helper_TP_TN_FP_FN( datadict = testdict, 
     #                     traj_model = model, 
     #                     ped = test_auc_frame, 
-    #                     both=True
+    #                     both=True,
+    #                     max1,
+    #                     min1
     #                     )
 
     # # FOR PLOTTING ALL THE DATA
@@ -380,126 +354,116 @@ def frame_traj_model_auc(model, testdict):
     # abnormal_index = np.where(testdict['abnormal_ped_pred'] == 1)
     # normal_index = np.where(testdict['abnormal_ped_pred'] == 0)
     
-    abnormal_index = np.where(test_auc_frame['y_pred_per_human'] == 1)
-    normal_index = np.where(test_auc_frame['y_pred_per_human'] == 0)
+    abnormal_index = np.where(test_auc_frame['y_pred_per_human'] == 1)[0]
+    normal_index = np.where(test_auc_frame['y_pred_per_human'] == 0)[0]
+    
+    abnormal_index_frame = np.where(test_auc_frame['y'] == 1)[0]
+    normal_index_frame = np.where(test_auc_frame['y'] == 0)[0]
+    
+    if metric == 'iou':
+        ylabel = 'Probability (1-IOU)'
+    elif metric == 'l2':
+        ylabel = 'Probability L2'
 
+    index = [abnormal_index, normal_index]
+    ped_type = ['abnormal_ped', 'normal_ped']
+    xlabel = ['Detected Abnormal Pedestrains', 'Detected Normal Pedestrains']
+    titles =['Abnormal', 'Normal']
+
+
+    ##############
+    # # DELETE OR MOVE TO A Different place
+    index = [abnormal_index_frame, normal_index_frame ]
+    xlabel = ['Abnormal Frames', 'Detected Normal Frames']
+    ped_type = ['abnormal_ped_frame', 'normal_ped_frame']
+    wandb_name = ['rocs', 'roc_curve']
+    
+    y_true = test_auc_frame['y']
+    y_pred = test_auc_frame['x']
 
     # Uncomment to make iou plots
     ################################################
 
-    plot_iou(   prob_iou = test_auc_frame['x_pred_per_human'][abnormal_index[0]],
-                xlabel ='Detected Abnormal Pedestrains ',
-                ped_type = 'abnormal_ped',
-                plot_loc = plot_loc,
-                nc = nc_per_human
-                )
+    for indices, ped_, x_lab, title in zip(index, ped_type, xlabel, titles ):
+        plot_iou(   prob_iou = test_auc_frame['x_pred_per_human'][indices],
+                    gt_label = test_auc_frame['y_pred_per_human'][indices],
+                    xlabel = x_lab,
+                    ped_type = ped_,
+                    plot_loc = plot_loc,
+                    nc = nc_per_human,
+                    ylabel = ylabel,
+                    title = title
+                    )        
+    # xlabel = ['Detected Abnormal Pedestrains', 'Detected Normal Pedestrains']
+    index = [abnormal_index_frame, normal_index_frame ]
+    xlabel = ['Abnormal Frames', 'Detected Normal Frames']
+    ped_type = ['abnormal_ped_frame', 'normal_ped_frame']
 
-    plot_iou(   prob_iou = test_auc_frame['x_pred_per_human'][normal_index[0]],
-                xlabel ='Detected Normal Pedestrains ',
-                ped_type = 'normal_ped',
-                plot_loc = plot_loc,
-                nc = nc_per_human
-                )
+    for indices, ped_, x_lab, title in zip(index, ped_type, xlabel, titles ):
+        plot_iou(   prob_iou = np.sum(test_auc_frame['std_per_frame'][indices], axis = 1),
+                    gt_label = test_auc_frame['y'][indices],
+                    xlabel = x_lab,
+                    ped_type = '{}_std'.format(ped_),
+                    plot_loc = plot_loc,
+                    nc = nc,
+                    ylabel = 'Standard Deviation Summed',
+                    title = title
+                    )
+
+    for indices, ped_, x_lab, title in zip(index, ped_type, xlabel, titles ):
+        for i, axis in zip(range(0,4), ['Mid X', 'Mid Y', 'W', 'H']):
+            plot_iou(   prob_iou = test_auc_frame['std_per_frame'][indices][:,i],
+                        gt_label = test_auc_frame['y'][indices],
+                        xlabel = x_lab,
+                        ped_type = '{}_std_axis_{}'.format(ped_, i),
+                        plot_loc = plot_loc,
+                        nc = nc,
+                        ylabel = 'Standard Deviation {}'.format(axis),
+                        title = '{}_axis_{}'.format(title, i)
+                        )
+
+    for indices, ped_, x_lab, title in zip(index, ped_type, xlabel, titles ):
+        plot_iou(   prob_iou = test_auc_frame['std_iou_or_l2_per_frame'][indices],
+                    gt_label = test_auc_frame['y'][indices],
+                    xlabel = x_lab,
+                    ped_type = '{}_std_{}'.format(ped_, hyparams['metric']),
+                    plot_loc = plot_loc,
+                    nc = nc,
+                    ylabel = 'Standard Deviation {}'.format(hyparams['metric']),
+                    title = title 
+                    )
 
 
-    abnormal_index_frame = np.where(test_auc_frame['y'] == 1)
-    normal_index_frame = np.where(test_auc_frame['y'] == 0)
+    for indices, ped_, x_lab, title in zip(index, ped_type, xlabel, titles ):
+        plot_iou(   prob_iou = test_auc_frame['x'][indices],
+                    gt_label = test_auc_frame['y'][indices],
+                    xlabel = x_lab,
+                    ped_type = ped_,
+                    plot_loc = plot_loc,
+                    nc = nc,
+                    ylabel = ylabel,
+                    title = title
+                    )        
 
-
-
-
-    plot_iou(   prob_iou = test_auc_frame['x'][abnormal_index_frame[0], 0],
-                xlabel ='Detected Abnormal Pedestrains ',
-                ped_type = 'abnormal_ped_frame',
-                plot_loc = plot_loc,
-                nc = nc_per_human
-                )
-
-    plot_iou(   prob_iou = test_auc_frame['x'][normal_index_frame[0], 0],
-                xlabel ='Detected Normal Pedestrains ',
-                ped_type = 'normal_ped_frame',
-                plot_loc = plot_loc,
-                nc = nc_per_human
-                )
-
+                
 
     
     ###################################################
+    # This is where the ROC Curves are plotted 
+    wandb_name = ['rocs', 'roc_curve']
+    
+    y_true = test_auc_frame['y']
+    y_pred = test_auc_frame['x']
 
     # y_true_per_human = testdict['abnormal_ped_pred']
     y_true_per_human = test_auc_frame['y_pred_per_human']
     y_pred_per_human = test_auc_frame['x_pred_per_human']
     #####################################################################
     # Might have a problem here in wandb if tried running and saving 
-    roc_plot(y_true_per_human, y_pred_per_human, plot_loc, nc_per_human, wandb_name)
+    roc_plot( y_true_per_human, y_pred_per_human, plot_loc, nc_per_human, wandb_name)
+    roc_plot( y_true, y_pred, plot_loc, nc, wandb_name)
 
 
-def helper_TP_TN_FP_FN(datadict, traj_model, ped, both):
-
-    """
-    This uses function in the TP_TN_FP_FN file for plotting
-    datadict: 
-    traj_model: lstm, etc
-    ped: dict with x is two columns contains predictions, indices
-         y contains the ground truth information 
-    both: plot bitrap and lstm model on top of each other
-    """
-  
-
-    # seperates them into TP. TN, FP, FN
-
-    # Note that y_pred should not be threshold yet, granted if it is no
-    # error cuz would change by threshold again assuming using same threshold 
-    conf_dict = seperate_misclassifed_examples( y_pred = ped['x'][:,0],
-                                                indices = ped['x'][:,1],
-                                                test_y = ped['y'],
-                                                threshold=0.5
-                                                )
-
-    
-    print('length of  TP {} '.format(len(conf_dict['TP'])))
-    print('length of  TN {} '.format(len(conf_dict['TN'])))
-    print('length of  FP {} '.format(len(conf_dict['FP'])))
-    print('length of  FN {} '.format(len(conf_dict['FN'])))
-    # quit()
-    
-    # what am I actually returning
-    TP_TN_FP_FN, boxes_dict = sort_TP_TN_FP_FN_by_vid_n_frame(datadict, conf_dict )
-
-
-    # Does not return result, but saves images to folders
-    make_dir(loc['visual_trajectory_list'])
-    pic_loc = join(     os.path.dirname(os.getcwd()),
-                        *loc['visual_trajectory_list']
-                        )
-
-    # need to make last one robust "test_vid" : "train_vid"
-    # can change
-
-    loc_videos = loc['data_load'][exp['data']]['test_vid']
-    # print(boxes_dict.keys())
-    # quit()
-    for conf_key in boxes_dict.keys():
-        temp = loc['visual_trajectory_list'].copy()
-        temp.append(conf_key)
-        make_dir(temp)
-
-    for conf_key in boxes_dict.keys():
-        pic_loc_conf_key =  join(pic_loc, conf_key)
-        cycle_through_videos(traj_model, both, boxes_dict[conf_key], max1, min1, pic_loc_conf_key, loc_videos, xywh=True)
-
-
-
-def make_dir(dir_list):
-    try:
-        print(os.makedirs(join( os.path.dirname(os.getcwd()),
-                                *dir_list )) )
-    except OSError:
-        print('Creation of the directory {} failed'.format( join(os.path.dirname(os.getcwd()),
-                                                            *dir_list) ) )
-    else:
-        print('Successfully created the directory {}'.format(   join(os.path.dirname(os.getcwd()),
-                                                                *dir_list) ) )
 
 
 # def trouble_shot(testdict, model, frame, ped_id, vid):
@@ -514,9 +478,9 @@ def plot_traj_gen_traj_vid(testdict, model):
 
     """
 
+    frame = 517
     # This is helping me plot the data from tlbr -> xywh -> tlbr
     ped_loc = loc['visual_trajectory_list'].copy()
-    frame = 517
     ped_id = 11
     
     # vid = '07_0009'
@@ -630,7 +594,7 @@ def main():
 
 
     # To-Do add input argument for when loading 
-    load_lstm_model = True
+    load_lstm_model = False
     special_load = False # go back and clean up with command line inputs
     model_loc = join(   os.path.dirname(os.getcwd()),
                         *loc['model_path_list']
@@ -638,15 +602,26 @@ def main():
     
     
     nc = [  #loc['nc']['date'],
-            '03_11_2021',
-            # loc['nc']['model_name'],
-            'lstm_network',
+            '05_18_2021',
+            loc['nc']['model_name'],
+            # 'lstm_network',
             loc['nc']['data_coordinate_out'],
             loc['nc']['dataset_name'],
-            hyparams['frames'],
+            hyparams['input_seq'],
+            hyparams['pred_seq'],
             ] # Note that frames is the sequence input
 
 
+    # traindict, testdict = data_lstm(    loc['data_load'][exp['data']]['train_file'],
+    #                                     loc['data_load'][exp['data']]['test_file'],
+    #                                     hyparams['input_seq'], hyparams['pred_seq'] 
+    #                                     )
+    global max1, min1
+    
+    max1 = None
+    min1 = None
+    # max1 = traindict['x_ppl_box'].max() if traindict['y_ppl_box'].max() <= traindict['x_ppl_box'].max() else traindict['y_ppl_box'].max()
+    # min1 = traindict['x_ppl_box'].min() if traindict['y_ppl_box'].min() >= traindict['x_ppl_box'].min() else traindict['y_ppl_box'].min()
 
   
     # This is a temp solution, perm is to make function normalize function
@@ -656,46 +631,47 @@ def main():
     #  Note I don't need a model to do trobule shot code
 
 
-    if load_lstm_model:        
-        if special_load:
-            # model_path = os.path.join( os.path.dirname(os.getcwd()),
-            #                             'results_all_datasets/experiment_3_1/saved_model/01_07_2021_lstm_network_xywh_avenue_20.h5'
-            #                             )
+    # if load_lstm_model:        
+    #     if special_load:
+    #         # model_path = os.path.join( os.path.dirname(os.getcwd()),
+    #         #                             'results_all_datasets/experiment_3_1/saved_model/01_07_2021_lstm_network_xywh_avenue_20.h5'
+    #         #                             )
 
-            # model_path = os.path.join( os.path.dirname(os.getcwd()),
-            #                             'results_all_datasets/experiment_3_1/saved_model/12_18_2020_lstm_network_xywh_st_20.h5'
-            #                             )
-            pass
-        else:
-            model_path = os.path.join(  model_loc,
-                            '{}_{}_{}_{}_{}.h5'.format(*nc)
-                            )
-        print(model_path)
-        lstm_model = tf.keras.models.load_model(    model_path,  
-                                                    custom_objects = {'loss':'mse'} , 
-                                                    compile=True
-                                                    )
-    else:
-        # returning model right now but might change that in future and load instead
-        lstm_model = lstm_train(traindict)
+    #         # model_path = os.path.join( os.path.dirname(os.getcwd()),
+    #         #                             'results_all_datasets/experiment_3_1/saved_model/12_18_2020_lstm_network_xywh_st_20.h5'
+    #         #                             )
+    #         pass
+    #     else:
+    #         model_path = os.path.join(  model_loc,
+    #                         '{}_{}_{}_{}_{}_{}.h5'.format(*nc)
+    #                         )
+    #     print(model_path)
+    #     lstm_model = tf.keras.models.load_model(    model_path,  
+    #                                                 custom_objects = {'loss':'mse'} , 
+    #                                                 compile=True
+    #                                                 )
+    # else:
+    #     # returning model right now but might change that in future and load instead
+    #     lstm_model = lstm_train(traindict)
 
     #Load Data
-    pkldict = load_pkl()
-    # traindict, testdict = data_lstm(    loc['data_load'][exp['data']]['train_file'],
-    #                                     loc['data_load'][exp['data']]['test_file']
-    #                                     )
+    # pkldict = [load_pkl(loc['pkl_file']['avenue'])]
 
-
-    # global max1, min1
-    # max1 = traindict['x_ppl_box'].max() if traindict['y_ppl_box'].max() <= traindict['x_ppl_box'].max() else traindict['y_ppl_box'].max()
-    # min1 = traindict['x_ppl_box'].min() if traindict['y_ppl_box'].min() >= traindict['x_ppl_box'].min() else traindict['y_ppl_box'].min()
+    pkldicts = []
+    pkldicts.append(load_pkl(loc['pkl_file']['avenue_template'].format(20,5)))
+    # pkldicts.append(load_pkl(loc['pkl_file']['avenue_template'].format(20,10)))
+    # pkldicts.append(load_pkl(loc['pkl_file']['avenue_template'].format(5,5)))
+    # pkldicts.append(load_pkl(loc['pkl_file']['avenue_template'].format(5,10)))
     
-    frame_traj_model_auc(lstm_model, pkldict)
-     # Note would need to change mode inside frame_traj
+
+    # frame_traj_model_auc(lstm_model, testdict, hyparams['metric'], hyparams['avg_or_max'])
+    frame_traj_model_auc('bitrap', pkldicts, hyparams['metric'], hyparams['avg_or_max'])
+    print('Input Seq: {}, Output Seq: {}'.format(hyparams['input_seq'], hyparams['pred_seq']))
+    print('Metric: {}, avg_or_max: {}'.format(hyparams['metric'], hyparams['avg_or_max']))
+    # Note would need to change mode inside frame_traj
 
 
     # classifer_train(traindict, testdict, lstm_model)
-    # frame_traj_model_auc(lstm_model, testdict)
      
 
     # plot_traj_gen_traj_vid(pkldict,lstm_model)

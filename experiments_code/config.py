@@ -7,20 +7,23 @@ exp = { '1': False,
         # want an adaptive model saved based on arch size for model_loc
         'data': 'avenue', #st, avenue,hr-st
         'data_consecutive': True,
-        'model_name': 'bitrap_640_360', #lstm_network, bitrap
+        'model_name': 'bitrap', #lstm_network, bitrap, bitrap_640_360
         }
 
 
 hyparams = {
-    'epochs':350,
+    'epochs': 350,
     'batch_size': 32,
     'buffer_size': 10000,
  
     'frames': 5,
-    'input_seq': 5,
-    'pred_seq': 5,
+    'input_seq': '20_20_5_5',
+    'pred_seq': '5_10_5_10',
+    'metric': 'l2', #l2 or iou
+    'avg_or_max': 'avg', #avg or max
+    'errortype': 'error_flattened', #'error_diff' or 'error_summed' or 'error_flattened'
 
-    'to_xywh':True, # This is assuming file is in tlbr format
+    'to_xywh': True, # This is assuming file is in tlbr format
     # 'max':913.0, # wonder better way to pick
     # 'min':-138.5, # wonder better way to pick
 
@@ -79,17 +82,17 @@ time = now.strftime("%H:%M:%S")
 if exp['data_consecutive']:
     model_path_list = ['results_all_datasets', 'experiment_{}'.format(name_exp), 'saved_model_consecutive']
     metrics_path_list = ['results_all_datasets', 'experiment_{}'.format(name_exp), 'metrics_plot_consecutive']
-    visual_trajectory_list = ['results_all_datasets', 'experiment_{}'.format(name_exp), 'visual_trajectory_consecutive', '{}_{}_{}_{}'.format(date, exp['data'], time, hyparams['frames'])]
+    visual_trajectory_list = ['results_all_datasets', 'experiment_{}'.format(name_exp), 'visual_trajectory_consecutive', '{}_{}_{}_{}_{}'.format(date, exp['data'], time, hyparams['input_seq'], hyparams['pred_seq'])]
     
     if exp['model_name'] == 'bitrap' or exp['model_name'] == 'bitrap_640_360' or exp['model_name'] == 'bitrap_1080_1020':
          model_path_list = ['results_all_datasets', 'experiment_{}'.format(name_exp), 'saved_model_consecutive']
          metrics_path_list = ['results_all_datasets', 'experiment_{}'.format(name_exp), 'metrics_plot_consecutive_bitrap']
-         visual_trajectory_list = ['results_all_datasets', 'experiment_{}'.format(name_exp), 'visual_trajectory_consecutive_bitrap', '{}_{}_{}_{}'.format(date, exp['data'], time, hyparams['frames'])]
+         visual_trajectory_list = ['results_all_datasets', 'experiment_{}'.format(name_exp), 'visual_trajectory_consecutive_bitrap', '{}_{}_{}_{}_{}'.format(date, exp['data'], time, hyparams['input_seq'], hyparams['pred_seq'])]
 
 else:
     model_path_list = ['results_all_datasets', 'experiment_{}'.format(name_exp), 'saved_model']
     metrics_path_list ['results_all_datasets', 'experiment_{}'.format(name_exp), 'metrics_plot']
-    visual_trajectory_list = ['results_all_datasets', 'experiment_{}'.format(name_exp), 'visual_trajectory', '{}_{}_{}_{}'.format(date, exp['data'], time, hyparams['frames'])]
+    visual_trajectory_list = ['results_all_datasets', 'experiment_{}'.format(name_exp), 'visual_trajectory', '{}_{}_{}_{}_{}'.format(date, exp['data'], time, hyparams['input_seq'], hyparams['pred_seq'])]
 
 
 loc =  {
@@ -117,6 +120,7 @@ loc =  {
                 'test_file': "/mnt/roahm/users/akanu/projects/anomalous_pred/output_deepsort/avenue/test_txt/",
                 'train_vid': '/mnt/roahm/users/akanu/dataset/Anomaly/Avenue_Dataset/training_videos',
                 'test_vid': '/mnt/roahm/users/akanu/dataset/Anomaly/Avenue_Dataset/testing_videos',
+                'pic_loc_test': '/mnt/roahm/users/akanu/dataset/Anomaly/Avenue_Dataset/frames_of_vid/test/'
                 },
 
             #Need to rerun ped1
@@ -136,7 +140,14 @@ loc =  {
                 'train_vid': '/mnt/workspace/datasets/shanghaitech/training/videos',
                 'test_vid':  '/mnt/roahm/users/akanu/projects/Deep-SORT-YOLOv4/tensorflow2.0/deep-sort-yolov4/input_video/st_test',
                 },
-            }
+            },
+    
+    'pkl_file':{
+        'avenue': "/home/akanu/output_bitrap/avenue/gaussian_avenue_in_{}_out_{}.pkl".format(hyparams['input_seq'],
+                                                                                             hyparams['pred_seq']),
+        'avenue_template': "/home/akanu/output_bitrap/avenue/gaussian_avenue_in_{}_out_{}.pkl",
+                                    
+    }
 
 
 }

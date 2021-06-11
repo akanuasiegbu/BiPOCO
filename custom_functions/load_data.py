@@ -52,10 +52,10 @@ def Files_Load(train_file,test_file):
     return locations
 
 # def load_pkl(loc_files ):
-def load_pkl():
+def load_pkl(data_loc):
     
     # data_loc = '/home/akanu/output_bitrap/avenue/gaussian_avenue_640_360_trained_normal_data.pkl'
-    data_loc = '/home/akanu/output_bitrap/avenue/gaussian_avenue_in_5_out_5.pkl'
+    # data_loc = '/home/akanu/output_bitrap/avenue/gaussian_avenue_in_5_out_10.pkl'
     temp, datadict = {}, {}
     
     with open(data_loc, 'rb') as f:

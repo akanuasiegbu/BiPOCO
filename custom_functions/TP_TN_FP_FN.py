@@ -2,6 +2,8 @@ import numpy as np
 from load_data import norm_train_max_min
 import cv2
 import os
+from custom_functions.utils import make_dir
+from os.path import join
 
 
 # def seperate_misclassifed_examples(bm_model,test_x, indices, test_y, threshold=0.5):
@@ -272,3 +274,58 @@ def cycle_through_videos(model,both, data, max1, min1,pic_loc, loc_videos, xywh=
 
                         if j == size:
                             break
+
+
+def helper_TP_TN_FP_FN(datadict, traj_model, ped, both, max1, min1):
+    
+    """
+    This uses function in the TP_TN_FP_FN file for plotting
+    datadict: 
+    traj_model: lstm, etc
+    ped: dict with x is two columns contains predictions, indices
+         y contains the ground truth information 
+    both: plot bitrap and lstm model on top of each other
+    """
+  
+
+    # seperates them into TP. TN, FP, FN
+
+    # Note that y_pred should not be threshold yet, granted if it is no
+    # error cuz would change by threshold again assuming using same threshold 
+    conf_dict = seperate_misclassifed_examples( y_pred = ped['x'],
+                                                indices = ped['index'],
+                                                test_y = ped['y'],
+                                                threshold=0.5
+                                                )
+
+    
+    print('length of  TP {} '.format(len(conf_dict['TP'])))
+    print('length of  TN {} '.format(len(conf_dict['TN'])))
+    print('length of  FP {} '.format(len(conf_dict['FP'])))
+    print('length of  FN {} '.format(len(conf_dict['FN'])))
+    # quit()
+    
+    # what am I actually returning
+    TP_TN_FP_FN, boxes_dict = sort_TP_TN_FP_FN_by_vid_n_frame(datadict, conf_dict )
+
+
+    # Does not return result, but saves images to folders
+    make_dir(loc['visual_trajectory_list'])
+    pic_loc = join(     os.path.dirname(os.getcwd()),
+                        *loc['visual_trajectory_list']
+                        )
+
+    # need to make last one robust "test_vid" : "train_vid"
+    # can change
+
+    loc_videos = loc['data_load'][exp['data']]['test_vid']
+    # print(boxes_dict.keys())
+    # quit()
+    for conf_key in boxes_dict.keys():
+        temp = loc['visual_trajectory_list'].copy()
+        temp.append(conf_key)
+        make_dir(temp)
+
+    for conf_key in boxes_dict.keys():
+        pic_loc_conf_key =  join(pic_loc, conf_key)
+        cycle_through_videos(traj_model, both, boxes_dict[conf_key], max1, min1, pic_loc_conf_key, loc_videos, xywh=True)

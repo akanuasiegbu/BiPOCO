@@ -1,4 +1,5 @@
-"""# Note that when I ran this orginally was using jupyter notebook
+"""
+# Note that when I ran this orginally was using jupyter notebook
 # WOuld need to make sure right directory is being looked looked at
 # Also would want to add directoory and want correct directory to save new
 # videos """
@@ -8,9 +9,29 @@ loc : Directory that is looked at. (It's two directory out)
 save_vid_loc : Directory that video is saved too
 """
 
+import os
 from os import listdir
 from os.path import isfile, join, isdir
 import cv2
+from load_data import Files_Load
+from experiments_code.config import hyparams, loc, exp
+
+def vid_to_frames(vid_loc,  pic_loc):
+    """
+    Thats the location of the videos
+    """
+
+    frame_index = 0
+    video_capture = cv2.VideoCapture(vid_loc)
+    while True:
+    
+        ret, frame = video_capture.read()
+        if ret != True:
+            break
+
+        cv2.imwrite(pic_loc + '/' +'{:02d}.jpg'.format(frame_index) , frame)
+        frame_index += 1
+
 
 
 
@@ -68,3 +89,29 @@ def conver_data_vid(loc, save_vid_loc):
             for i in range(0,len(all_frames)):
                 out.write(all_frames[i])
             out.release()
+
+def make_dir(dir_list):
+    try:
+        print(os.makedirs(join( '/mnt/roahm/users/akanu/dataset/Anomaly/Avenue_Dataset/',
+                                *dir_list )) )
+    except OSError:
+        print('Creation of the directory {} failed'.format( join(os.path.dirname(os.getcwd()),
+                                                            *dir_list) ) )
+    else:
+        print('Successfully created the directory {}'.format(   join(os.path.dirname(os.getcwd()),
+                                                                *dir_list) ) )
+
+def main():
+    pass
+
+if __name__ =='__main__':
+    train_file = loc['data_load'][exp['data']]['train_vid']
+    test_file = loc['data_load'][exp['data']]['test_vid']    
+    for vid in sorted(listdir(train_file)):
+        dir_list = ['frames_of_vid', 'train', '{:02d}'.format(int(vid[:-4]))]
+        vid_loc = test_file + '/' + vid
+
+        make_dir(dir_list)
+        pic_loc = join( '/mnt/roahm/users/akanu/dataset/Anomaly/Avenue_Dataset/', *dir_list )
+
+        vid_to_frames(vid_loc, pic_loc)    

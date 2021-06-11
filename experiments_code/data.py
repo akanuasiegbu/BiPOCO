@@ -15,14 +15,14 @@ from load_data import norm_train_max_min
 from load_data_binary import *
 
 
-def data_lstm(train_file, test_file):
+def data_lstm(train_file, test_file, input_seq, pred_seq):
 
     # returns a dict file
     loc = Files_Load(train_file,test_file)
     traindict = Boxes(  loc_files = loc['files_train'], 
                         txt_names = loc['txt_train'],
-                        input_seq = hyparams['input_seq'],
-                        pred_seq = hyparams['pred_seq'],
+                        input_seq = input_seq,
+                        pred_seq = pred_seq,
                         data_consecutive = exp['data_consecutive'], 
                         pad = 'pre', 
                         to_xywh = hyparams['to_xywh'],
@@ -56,19 +56,9 @@ def tensorify(train, val, batch_size):
     buffer_size = hyparams['buffer_size']
     batch_size = hyparams['batch_size']
 
-
-    # print('Inside Tensorfify')
-    """
-    Come back and fix, I dont like tha I need to cast to float32
-    """
-
-    print(train['x'].shape)
-    print(train['y'].shape)
-    print(val['x'].shape)
-    print(val['y'].shape)
-    train_univariate = tf.data.Dataset.from_tensor_slices((train['x'], np.array(train['y'], dtype=np.float32)))
+    train_univariate = tf.data.Dataset.from_tensor_slices((train['x'], np.array(train['y'].reshape(-1,hyparams['pred_seq']*4), dtype=np.float32)))
     train_univariate = train_univariate.cache().shuffle(buffer_size).batch(batch_size)
-    val_univariate = tf.data.Dataset.from_tensor_slices((val['x'],np.array(val['y'], dtype=np.float32)))
+    val_univariate = tf.data.Dataset.from_tensor_slices((val['x'],np.array(val['y'].reshape(-1,hyparams['pred_seq']*4), dtype=np.float32)))
     val_univariate = val_univariate.cache().shuffle(buffer_size).batch(batch_size)
 
     return train_univariate, val_univariate
