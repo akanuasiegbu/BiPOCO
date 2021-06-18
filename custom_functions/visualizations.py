@@ -3,7 +3,7 @@ import numpy as np
 from os.path import join
 
 
-def plot_frame_from_image(pic_loc, bbox_preds, save_to_loc, vid, frame, idy, prob,abnormal_frame, abnormal_ped, gt_bbox = None):
+def plot_frame_from_image(pic_loc, bbox_preds, save_to_loc, vid, frame, idy, prob,abnormal_frame, abnormal_ped, gt_bboxs = None):
     """
     pic_loc: this is where the orginal pic is saved
     bbox_pred: this is where the bbox is saved
@@ -12,8 +12,9 @@ def plot_frame_from_image(pic_loc, bbox_preds, save_to_loc, vid, frame, idy, pro
     for bbox_pred in bbox_preds:
         cv2.rectangle(img, (int(bbox_pred[0]), int(bbox_pred[1])), (int(bbox_pred[2]), int(bbox_pred[3])),(0,255,255), 2)
     
-    
-    cv2.rectangle(img, (int(gt_bbox[0]), int(gt_bbox[1])), (int(gt_bbox[2]), int(gt_bbox[3])),(0,255,0), 2)
+    for gt_bbox in gt_bboxs:
+        # Doing this way also takes care of multiple bounding boxes
+        cv2.rectangle(img, (int(gt_bbox[0]), int(gt_bbox[1])), (int(gt_bbox[2]), int(gt_bbox[3])),(0,255,0), 2)
 
     # cv2.putText(img, '{:.4f}'.format(prob),(int(bbox_pred[2]), int(bbox_pred[3])),0, 5e-3 * 100, (255,255,0),2)
 
@@ -22,10 +23,10 @@ def plot_frame_from_image(pic_loc, bbox_preds, save_to_loc, vid, frame, idy, pro
     # This is for abnormal frame, this uses the last bbox of set to plot 
     if abnormal_frame:
         # cv2.putText(img, '1',(int(bbox_pred[0]), int(bbox_pred[1])),0, 5e-3 * 100, (0,0,255),2)
-        cv2.putText(img, 'Abnormal',(25,25),0, 5e-3 * 150, (0,0,255),2)
+        cv2.putText(img, 'Abnormal Frame',(25,25),0, 5e-3 * 150, (0,0,255),2)
     else:
         # cv2.putText(img, '0',(int(bbox_pred[0]), int(bbox_pred[1])),0, 5e-3 * 100, (0,255, 0 ),2)
-        cv2.putText(img, 'Normal',(25, 25),0, 5e-3 * 150, (0,255, 0 ),2)
+        cv2.putText(img, 'Normal Frame',(25, 25),0, 5e-3 * 150, (0,255, 0 ),2)
     
     # This is for abnormal person
     if abnormal_ped:
@@ -40,10 +41,10 @@ def plot_frame_from_image(pic_loc, bbox_preds, save_to_loc, vid, frame, idy, pro
 
     # if abnormal_frame and abnormal_ped:
     
-    cv2.imwrite(save_to_loc + '/' + '{:02d}__{}_{}_{:.4f}.jpg'.format(vid, frame, idy, prob), img)
+    cv2.imwrite(save_to_loc + '/' + '{:02d}'.format(vid) + '/' + '{:02d}__{}_{}_{:.4f}.jpg'.format(vid, frame, idy, prob), img)
 
 
-def plot_vid(out_frame, pic_loc, visual_plot_loc):
+def plot_vid(out_frame, pic_locs, visual_plot_loc):
 
     """
     out_frame: this is the dict
@@ -56,7 +57,7 @@ def plot_vid(out_frame, pic_loc, visual_plot_loc):
                                                                                             out_frame['abnormal_gt_frame_metric'],
                                                                                             out_frame['abnormal_ped_pred'],
                                                                                             out_frame['gt_bbox'] ):
-        pic_loc = join(  pic_loc, '{:02d}'.format(int(vid[0][:-4])) )
+        pic_loc = join(  pic_locs, '{:02d}'.format(int(vid[0][:-4])) )
         pic_loc =  pic_loc + '/' +'{:02d}.jpg'.format(int(frame))
         plot_frame_from_image(  pic_loc = pic_loc,  
                                 bbox_preds = bbox_preds ,
@@ -67,4 +68,4 @@ def plot_vid(out_frame, pic_loc, visual_plot_loc):
                                 prob = prob[0],
                                 abnormal_frame = abnormal_frame,
                                 abnormal_ped = abnormal_ped,
-                                gt_bbox = gt_bbox)
+                                gt_bboxs = gt_bbox)

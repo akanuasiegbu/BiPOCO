@@ -17,8 +17,8 @@ hyparams = {
     'buffer_size': 10000,
  
     'frames': 5,
-    'input_seq': '20_20_5_5',
-    'pred_seq': '5_10_5_10',
+    'input_seq': '20',
+    'pred_seq': '10',
     'metric': 'l2', #l2 or iou
     'avg_or_max': 'avg', #avg or max
     'errortype': 'error_flattened', #'error_diff' or 'error_summed' or 'error_flattened'

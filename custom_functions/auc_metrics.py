@@ -69,12 +69,12 @@ def anomaly_metric(prob, avg_or_max, pred_trajs, gt_box, vid_loc, frame_loc, per
         std.append( np.std(pred_trajs[same_vid_frame_person].reshape(-1,4), axis=0) ) # Might need to change this for the vertical direction
         # if hyparams['metric'] == 'iou':
         std_iou_or_l2.append(np.std(prob[same_vid_frame_person]))
-        bbox_list.append(np.array(bbox).reshape(-1,4))
         abnormal_ped.append(abnormal_person[same_vid_frame_person][0]) #same person
-        gt.append(np.array(gt_box_temp).reshape(-1))
+        bbox_list.append(np.array(bbox).reshape(-1,4))
+        gt.append(np.array(gt_box_temp).reshape(-1,4))
 
         print('I dont think the gt bbox shape is correct')
-        quit()
+        # quit()
 
 
     out = {}
@@ -172,6 +172,7 @@ def l2_error(testdicts, models, errortype, max1 = None, min1 =None ):
     for pred, true in zip(preds, trues):
         diff = (true-pred)**2
         summed = np.sum(diff, axis =2)
+        summed = np.sqrt(summed)
 
         if errortype == 'error_diff':
             error = np.sum(np.diff(summed, axis =1), axis=1)
@@ -188,14 +189,15 @@ def l2_error(testdicts, models, errortype, max1 = None, min1 =None ):
 
     
     l2_error  = np.concatenate(summed_list)
-    mmin = np.min(summed)
-    mmax = np.max(summed)
+    # mmin = np.min(summed)
+    # mmax = np.max(summed)
 
     
-    l2_norm = (l2_error - mmin)/ (mmax - mmin)
+    # l2_norm = (l2_error - mmin)/ (mmax - mmin)
 
 
-    return l2_norm.reshape(-1,1)
+    # return l2_norm.reshape(-1,1)
+    return l2_error.reshape(-1,1)
 
 
 

@@ -101,14 +101,25 @@ def make_dir(dir_list):
         print('Successfully created the directory {}'.format(   join(os.path.dirname(os.getcwd()),
                                                                 *dir_list) ) )
 
-def main():
-    pass
+
 
 if __name__ =='__main__':
     train_file = loc['data_load'][exp['data']]['train_vid']
     test_file = loc['data_load'][exp['data']]['test_vid']    
-    for vid in sorted(listdir(train_file)):
-        dir_list = ['frames_of_vid', 'train', '{:02d}'.format(int(vid[:-4]))]
+    test = False
+
+    if test:
+        file = test_file
+    else:
+        file = train_file
+
+    for vid in sorted(listdir(file)):
+
+        if test:
+            dir_list = ['frames_of_vid', 'test', '{:02d}'.format(int(vid[:-4]))]
+        else:
+            dir_list = ['frames_of_vid', 'train', '{:02d}'.format(int(vid[:-4]))]
+
         vid_loc = test_file + '/' + vid
 
         make_dir(dir_list)

@@ -285,17 +285,23 @@ def frame_traj_model_auc(model, testdicts, metric, avg_or_max):
     path_list = loc['metrics_path_list'].copy()
     visual_path = loc['visual_trajectory_list'].copy()
     for path in [path_list, visual_path]:
-        path.append('{}_{}_{}_in_{}_out_{}'.format(  loc['nc']['date'],
+        path.append('{}_{}_{}_in_{}_out_{}_{}'.format(  loc['nc']['date'],
                                                         metric,
                                                         avg_or_max, 
                                                         hyparams['input_seq'], 
-                                                        hyparams['pred_seq'] ) )
+                                                        hyparams['pred_seq'],
+                                                        hyparams['errortype'] ) )
     make_dir(path_list)
     plot_loc = join( os.path.dirname(os.getcwd()), *path_list )
 
-    # For visualzing 
-    make_dir(visual_path)
-    visual_plot_loc = join( os.path.dirname(os.getcwd()), *visual_path )
+    # # For visualzing 
+    # # This makes folders for the videos
+    # for i in range(1,22):
+    #     path = visual_path.copy()
+    #     path.append('{:02d}'.format(i))
+    #     make_dir(path)
+
+    # visual_plot_loc = join( os.path.dirname(os.getcwd()), *visual_path )
 
     nc = [  loc['nc']['date'] + '_per_frame',
             loc['nc']['model_name'],
@@ -307,12 +313,9 @@ def frame_traj_model_auc(model, testdicts, metric, avg_or_max):
     
 
 
-        # if index_i == 10:
-        #     break
-
-    # This plots the data for visualizations
-    # pic_loc = loc['data_load']['avenue']['pic_loc_test']
-    # plot_vid( out_frame, pic_loc, visual_plot_loc )
+    # # This plots the data for visualizations
+    # pic_locs = loc['data_load']['avenue']['pic_loc_test']
+    # plot_vid( out_frame, pic_locs, visual_plot_loc )
 
     # quit()
 
@@ -320,30 +323,7 @@ def frame_traj_model_auc(model, testdicts, metric, avg_or_max):
     # print("Number of abnormal people after maxed {}".format(sum(test_auc_frame['y'])))
     print("Number of abnormal people after maxed {}".format(len(np.where(test_auc_frame['y'] == 1 )[0] ) ))
 
-    # helper_TP_TN_FP_FN( datadict = testdict, 
-    #                     traj_model = model, 
-    #                     ped = test_auc_frame, 
-    #                     both=True,
-    #                     max1,
-    #                     min1
-    #                     )
-
-    # # FOR PLOTTING ALL THE DATA
-    # test_auc_frame_all = {}
-    # iou_prob_per_person = np.append(y_pred_per_human.reshape(-1,1), np.arange(0,len(y_pred_per_human)).reshape(-1,1), axis=1)
-    # test_auc_frame_all['x'] = iou_prob_per_person
-    # test_auc_frame_all['y'] = testdict['abnormal_ped_pred'].reshape(-1,1) 
-
-
-    # helper_TP_TN_FP_FN( datadict = testdict, 
-    #                     traj_model = model, 
-    #                     ped = test_auc_frame_all, 
-    #                     both=True
-    #                     )
-
-    # this is for plotting indivual people make into a func
    
-    
 
 
     #### Per bounding box
@@ -655,17 +635,17 @@ def main():
     #     lstm_model = lstm_train(traindict)
 
     #Load Data
-    # pkldict = [load_pkl(loc['pkl_file']['avenue'])]
+    pkldicts = [ load_pkl(loc['pkl_file']['avenue']) ]
 
-    pkldicts = []
-    pkldicts.append(load_pkl(loc['pkl_file']['avenue_template'].format(20,5)))
+    # pkldicts = []
+    # pkldicts.append(load_pkl(loc['pkl_file']['avenue_template'].format(20,5)))
     # pkldicts.append(load_pkl(loc['pkl_file']['avenue_template'].format(20,10)))
     # pkldicts.append(load_pkl(loc['pkl_file']['avenue_template'].format(5,5)))
     # pkldicts.append(load_pkl(loc['pkl_file']['avenue_template'].format(5,10)))
     
 
     # frame_traj_model_auc(lstm_model, testdict, hyparams['metric'], hyparams['avg_or_max'])
-    frame_traj_model_auc('bitrap', pkldicts, hyparams['metric'], hyparams['avg_or_max'])
+    frame_traj_model_auc( 'bitrap', pkldicts, hyparams['metric'], hyparams['avg_or_max'])
     print('Input Seq: {}, Output Seq: {}'.format(hyparams['input_seq'], hyparams['pred_seq']))
     print('Metric: {}, avg_or_max: {}'.format(hyparams['metric'], hyparams['avg_or_max']))
     # Note would need to change mode inside frame_traj

@@ -3696,3 +3696,195 @@ python -m pdb main.py
 python -m pdb main.py 
 python -m pdb main.py 
 python -m pdb main.py 
+clear
+ls
+ls
+cd docker/
+ls
+cd ..
+ls
+cd experiments_code/
+ls
+python -m pdb main.py 
+exit
+cd experiments_code/
+;s
+ls
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+clear
+python main.py 
+ext
+clear
+python main.py 
+python main.py 
+exit
+exit
+clear
+clear
+ls
+cd experiments_code/
+clear
+ls
+clear
+ls
+cd ..
+ls
+cd custom_functions/
+ls
+python -m pdb frames_to_videos_n_back.py 
+python -m pdb frames_to_videos_n_back.py 
+clear
+ls
+python -m pdb frames_to_videos_n_back.py 
+python -m pdb frames_to_videos_n_back.py 
+python -m pdb frames_to_videos_n_back.py 
+python frames_to_videos_n_back.py 
+clear
+python frames_to_videos_n_back.py 
+clear
+ls
+cd ..
+cd experiments_code/
+ls
+python -m pdb main.py 
+tmux
+tmux new-session
+exit
+clear
+ls
+cd experiments_code/
+ls
+python -m pdb main.py 
+clear
+ls
+cd experiments_code/
+ls
+cd clear
+ls
+clear
+python main.py 
+clear
+python main.py 
+clear
+ls
+clear
+ls
+cd experiments_code/
+LS
+Ls
+ls
+clerar
+clear
+ls
+cd custom_functions/
+ls
+python -m pdb iou_utils.py 
+clear
+python -m pdb iou_utils.py 
+python -m pdb iou_utils.py 
+python -m pdb iou_utils.py 
+clear
+python -m pdb iou_utils.py 
+exit
+clear
+ls
+cd custom_functions/
+ls
+python iou_utils.py 
+python iou_utils.py 
+clear
+cd custom_functions/
+ls
+python -m pdb iou_utils.py 
+python -m pdb iou_utils.py 
+python -m pdb iou_utils.py 
+clear
+clear
+python -m pdb iou_utils.py 
+clear
+python -m pdb iou_utils.py 
+python -m pdb iou_utils.py 
+python -m pdb iou_utils.py 
+python ious
+python iou_utils.py 
+python iou_utils.py 
+python -m pdb iou_utils.py 
+clear
+ls
+python 
+clear
+ls
+cd custom_functions/
+ls
+python -m pdb iou_utils.py 
+python -m pdb iou_utils.py 
+clear
+python -m pdb iou_utils.py 
+exit
+clear
+ls
+cd cua
+cd custom_functions/
+ls
+python -m pdb ma
+python -m pdb iou_utils.py 
+clear
+python -m pdb iou_utils.py 
+clear
+ls
+python -m pdb iou_utils.py 
+xlear
+clear
+ls
+python -m pdb iou_utils.py 
+clear
+python iou_utils.py 
+ls
+python -m pdb iou_utils.py 
+python -m pdb iou_utils.py 
+clear
+ls
+python -m pdb iou_utils.py 
+python -m pdb iou_utils.py 
+python -m pdb iou_utils.py 
+python -m pdb iou_utils.py 
+clear
+clear
+ls
+cd custom_functions/
+ls
+clear
+ls
+ls
+python -m pdb iou_utils.py 
+python -m pdb iou_utils.py 
+python -m pdb iou_utils.py 
+clear
+python iou_utils.py 
+python -m pdb iou_utils.py 
+python -m pdb iou_utils.py 
+python -m pdb iou_utils.py 
+python -m pdb iou_utils.py 
+clear
+ls
+python -m pdb iou_utils.py 
+clear
+ls
+python -m pdb iou_utils.py 
+python -m pdb iou_utils.py 
+python -m pdb iou_utils.py 
+clear
+python -m pdb iou_utils.py 
+python -m pdb iou_utils.py 
+python -m pdb iou_utils.py 
+python -m pdb iou_utils.py 
+python -m pdb iou_utils.py 
+python -m pdb iou_utils.py 
+python -m pdb iou_utils.py 
+python -m pdb iou_utils.py 
+python iou_utils.py 
+python -m pdb iou_utils.py 
+python -m pdb iou_utils.py 
