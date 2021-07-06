@@ -75,20 +75,12 @@ def sigmoid(bbox):
     return 1/(1+np.exp(-bbox))
 
 def ciou(bboxes1, bboxes2):
+    
 
     x = xywh_tlbr(bboxes1)
     y = xywh_tlbr(bboxes2)
     I = intersection(x,y)
     Uni = union(x,y)
-
-
-    # How does this block help
-    #########################
-    exchange = False
-    if bboxes1.shape[0] > bboxes2.shape[0]:
-        bboxes1, bboxes2 = bboxes2, bboxes1
-        cious = np.zeros((cols, rows))
-        exchange = True
 
     w1 = bboxes1[..., 2:3]
     h1 = bboxes1[..., 3:4]
@@ -105,21 +97,55 @@ def ciou(bboxes1, bboxes2):
     c_b = np.max((center_y1 + h1 / 2,center_y2 + h2 / 2),  axis=0, keepdims=True)
 
     inter_diag = (center_x2 - center_x1)**2 + (center_y2 - center_y1)**2
-    c_diag = np.clip((c_r - c_l),a_min=0, a_max =10000000)**2 + np.clip((c_b - c_t),a_min=0, a_max =10000000)**2
+    c_diag = np.clip((c_r - c_l),a_min=0, a_max =None)**2 + np.clip((c_b - c_t),a_min=0, a_max =None)**2
 
     
-    u = (inter_diag) / c_diag
-    iou_term = np.divide(I, Uni, where=U>0)
+    u_term = inter_diag.squeeze()/ c_diag.squeeze()
+    iou_term = np.divide(I, Uni, where=Uni>0)
     v = (4 / (np.pi ** 2)) * ((np.arctan(w2 / h2) - np.arctan(w1 / h1))**2)
 
-    S = 0 if iou_term<0.5 else 1
+    S = iou_term>0.5 # the ones greater than 0.5 are the trues which are 1
     alpha= S*v/(1-iou_term+v)
 
-    cious = iou_term - u - alpha * v
-    cious = np.clamp(cious,min=-1.0,max = 1.0)
-    if exchange:
-        cious = cious.T
-    return np.sum(1-cious)
+    # using the metric and not the loss
+    cious = iou_term.squeeze() - u_term.squeeze() - alpha.squeeze() * v.squeeze()
+
+    return cious
+
+
+def diou(bboxes1, bboxes2):
+    
+    x = xywh_tlbr(bboxes1)
+    y = xywh_tlbr(bboxes2)
+    I = intersection(x,y)
+    Uni = union(x,y)
+
+    w1 = bboxes1[..., 2:3]
+    h1 = bboxes1[..., 3:4]
+    w2 = bboxes2[..., 2:3]
+    h2 = bboxes2[..., 3:4]
+    center_x1 = bboxes1[..., 0:1]
+    center_y1 = bboxes1[..., 1:2]
+    center_x2 = bboxes2[..., 0:1]
+    center_y2 = bboxes2[..., 1:2]
+
+    c_l = np.min((center_x1 - w1 / 2,center_x2 - w2 / 2),  axis=0, keepdims=True)
+    c_r = np.max((center_x1 + w1 / 2,center_x2 + w2 / 2),  axis=0, keepdims=True)
+    c_t = np.min((center_y1 - h1 / 2,center_y2 - h2 / 2),  axis=0, keepdims=True)
+    c_b = np.max((center_y1 + h1 / 2,center_y2 + h2 / 2),  axis=0, keepdims=True)
+
+    inter_diag = (center_x2 - center_x1)**2 + (center_y2 - center_y1)**2
+    c_diag = np.clip((c_r - c_l),a_min=0, a_max =None)**2 + np.clip((c_b - c_t),a_min=0, a_max =None)**2
+
+    
+    u_term = inter_diag.squeeze()/ c_diag.squeeze()
+    iou_term = np.divide(I, Uni, where=Uni>0)
+
+
+    # using the metric and not the loss                                                                                                                                                                                                                                                                                                                                                                                             
+    dious = iou_term.squeeze() - u_term.squeeze() 
+
+    return dious
 
 
 
@@ -128,10 +154,13 @@ if __name__ == '__main__':
     # gt =xywh_tlbr(pkldicts['y_ppl_box'][0:1])
     # pred = xywh_tlbr(pkldicts['pred_trajs'][0:1])
 
-    gt = pkldicts['y_ppl_box'][0:1]
-    pred = pkldicts['pred_trajs'][0:1]
+    gt = pkldicts['y_ppl_box']
+    pred = pkldicts['pred_trajs']
     # gt[0][0] = np.array([477, 114, 511,237])
     # pred[0][0] = np.array([477.41, 112.95, 512.34,237.22])
+    gt[0][0] = np.array([494, 175.5, 34, 123])
+    pred[0][0] = np.array([494.875, 175.085, 34.93, 124.27])
+
     ciou(gt, pred)
     # gious = giou(gt, pred)
     # ious = bb_intersection_over_union_np(gt, pred)

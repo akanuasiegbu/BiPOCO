@@ -15,7 +15,7 @@ from coordinate_change import xywh_tlbr, tlbr_xywh
 from TP_TN_FP_FN import *
 from load_data import norm_train_max_min, load_pkl
 from load_data_binary import compute_iou
-
+from custom_functions.iou_utils import giou, diou, ciou
 
 
 
@@ -73,7 +73,7 @@ def anomaly_metric(prob, avg_or_max, pred_trajs, gt_box, vid_loc, frame_loc, per
         bbox_list.append(np.array(bbox).reshape(-1,4))
         gt.append(np.array(gt_box_temp).reshape(-1,4))
 
-        print('I dont think the gt bbox shape is correct')
+        # print('I dont think the gt bbox shape is correct')
         # quit()
 
 
@@ -93,7 +93,7 @@ def anomaly_metric(prob, avg_or_max, pred_trajs, gt_box, vid_loc, frame_loc, per
     return out
 
 
-def iou_as_probability(testdicts, models, max1 =None, min1 =None):
+def iou_as_probability(testdicts, models, errortype, max1 =None, min1 =None):
     """
     Note that to make abnormal definition similar to orgininal definition
     Need to switch ious because low iou indicates abnormal and high 
@@ -106,7 +106,7 @@ def iou_as_probability(testdicts, models, max1 =None, min1 =None):
     # model here is lstm model
     # need to normalize because lstm expects normalized
     if models =='bitrap':
-        iou = []
+        ious = []
         for testdict in testdicts:
             y = testdict['y_ppl_box'] # this is the gt 
             # gt_bb_unorm_tlbr = xywh_tlbr(np.squeeze(y))
@@ -115,14 +115,12 @@ def iou_as_probability(testdicts, models, max1 =None, min1 =None):
             iou = bb_intersection_over_union_np(    predicted_bb_unorm_tlbr,
                                                     gt_bb_unorm_tlbr )
             # need to squeeze to index correctly 
-            iou.append(np.squeeze(iou))
+            ious.append(np.squeeze(iou))
         
-        iou  = np.concatenate(iou)
+        iou  = np.concatenate(ious)
 
     else:
-        print('CHECK CODE BELOW TO MAKE SURE THEN REMOVE THE QUIT')
-        quit()
-        iou = []
+        ious = []
         for testdict, model in zip(testdicts, models):
         # Need to fix this for lstm network
             x,y = norm_train_max_min(   testdict,
@@ -132,12 +130,20 @@ def iou_as_probability(testdicts, models, max1 =None, min1 =None):
                                         min1 = min1
                                         )
 
-            iou.append(compute_iou(x, y, max1, min1,  model))
-            iou = np.concatenate(iou)
+            ious.append(compute_iou(x, y, max1, min1,  model))
+            iou = np.concatenate(ious)
 
     iou_prob =  1 - iou
 
-    return  iou_prob.reshape(-1,1)
+
+    if errortype == 'error_diff':
+        output = np.sum(np.diff(iou_prob, axis =1), axis=1)
+    elif errortype == 'error_summed':
+        output = np.sum(iou_prob, axis=1)
+    elif errortype == 'error_flattened':
+        output = iou_prob.reshape(-1,1)
+
+    return  output
 
 
 
@@ -182,9 +188,7 @@ def l2_error(testdicts, models, errortype, max1 = None, min1 =None ):
             error = summed.reshape(-1,1)
 
         summed_list.append(error)
-
-
-        
+   
         
 
     
@@ -200,8 +204,94 @@ def l2_error(testdicts, models, errortype, max1 = None, min1 =None ):
     return l2_error.reshape(-1,1)
 
 
+def giou_as_metric(testdicts, models, errortype, max1 = None, min1 =None):
+    # giou expects tlbr
+    # Fliped 
+    if models =='bitrap':
+        gious = []
+        for testdict in testdicts:
+            gt_bb = xywh_tlbr(testdict['y_ppl_box'])
+            predicted_bb = xywh_tlbr(testdict['pred_trajs'])
+            gious_temp = giou( gt_bb, predicted_bb)
 
-def combine_time(testdicts, errortype, models='bitrap', max1 =None, min1 = None):
+            # need to squeeze to index correctly 
+            gious.append(np.squeeze( 1- gious_temp)) #######################
+        
+        gious  = np.concatenate(gious)
+
+
+    # Need to add the LSTM part here
+
+    if errortype == 'error_diff':
+        output = np.sum(np.diff(gious, axis =1), axis=1)
+    elif errortype == 'error_summed':
+        output = np.sum(gious, axis=1)
+    elif errortype == 'error_flattened':
+        output = gious.reshape(-1,1)
+
+    
+    return output
+
+def ciou_as_metric(testdicts, models, errortype, max1 = None, min1 =None):
+    # flipped
+    if models =='bitrap':
+        cious = []
+    for testdict in testdicts:
+        gt_bb = testdict['y_ppl_box']
+        predicted_bb = testdict['pred_trajs']
+        cious_temp = ciou( gt_bb, predicted_bb)
+
+        # need to squeeze to index correctly 
+        cious.append(np.squeeze(1-cious_temp)) ###########################3
+
+    cious  = np.concatenate(cious)
+
+
+    # Need to add the LSTM part here
+
+    if errortype == 'error_diff':
+        output = np.sum(np.diff(cious, axis =1), axis=1)
+    elif errortype == 'error_summed':
+        output = np.sum(cious, axis=1)
+    elif errortype == 'error_flattened':
+        output = cious.reshape(-1,1)
+
+    
+    return output
+
+
+
+def diou_as_metric(testdicts, models, errortype, max1 = None, min1 =None):
+    # Needs it in xywh form
+    # Subtracred one to turn them into probablity of sort 
+    if models =='bitrap':
+        dious = []
+    for testdict in testdicts:
+        gt_bb = testdict['y_ppl_box']
+        predicted_bb = testdict['pred_trajs']
+        dious_temp = diou( gt_bb, predicted_bb)
+
+        # need to squeeze to index correctly 
+        dious.append(np.squeeze(1-dious_temp))
+
+    dious  = np.concatenate(dious)
+
+
+    # Need to add the LSTM part here
+
+    if errortype == 'error_diff':
+        output = np.sum(np.diff(dious, axis =1), axis=1)
+    elif errortype == 'error_summed':
+        output = np.sum(dious, axis=1)
+    elif errortype == 'error_flattened':
+        output = dious.reshape(-1,1)
+
+    
+    return output
+
+
+
+def combine_time(testdicts, models, errortype, modeltype='bitrap', max1 =None, min1 = None):
     
     
     vid_loc, person_id, frame_loc, abnormal_gt_frame, abnormal_event_person, gt_bbox, pred_trajs = [],[],[],[],[], [],[]
@@ -230,7 +320,7 @@ def combine_time(testdicts, errortype, models='bitrap', max1 =None, min1 = None)
                 vid_loc.append(np.repeat(vid,testdict['y_ppl_box'].shape[1]))
 
 
-        if models =='bitrap':
+        if modeltype =='bitrap':
             if errortype =='error_diff' or errortype == 'error_summed':
                 pred_trajs.append(testdict['pred_trajs'] )
             elif errortype == 'error_flattened':

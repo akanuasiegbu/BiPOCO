@@ -8,6 +8,7 @@ exp = { '1': False,
         'data': 'avenue', #st, avenue,hr-st
         'data_consecutive': True,
         'model_name': 'bitrap', #lstm_network, bitrap, bitrap_640_360
+        'K': 1
         }
 
 
@@ -17,11 +18,11 @@ hyparams = {
     'buffer_size': 10000,
  
     'frames': 5,
-    'input_seq': '20',
-    'pred_seq': '10',
-    'metric': 'l2', #l2 or iou
+    'input_seq': 5,
+    'pred_seq': 5,
+    'metric': 'giou', #giou,l2, ciou diou,iou
     'avg_or_max': 'avg', #avg or max
-    'errortype': 'error_flattened', #'error_diff' or 'error_summed' or 'error_flattened'
+    'errortype': 'error_summed', #'error_diff' or 'error_summed' or 'error_flattened'
 
     'to_xywh': True, # This is assuming file is in tlbr format
     # 'max':913.0, # wonder better way to pick
@@ -143,9 +144,17 @@ loc =  {
             },
     
     'pkl_file':{
-        'avenue': "/home/akanu/output_bitrap/avenue/gaussian_avenue_in_{}_out_{}.pkl".format(hyparams['input_seq'],
-                                                                                             hyparams['pred_seq']),
-        'avenue_template': "/home/akanu/output_bitrap/avenue/gaussian_avenue_in_{}_out_{}.pkl",
+        'avenue': "/home/akanu/output_bitrap/avenue_unimodal/gaussian_avenue_in_{}_out_{}_K_{}.pkl".format(hyparams['input_seq'],
+                                                                                             hyparams['pred_seq'],
+                                                                                             exp['K']),
+        'avenue_template': "/home/akanu/output_bitrap/avenue_unimodal/gaussian_avenue_in_{}_out_{}_K_{}.pkl",
+
+        'st': "/home/akanu/output_bitrap/st_unimodal/gaussian_st_in_{}_out_{}_K_{}.pkl".format(hyparams['input_seq'],
+                                                                                             hyparams['pred_seq'],
+                                                                                             exp['K']),
+
+        'st_template': "/home/akanu/output_bitrap/st_unimodal/gaussian_st_in_{}_out_{}_K_{}.pkl"
+                                                                                             
                                     
     }
 

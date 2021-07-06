@@ -3888,3 +3888,559 @@ python -m pdb iou_utils.py
 python iou_utils.py 
 python -m pdb iou_utils.py 
 python -m pdb iou_utils.py 
+clear
+ls
+cd output_bitrap/
+ls
+cd avenue
+cd ..
+cd avenue_unimodal/
+ls
+pwd
+ls
+ls
+cd ~
+ls
+cd experiments_code/
+ls
+python -m pdb main.py 
+exit
+cler
+clear
+ls
+clear
+ls
+cd experiments_code/
+ls
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+clear
+ls
+ls
+clear
+cd experiments_code/
+ls
+clear
+python
+clear
+ls
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python main.py 
+python -m pdb main.py 
+python main.py 
+python -m pdb main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+clear
+python main.py 
+python main.py 
+python main.py 
+clear
+ls
+cd custom_functions/
+ls
+python -m pdb iou_utils.py 
+python -m pdb iou_utils.py 
+python -m pdb iou_utils.py 
+python -m pdb iou_utils.py 
+python -m pdb iou_utils.py 
+python -m pdb iou_utils.py 
+python -m pdb iou_utils.py 
+python -m pdb iou_utils.py 
+clear
+ls
+clear
+ls
+cd experiments_code/
+ls
+ls
+clear
+ls
+ls
+cd ..
+ls
+cd custom_functions/
+ls
+python -m pdb iou_utils.py 
+python -m pdb iou_utils.py 
+python -m pdb iou_utils.py 
+clear
+ls
+clear
+ls
+ls
+ls
+clear
+ls
+ls
+clear
+ls
+python -m pdb iou_utils.py 
+python -m pdb iou_utils.py 
+clear
+python -m pdb iou_utils.py 
+python -m pdb iou_utils.py 
+clear
+ls
+python -m pdb iou_utils.py 
+python -m pdb iou_utils.py 
+clear
+ls
+python -m pdb iou_utils.py 
+exit
+exit
+clear
+ls
+nvidia-smi
+ls
+cd experiments_code/
+LS
+ls
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+clear
+clear
+clear
+python main.py 
+clear
+python -m pdb main.py 
+clear
+python -m pdb main.py 
+python main.py 
+clear
+python main.py 
+python main.py 
+python -m pdb main.py 
+python main.py 
+python main.py 
+clear
+ls
+clear
+python main.py 
+clear
+python main.py 
+clear
+ls
+ls
+python main.py 
+clar
+python main.py 
+clear
+;s
+ls
+clear
+python main.py 
+clear
+python main.py 
+python main.py 
+clear
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+cler
+clear
+python main.py 
+python main.py 
+clear
+python main.py 
+python main.py 
+clear
+ls
+clear
+python tra
+clear
+python main.py 
+python main.py 
+clear
+python main.py 
+python main.py 
+clear
+cd experiments_code/
+ls
+python main.py 
+clear
+ls
+clear
+ls
+python main.py 
+python main.py 
+clear
+python main.py 
+python main.py 
+clear
+python main.py 
+clear
+python main.py 
+python main.py 
+python main.py 
+clear
+python main.py 
+python main.py 
+clear
+ls
+cd experiments_code/
+ls
+python main.py 
+clear
+ls
+clear
+python main.py 
+clear
+python main.py 
+python main.py 
+clar
+clear
+python main.py 
+clear
+exit
+clear
+cd experiments_code/
+ls
+python main.py 
+clear
+python main.py 
+python main.py 
+exit
+clear
+cler
+clear
+ls
+clear
+clear
+ls
+cd experiments_code/
+ls
+python main.py 
+python main.py 
+clear
+ls
+clear
+ls
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+clear
+python main.py 
+python main.py 
+cllear
+python main.py 
+python main.py 
+python main.py 
+clear
+ls
+python main.py 
+python main.py 
+clear
+python main.py 
+python main.py 
+clearf
+clear
+ls
+cd ..
+ls
+cd docker/
+ls
+cd ..
+ls
+cd output_bitrap/
+ls
+clear
+ls
+tmux attach-session -t 0
+exit
+clear
+clear
+ls
+cd experiments_code/
+ls
+ls
+python main.py 
+python main.py 
+python iou
+python main.py 
+clear
+ls
+clear
+python main.py 
+clear
+python main.py 
+python main.py 
+clear
+ls
+clear
+python main.py 
+clear
+ls
+exit
+clear
+ls
+clear
+cd experiments_code/
+ls
+clear
+python main.py 
+python main.py 
+clear
+ls
+cd experiments_code/
+ls
+python main.py 
+python main.py 
+python main.py 
+clear
+cd experiments_code/
+ls
+python -m pdb main.py 
+clear
+python main.py 
+python main.py 
+python main.py 
+clear
+python main.py 
+python main.py 
+clear
+python main.py 
+python main.py 
+clear
+python main.py 
+python main.py 
+clear
+python main.py 
+python main.py 
+clear
+python main.py 
+python main.py 
+clear
+clear
+python main.py 
+python main.py 
+clear
+python main.py 
+python main.py 
+clear
+python main.py 
+python main.py 
+clear
+python main.py 
+python main.py 
+clear
+python main.py 
+cd experiments_code/
+ls
+clear
+python main.py 
+ls
+cd ..
+ls
+cd output_bitrap/
+ls
+cd st_unimodal/
+ls
+clear
+ls
+clear
+cd ~
+ls
+cd experiments_code/
+clear
+python main.py 
+clear
+python main.py 
+clear
+python main.py 
+clear
+python main.py 
+clear
+python main.py 
+clear
+python main.py 
+clear
+python main.py 
+clear
+python main.py 
+cleara
+clear
+python main.py 
+clear
+ls
+cd docker/
+cd ..
+ls
+cd experiments_code/
+ls
+python main.py 
+python main.py 
+clear
+python main.py 
+python main.py 
+clear
+python main.py 
+python main.py 
+cclear
+clear
+python main.py 
+python main.py 
+clear
+python main.py 
+python main.py 
+clear
+clear
+python main.py 
+python main.py 
+clear
+clear
+python  main.py 
+python  main.py 
+clear
+ls
+clear
+ls
+clear
+python main.py 
+python main.py 
+clear
+python main.py 
+python main.py 
+clear
+python main.py 
+python main.py 
+c;ear
+clear
+ls
+clear
+exit
+clear
+clear
+ls
+cleear
+clear
+ls
+exot
+exit
+exit
+exit
+exit
+clear
+ls
+cd ..
+exit
+clear
+clear
+ls
+cd experiments_code/
+ls
+ls
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python main.py 
+clear
+ls
+cd experiments_code/
+ls
+ls
+ls
+python -m pdb main.py 
+python -main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+clear
+python main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python main.py 
+clear
+clear
+cd experiments_code/
+ls
+python main.py 
+python main.py 
+python main.py 
+clear
+python -m pdb main.py 
+python -m pdb main.py 
+python main.py 
+clear
+exit
+clear
+cd experiments_code/
+python main.py 
+python -m pdb main.py 
+python main.py 
+python -m pdb main.py 
+python main.py 
+eixt
+exit
+clear
+cd experiments_code/
+ls
+python main.py 
+python main.py 
+clear
+python -m pdb main.py 
+python -m pdb main.py 
+python main.py 
+python main.py 
+python main.py 
+clear
+python main.py 
+python -m pdb  main.py 
+nvidia-smi
+clear
+cd experiments_code/
+ls
+python -m pdb main.py
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python main.py 
+python main.py 
+python main.py 
+clear
+python main.py 
+python main.py 
+clear
+python main.py n
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+clear
+python main.py 
+python main.py 
+clear
+python main.py 
+exit
+clear
+cklear
+clear
+ls
+cd experiments_code/
+python main.py 
+clear
+ls
+exit

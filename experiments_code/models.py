@@ -27,7 +27,7 @@ def lstm_network(train_data, val_data, model_loc, nc,  epochs=300):
     with tf.device('/device:GPU:0'):
         lstm_20 = keras.Sequential()
         lstm_20.add(keras.layers.InputLayer(
-            input_shape=(hyparams['frames'], 4)))
+            input_shape=(hyparams['input_seq'], 4)))
         lstm_20.add(keras.layers.LSTM(4, return_sequences=True))
         lstm_20.add(keras.layers.LSTM(3, return_sequences=True))
         lstm_20.add(keras.layers.LSTM(6, return_sequences=True))
