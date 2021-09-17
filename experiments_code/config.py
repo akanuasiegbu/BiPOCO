@@ -8,7 +8,8 @@ exp = { '1': False,
         'data': 'avenue', #st, avenue,hr-st
         'data_consecutive': True,
         'model_name': 'bitrap', #lstm_network, bitrap, bitrap_640_360
-        'K': 1
+        'K': 1,
+        'plot_images':True
         }
 
 
@@ -18,11 +19,11 @@ hyparams = {
     'buffer_size': 10000,
  
     'frames': 5,
-    'input_seq': 5,
-    'pred_seq': 5,
-    'metric': 'giou', #giou,l2, ciou diou,iou
+    'input_seq':25,
+    'pred_seq':25,
+    'metric': 'l2', #giou,l2, ciou diou,iou
     'avg_or_max': 'avg', #avg or max
-    'errortype': 'error_summed', #'error_diff' or 'error_summed' or 'error_flattened'
+    'errortype': 'error_flattened', #'error_diff' or 'error_summed' or 'error_flattened'
 
     'to_xywh': True, # This is assuming file is in tlbr format
     # 'max':913.0, # wonder better way to pick
@@ -88,7 +89,7 @@ if exp['data_consecutive']:
     if exp['model_name'] == 'bitrap' or exp['model_name'] == 'bitrap_640_360' or exp['model_name'] == 'bitrap_1080_1020':
          model_path_list = ['results_all_datasets', 'experiment_{}'.format(name_exp), 'saved_model_consecutive']
          metrics_path_list = ['results_all_datasets', 'experiment_{}'.format(name_exp), 'metrics_plot_consecutive_bitrap']
-         visual_trajectory_list = ['results_all_datasets', 'experiment_{}'.format(name_exp), 'visual_trajectory_consecutive_bitrap', '{}_{}_{}_{}_{}'.format(date, exp['data'], time, hyparams['input_seq'], hyparams['pred_seq'])]
+         visual_trajectory_list = ['results_all_datasets', 'experiment_{}'.format(name_exp), 'visual_trajectory_consecutive_bitrap', '{}_{}_{}_{}'.format(date, exp['data'], hyparams['input_seq'], hyparams['pred_seq'])]
 
 else:
     model_path_list = ['results_all_datasets', 'experiment_{}'.format(name_exp), 'saved_model']
@@ -134,6 +135,7 @@ loc =  {
                 "test_file": "/mnt/roahm/users/akanu/projects/anomalous_pred/output_deepsort/st/test_txt/",
                 'train_vid': '/mnt/workspace/datasets/shanghaitech/training/videos',
                 'test_vid':  '/mnt/roahm/users/akanu/projects/Deep-SORT-YOLOv4/tensorflow2.0/deep-sort-yolov4/input_video/st_test',
+                'pic_loc_test':'/mnt/workspace/datasets/shanghaitech/testing/frames'
                 },
             'hr-st':{
                 'train_file':"/mnt/roahm/users/akanu/projects/anomalous_pred/output_deepsort/HR-ShanghaiTech/train_txt/",

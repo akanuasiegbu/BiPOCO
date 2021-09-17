@@ -12,7 +12,7 @@ import numpy as np
 
 def loss_plot(history, plot_loc, nc, save_wandb):
     """
-    history:  trained model with details for plots
+    history:  trained model with details for plots.
     plot_loc: directory to save images for metrics 
     nc: naming convention
     """
@@ -169,3 +169,138 @@ def plot_iou(prob_iou, gt_label, xlabel, ped_type, plot_loc, nc, ylabel, title, 
 
 
 
+def make_plots(test_auc_frame, nc, plot_loc):
+    visual_path = loc['visual_trajectory_list'].copy()
+
+    
+    print("Number of abnormal people after maxed {}".format(len(np.where(test_auc_frame['y'] == 1 )[0] ) ))
+
+   
+
+
+    #### Per bounding box
+    nc_per_human = nc.copy()
+    nc_per_human[0] = loc['nc']['date'] + '_per_bounding_box'
+    # y_pred_per_human = iou_as_probability(testdict, model)
+
+    # abnormal_index = np.where(testdict['abnormal_ped_pred'] == 1)
+    # normal_index = np.where(testdict['abnormal_ped_pred'] == 0)
+    
+    abnormal_index = np.where(test_auc_frame['y_pred_per_human'] == 1)[0]
+    normal_index = np.where(test_auc_frame['y_pred_per_human'] == 0)[0]
+    
+    abnormal_index_frame = np.where(test_auc_frame['y'] == 1)[0]
+    normal_index_frame = np.where(test_auc_frame['y'] == 0)[0]
+    
+    if metric == 'iou':
+        ylabel = '1-IOU'
+
+    elif metric == 'l2':
+        ylabel = 'L2 Error'
+
+    elif metric =='giou':
+        ylabel ='giou'
+
+    elif metric =='ciou':
+        ylabel = 'ciou'
+
+    elif metric =='diou':
+        ylabel = 'diou'
+
+    index = [abnormal_index, normal_index]
+    ped_type = ['abnormal_ped', 'normal_ped']
+    xlabel = ['Detected Abnormal Pedestrains', 'Detected Normal Pedestrains']
+    titles =['Abnormal', 'Normal']
+
+
+    ##############
+    # # DELETE OR MOVE TO A Different place
+    index = [abnormal_index_frame, normal_index_frame ]
+    xlabel = ['Abnormal Frames', 'Detected Normal Frames']
+    ped_type = ['abnormal_ped_frame', 'normal_ped_frame']
+    wandb_name = ['rocs', 'roc_curve']
+    
+    y_true = test_auc_frame['y']
+    y_pred = test_auc_frame['x']
+
+    # Uncomment to make iou plots
+    ################################################
+
+    for indices, ped_, x_lab, title in zip(index, ped_type, xlabel, titles ):
+        plot_iou(   prob_iou = test_auc_frame['x_pred_per_human'][indices],
+                    gt_label = test_auc_frame['y_pred_per_human'][indices],
+                    xlabel = x_lab,
+                    ped_type = ped_,
+                    plot_loc = plot_loc,
+                    nc = nc_per_human,
+                    ylabel = ylabel,
+                    title = title
+                    )        
+    # xlabel = ['Detected Abnormal Pedestrains', 'Detected Normal Pedestrains']
+    index = [abnormal_index_frame, normal_index_frame ]
+    xlabel = ['Abnormal Frames', 'Detected Normal Frames']
+    ped_type = ['abnormal_ped_frame', 'normal_ped_frame']
+
+    for indices, ped_, x_lab, title in zip(index, ped_type, xlabel, titles ):
+        plot_iou(   prob_iou = np.sum(test_auc_frame['std_per_frame'][indices], axis = 1),
+                    gt_label = test_auc_frame['y'][indices],
+                    xlabel = x_lab,
+                    ped_type = '{}_std'.format(ped_),
+                    plot_loc = plot_loc,
+                    nc = nc,
+                    ylabel = 'Standard Deviation Summed',
+                    title = title
+                    )
+
+    for indices, ped_, x_lab, title in zip(index, ped_type, xlabel, titles ):
+        for i, axis in zip(range(0,4), ['Mid X', 'Mid Y', 'W', 'H']):
+            plot_iou(   prob_iou = test_auc_frame['std_per_frame'][indices][:,i],
+                        gt_label = test_auc_frame['y'][indices],
+                        xlabel = x_lab,
+                        ped_type = '{}_std_axis_{}'.format(ped_, i),
+                        plot_loc = plot_loc,
+                        nc = nc,
+                        ylabel = 'Standard Deviation {}'.format(axis),
+                        title = '{}_axis_{}'.format(title, i)
+                        )
+
+    for indices, ped_, x_lab, title in zip(index, ped_type, xlabel, titles ):
+        plot_iou(   prob_iou = test_auc_frame['std_iou_or_l2_per_frame'][indices],
+                    gt_label = test_auc_frame['y'][indices],
+                    xlabel = x_lab,
+                    ped_type = '{}_std_{}'.format(ped_, hyparams['metric']),
+                    plot_loc = plot_loc,
+                    nc = nc,
+                    ylabel = 'Standard Deviation {}'.format(hyparams['metric']),
+                    title = title 
+                    )
+
+
+    for indices, ped_, x_lab, title in zip(index, ped_type, xlabel, titles ):
+        plot_iou(   prob_iou = test_auc_frame['x'][indices],
+                    gt_label = test_auc_frame['y'][indices],
+                    xlabel = x_lab,
+                    ped_type = ped_,
+                    plot_loc = plot_loc,
+                    nc = nc,
+                    ylabel = ylabel,
+                    title = title
+                    )        
+
+                
+
+    
+    ###################################################
+    # This is where the ROC Curves are plotted 
+    wandb_name = ['rocs', 'roc_curve']
+    
+    y_true = test_auc_frame['y']
+    y_pred = test_auc_frame['x']
+
+    # y_true_per_human = testdict['abnormal_ped_pred']
+    y_true_per_human = test_auc_frame['y_pred_per_human']
+    y_pred_per_human = test_auc_frame['x_pred_per_human']
+    # Might have a problem here in wandb if tried running and saving 
+    #####################################################################
+    roc_plot( y_true_per_human, y_pred_per_human, plot_loc, nc_per_human, wandb_name)
+    roc_plot( y_true, y_pred, plot_loc, nc, wandb_name)

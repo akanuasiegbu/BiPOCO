@@ -4444,3 +4444,804 @@ python main.py
 clear
 ls
 exit
+nvidia-smi
+clear
+ls
+cd experiments_code/
+ls
+pwd
+cd ..
+ls
+cd results_all_datasets/
+ls
+cd experiment_traj_model/
+ls
+cd saved_model_consecutive/
+ls
+pwd
+clear
+cd ..
+ls
+cd .,
+cd ..
+cd ~
+ls
+cd experiments_code/
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+clear
+python main.py 
+clear
+python -m pdb main.py 
+clear
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python main.py 
+python main.py 
+clear
+python main.py 
+cd experiments_code/
+ls
+python main.py 
+
+python main.py 
+python main.py 
+exit
+cler
+cler
+clear
+ls
+cd experiments_code/
+python main.py 
+clear
+cd experiments_code/ 
+ls
+python -m pdb main.py 
+cd experiments_code/
+ls
+python -m pdb main.py 
+clear
+ls
+ls
+cd experiments_code/
+LS
+ks
+ls
+python -m pdb main.py 
+python -m pdb main.py 
+clear
+python -m pdb main.py 
+clear
+python -m pdb main.py 
+python main.py 
+clear
+python main.py 
+clear
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+clear
+ls
+cd experiments_code/
+python main.py 
+python main.py 
+python main.py 
+python -m pdb main.py 
+python main.py 
+exit
+exit
+clear
+ls
+cd experiments_code/
+ls
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+clear
+python main.py 
+python main.py 
+exit
+clear
+ls
+nvidia-
+nvidia-smi
+clear
+ls
+cd experiments_code/
+ls
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+exit
+clear
+cd experiments_code/
+python main.py 
+python main.py 
+clear
+python main.py 
+clear
+ls
+clear
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+clear
+python main.py 
+cd /home/akanu/output_bitrap/
+ls
+cd st_unimodal/
+ls
+clear
+cd ~
+ls
+cd docker/
+ls
+cd ex
+cd ~
+ls
+cd experiments_code/
+ls
+python main.py 
+python main.py 
+python main.py 
+clear
+python main.py 
+clear
+python main.py 
+python -m pdb main.py 
+python main.py 
+clear
+ls
+clear
+clear
+python main.py 
+clear
+cler
+cler
+clear
+python main.py 
+clear
+ls
+python main.py 
+python main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+clear
+python main.py 
+python main.py 
+clear
+clear
+python main.py 
+clear
+python main.py 
+clear
+ls
+python main.py 
+python main.py 
+clear
+python main.py 
+clear
+ls
+clear
+ls
+python main.py 
+clear
+python main.py 
+clear
+python main.py 
+clear
+python main.py 
+c;ear
+clear
+ls
+ls
+exit
+clear
+ls
+ls
+cd results_all_datasets/
+ls
+cd experiment_
+cd experiment_traj_model/
+ls
+cd visual_trajectory_consecutive_bitrap/
+k
+ls
+cd 07_14_2021_st_3_3/
+ls
+cd 07_14_2021_st_in_3_out_3_K_1/
+ls
+cd 07_14_2021_giou_avg_in_3_out_3_error_summed/
+ls
+ls -la
+exot
+exit
+clear
+ls
+cd experiments_code/
+ls
+python main.py 
+clear
+python main.py 
+python -m pdb main.py 
+clear
+python main.py 
+exit
+clear
+nvidia-smi
+exit
+python ma
+cd experiments_code/
+python main.py 
+python main.py 
+/mnt/workspace/datasets/shanghaitech/testing/frames
+cd ..
+cd /mnt
+cd /mnt/workspace/datasets/shanghaitech/testing/frames
+pwd
+ls
+cd 01_0014
+ls
+000.jpg
+000.gp
+cd ~
+clear
+cd 
+ls
+cd experiments_code/
+;s
+ls
+python main.py 
+python -m pdbmain.py 
+python -m pdb main.py 
+python main.py 
+python -m pdb main.py 
+python main.py 
+clear
+python main.py 
+clear
+ls
+python -m pdb main.py 
+python main.py 
+python -m pdb main.py 
+python main.py 
+python main.py 
+clear
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python main.py 
+clear
+python main.py 
+clear
+python main.py 
+clear
+python main.py 
+clear
+python main.py 
+clear
+ls
+python main.py 
+exit
+clear
+cd experiments_code/
+ls
+python main.py 
+cler
+ls
+clear
+clear
+clear
+ls
+python main.py 
+clear
+ls
+python main.py 
+python main.py 
+clear
+ls
+clear
+python main.py 
+clear
+python main.py 
+exit
+clear
+ls
+cd experiments_code/
+python main.py 
+clear
+ls
+clear
+nvidia-smi
+clear
+python main.py 
+clear
+python main.py 
+python main.py 
+exit
+clear
+ls
+nvidia-smi
+clear
+ls
+cd experiments_code/
+ls
+clear
+python main.py 
+clear
+ls
+clear
+python main.py 
+clear
+python main.py 
+python main.py 
+exit
+nvidia-smi
+clear
+cd experiments_code/
+python main.py 
+exit
+nvidia-smi
+nvidia-smi
+nvidia-smi
+cd experiments_code/
+ls
+python main.py 
+exit
+nvidia-smi 
+clear
+ls
+cd experiments_code/
+python main.py 
+ clear
+python main.py 
+clea
+clear
+python main.py 
+exit
+nvidia-smi
+clear
+ls
+clear
+cd experiments_code/
+python main.py 
+clear
+python main.py 
+exit
+clear
+ls
+cd experiments_code/
+ls
+python main.py 
+clear
+python main.py 
+clear
+python main.py 
+clear
+python main.py 
+clear
+python main.py 
+python -m pdb main.py 
+exit
+nvidia-smi
+who
+exit
+cleara
+clear
+ls
+nvidia-smi
+claer
+clear
+cd experiments_code/
+ls
+python main.py 
+clear
+python main.py 
+clear
+ls
+python main.py 
+who
+ls
+nvidia-smi
+clear
+ls
+cls
+ls
+clear
+ls
+cd experiments_code/
+ls
+clear
+ls
+clea
+clear
+lls
+ls
+clear
+ls
+clear
+ls
+clear
+ls
+clear
+ls
+clear
+clear
+;s
+ls
+python -m pdb main.py 
+clear
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+clear
+python -m pdb main.py 
+python main.py 
+python -m pdb main.py 
+clear
+ls
+clear
+ls
+clear
+ls
+clear
+ls
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+clear
+python main.py 
+clear
+python main.py 
+clear
+python main.py 
+clear
+python main.py 
+clear
+ls
+cd experiments_code/
+ls
+python main.py 
+clear
+ls
+cd experiments_code/
+python main.py 
+clear
+ls
+cd experiments_code/
+clear
+python main.py 
+ckear
+clear
+clear
+cd experiments_code/
+ls
+python main.py 
+clear
+python main.py 
+clear
+clear
+cd experiments_code/
+ls
+python main.py 
+clear
+ls
+cd experiments_code/
+ls
+python python main.py 
+python main.py 
+nvidia-smi
+exit
+exit
+clear
+ls
+nvidia-smi
+clear
+ls
+cd experiments_code/
+clear
+ls
+python -m pdb main.py 
+clear
+python -m pdb main.py 
+python main.py 
+clear
+cd experiments_code/
+ls
+clear
+python -m pdb main.py 
+clear
+clear
+ls
+nvidia-smi
+clear
+cd experiments_code/
+ls
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+exit
+clear
+c;ear
+clear
+cd experiments_code/
+ls
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+clear
+ls
+cd experiments_code/
+ls
+python main.py 
+python main.py 
+python main.py 
+cleaqr
+clear
+ls
+cd experiments_code/
+ls
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+clear
+python main.py 
+python main.py 
+clear
+ls
+cd experiments_code/
+ls
+c;ear
+clear
+python main.py 
+clear
+python main.py 
+exit
+clear
+ls
+clear
+ls
+cd experiments_code/
+ls
+python main.py 
+clear
+ls
+ls
+clear
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+clear
+ls
+python main.py 
+exit
+clear
+cd ex
+cd experiments_code/
+python main.py 
+clear
+python main.py 
+clear
+exit
+clear
+ls
+ls
+cd experiments_code/
+ls
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+clear
+ls
+cd experiments_code/
+python main.py 
+exit
+clear
+cd experiments_code/
+ls
+python -m pdb main.py 
+python -m pdb main.py 
+clear
+ks
+clear
+python main.py 
+exit
+python 
+pip install more_itertools
+clear
+ls
+cd experiments_code/
+ls
+python -m pdb main.py 
+python -m pdb main.py 
+python main.py 
+python -m pdb main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+exit
+ls
+ls
+cd experiments_code/
+;s
+ls
+python main.py 
+python main.py 
+python main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+clear
+ls
+clear
+ls
+ls
+clear
+ls
+exit
+nvidia-smi 
+clear
+exit
+nvidia-smi 
+exit
+clear
+clear
+ks
+cd experiments_code/
+ls
+python main.py 
+python main.py 
+python main.py 
+nvidia-smi 
+cd experiments_code/
+ls
+python main.py 
+python main.py 
+cd experiments_code/
+ls
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+nvidia-smi
+clear
+ls
+cd experiments_code/
+ls
+python main.py 
+python main.py 
+python main.py 
+ls
+clear
+python main.py 
+python main.py 
+python main.py 
+nvidia-smi
+clear
+cd experiments_code/
+python main.py 
+clear
+ls
+cd experiments_code/
+ls
+cd ..
+ls
+cd experiments_code/
+;s
+ls
+cd ..
+ls
+cd results_all_datasets/
+ls
+cd experiment_traj_model/
+ls
+cd visual_trajectory_consecutive_bitrap/
+ls
+cd 07_27_2021_st_13_13/
+ls
+cd 07_27_2021_st_in_13_out_13_K_1/
+ls
+rm 07_27_2021_giou_avg_in_13_out_13_error_summed/
+rm -r 07_27_2021_giou_avg_in_13_out_13_error_summed/
+clear
+ls
+cd ..
+cd ~
+;s
+ls
+cd experiments_code/
+;s
+ls
+python main.py 
+clear
+ls
+cd experiments_code/
+ls
+python main.py 
+clear
+python -m pdb main.py 
+python -m pdb main.py 
+clear
+python -m pdb main.py 
+clear
+python -m pdb main.py 
+python -m pdb main.py 
+clear
+python -m pdb main.py 
+python -m pdb main.py 
+clear
+python -m pdb main.py 
+clear
+python main.py 
+clear
+ls
+cd experiments_code/
+python main.py 
+python main.py 
+nvidia-
+nvidia-smi
+clear
+ls
+cd experiments_code/
+ls
+python main.py 
+python -m pdb main.py 
+clear
+ls
+clear
+python main.py 
+clear
+python main.py 
+clear
+ls
+python main.py 
+clear
+python main.py 
+python main.py 
+nvidia-smo
+nvidia-smi
+clar
+clear
+ls
+cd experiments_code/
+ls
+python main.py 
+clear
+ls
+exit
+clear
+ls
+cd experiments_code/
+ls
+python main.py 
+exit

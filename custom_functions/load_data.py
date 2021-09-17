@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
-from keras.preprocessing.sequence import pad_sequences
+from tensorflow.keras.preprocessing.sequence import pad_sequences
+# from keras.preprocessing.sequence import pad_sequences
 import os
 import pickle
 # from collections import OrderedDict
@@ -52,7 +53,7 @@ def Files_Load(train_file,test_file):
     return locations
 
 # def load_pkl(loc_files ):
-def load_pkl(data_loc):
+def load_pkl(data_loc, data_name):
     
     # data_loc = '/home/akanu/output_bitrap/avenue/gaussian_avenue_640_360_trained_normal_data.pkl'
     # data_loc = '/home/akanu/output_bitrap/avenue/gaussian_avenue_in_5_out_10.pkl'
@@ -83,7 +84,18 @@ def load_pkl(data_loc):
                     preds.append(pred[0])
                 temp[key].append(np.array(preds).reshape(-1,4) ) # picking one of the 20 right here
             elif key == 'video_file':
-                temp[key].append('{:02d}.txt'.format(data_elem))
+                if data_name =='avenue':
+                    temp[key].append('{:02d}.txt'.format(data_elem))
+                elif data_name == 'st':
+                    elem = str(data_elem)
+                    if len(elem) == 5:
+                        temp[key].append('0{}_{}.txt'.format(elem[0], elem[1:]))
+                    elif len(elem) == 6:
+                        temp[key].append('{}_{}.txt'.format(elem[0:2], elem[2:]))
+                    else:
+                        print('Error in load_pkl')
+                        quit()
+
             else:
                 temp[key].append(data_elem)
 

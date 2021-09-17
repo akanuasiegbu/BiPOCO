@@ -27,7 +27,8 @@ RUN wget --progress=bar:force https://bootstrap.pypa.io/get-pip.py && \
 		seaborn==0.11.0\
 		tensorflow_addons==0.11.2 \
 		tensorflow_datasets\
-		wandb
+		wandb\
+		more_itertools
 
 
 

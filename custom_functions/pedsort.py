@@ -26,3 +26,23 @@ def pedsort(datadict):
 
         ped[str(i)] = temp
     return ped
+
+
+def incorrect_frame_represent(outframe):
+
+    ped_wrong_represent ={}
+
+    abnormal_frame = np.where(outframe['abnormal_gt_frame_metric'] == 1)[0]
+
+    ped_represent= outframe['abnormal_ped_pred'][abnormal_frame]
+    ped_index = np.where(ped_represent == 0)[0]
+    abnormal_frame_incorrect_ped_represent = abnormal_frame[ped_index]
+
+
+    for key in outframe.keys():
+        ped_wrong_represent[key] = outframe[key][abnormal_frame_incorrect_ped_represent]
+
+    
+    return ped_wrong_represent
+
+    

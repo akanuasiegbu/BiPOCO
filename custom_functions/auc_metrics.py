@@ -19,13 +19,15 @@ from custom_functions.iou_utils import giou, diou, ciou
 
 
 
-def anomaly_metric(prob, avg_or_max, pred_trajs, gt_box, vid_loc, frame_loc, person_id, abnormal_gt, abnormal_person):
+def anomaly_metric(prob, avg_or_max, pred_trajs, gt_box, vid_loc, frame_loc, person_id, abnormal_gt, abnormal_person, prob_in_time,
+                    prob_l2=None, prob_iou=None, prob_giou=None, prob_ciou=None, prob_diou=None):
     """
     This functon helps calculate abnormality by averaging or taking the max of pedestrains
-    that belong to the same frame.
+    that belong to the same frame and video.
 
-    
+    This is allows for aggravating of pedestrains together     
     """
+    
     vid_frame = np.append(vid_loc, frame_loc, axis=1)
     vid_frame_person = np.append(vid_frame, person_id, axis =1)
 
@@ -34,20 +36,31 @@ def anomaly_metric(prob, avg_or_max, pred_trajs, gt_box, vid_loc, frame_loc, per
     repeat_inverse_id = np.where(unique_counts >= 1)[0] 
     # makes sense cuz sometimes might be one pedestrain if the start off at  the front of seq
 
-
     calc_prob, frame, vid, id_y, gt_abnormal, std = [], [], [], [], [],[]
     std_iou_or_l2, bbox_list, abnormal_ped, gt = [], [], [], []
+    prob_l2_list, prob_iou_list, prob_giou_list, prob_ciou_list, prob_diou_list  = [], [], [], [], []
+    prob_with_time = []
     for i in repeat_inverse_id:
         same_vid_frame_person = np.where(unique_inverse == i)[0]
-
         temp_prob = prob[same_vid_frame_person]
         temp_pred_trajs = pred_trajs[same_vid_frame_person]
-        gt_box_temp = gt_box[same_vid_frame_person][0]
+        gt_box_temp = gt_box[same_vid_frame_person]
 
         if avg_or_max == 'avg':
             calc_prob.append(np.mean(prob[same_vid_frame_person]))
             bbox = temp_pred_trajs
             # bbox = np.mean(temp_pred_trajs, axis = 0) # For averageing
+            if exp['plot_images']:
+                if hyparams['errortype']=='error_flattened':
+                    prob_with_time.append(-1)
+                else:    
+                    prob_with_time.append(prob_in_time[same_vid_frame_person])
+                prob_l2_list.append(prob_l2[same_vid_frame_person])
+                prob_iou_list.append(prob_iou[same_vid_frame_person])
+                prob_giou_list.append(prob_giou[same_vid_frame_person])
+                prob_ciou_list.append(prob_ciou[same_vid_frame_person])
+                prob_diou_list.append(prob_diou[same_vid_frame_person])
+
                 
         if avg_or_max == 'max':
             calc_prob.append(np.max(prob[same_vid_frame_person]))
@@ -79,17 +92,21 @@ def anomaly_metric(prob, avg_or_max, pred_trajs, gt_box, vid_loc, frame_loc, per
 
     out = {}
     out['prob'] = np.array(calc_prob).reshape(-1,1)
-    out['frame'] = np.array(frame).reshape(-1,1)
+    out['frame'] = np.array(frame, dtype=int).reshape(-1,1)
     out['vid'] = np.array(vid).reshape(-1,1)
-    out['id_y'] = np.array(id_y).reshape(-1,1)
+    out['id_y'] = np.array(id_y, dtype =int).reshape(-1,1)
     out['abnormal_gt_frame_metric'] = np.array(gt_abnormal).reshape(-1,1)
     out['std'] = np.array(std).reshape(-1,4)
     out['std_iou_or_l2'] = np.array(std_iou_or_l2).reshape(-1,1)
-    out['bbox'] = xywh_tlbr(np.array(bbox_list, dtype=object)) #  Note that this can be diff shapes in diff index
+    out['pred_bbox'] = xywh_tlbr(np.array(bbox_list, dtype=object)) #  Note that this can be diff shapes in diff index
     out['abnormal_ped_pred'] = np.array(abnormal_ped).reshape(-1,1)
     out['gt_bbox'] = xywh_tlbr(np.array(gt))
-
-
+    out['prob_with_time'] = np.squeeze( np.array(prob_with_time) )
+    out['prob_l2'] = np.array(prob_l2_list)
+    out['prob_iou'] = np.array(prob_iou_list)
+    out['prob_giou'] = np.array(prob_giou_list)
+    out['prob_ciou'] = np.array(prob_ciou_list)
+    out['prob_diou'] = np.array(prob_diou_list)
     return out
 
 
@@ -142,8 +159,10 @@ def iou_as_probability(testdicts, models, errortype, max1 =None, min1 =None):
         output = np.sum(iou_prob, axis=1)
     elif errortype == 'error_flattened':
         output = iou_prob.reshape(-1,1)
+    else:
+        pass
 
-    return  output
+    return  output, iou_prob
 
 
 
@@ -174,11 +193,12 @@ def l2_error(testdicts, models, errortype, max1 = None, min1 =None ):
     for testdict in testdicts:
         trues.append(xywh_tlbr(testdict['y_ppl_box']))
     
-    summed_list = []
+    summed_list, output_in_time = [], []
     for pred, true in zip(preds, trues):
         diff = (true-pred)**2
         summed = np.sum(diff, axis =2)
         summed = np.sqrt(summed)
+        
 
         if errortype == 'error_diff':
             error = np.sum(np.diff(summed, axis =1), axis=1)
@@ -186,22 +206,19 @@ def l2_error(testdicts, models, errortype, max1 = None, min1 =None ):
             error = np.sum(summed, axis=1)
         elif errortype == 'error_flattened':
             error = summed.reshape(-1,1)
+        else:
+            pass
 
         summed_list.append(error)
+        output_in_time.append(summed)
    
         
 
     
+    output_in_time = np.concatenate(output_in_time)
     l2_error  = np.concatenate(summed_list)
-    # mmin = np.min(summed)
-    # mmax = np.max(summed)
 
-    
-    # l2_norm = (l2_error - mmin)/ (mmax - mmin)
-
-
-    # return l2_norm.reshape(-1,1)
-    return l2_error.reshape(-1,1)
+    return l2_error.reshape(-1,1), output_in_time
 
 
 def giou_as_metric(testdicts, models, errortype, max1 = None, min1 =None):
@@ -290,9 +307,81 @@ def diou_as_metric(testdicts, models, errortype, max1 = None, min1 =None):
     return output
 
 
-
-def combine_time(testdicts, models, errortype, modeltype='bitrap', max1 =None, min1 = None):
+def giou_ciou_diou_as_metric(testdicts, models, metric, errortype, max1=None, min1=None):
     
+    gious_dious_cious = []
+    if models == 'bitrap':
+        for testdict in testdicts:
+            gt_bb = testdict['y_ppl_box']
+            predicted_bb = testdict['pred_trajs']
+            if metric == 'giou':
+                gt_bb = xywh_tlbr(testdict['y_ppl_box'])
+                predicted_bb = xywh_tlbr(testdict['pred_trajs'])
+                temp = giou( gt_bb, predicted_bb)
+            elif metric == 'ciou':
+                temp = ciou( gt_bb, predicted_bb)
+            elif metric == 'diou':
+                temp = diou( gt_bb, predicted_bb)
+            # need to squeeze to index correctly 
+            gious_dious_cious.append(np.squeeze(1-temp))
+
+        output_in_time  = np.concatenate(gious_dious_cious)
+
+    else:
+        for testdict, model in zip(testdicts, models):
+        # Need to fix this for lstm network
+        ############ Might be good to replace this
+            x,y = norm_train_max_min(   testdict,
+                                        # max1 = hyparams['max'],
+                                        # min1 = hyparams['min']
+                                        max1 = max1,
+                                        min1 = min1
+                                        )
+
+            shape =  x.shape
+            predicted_bb = model.predict(x)
+    
+            predicted_bb_unorm = norm_train_max_min(predicted_bb, max1, min1, True)
+            predicted_bb_unorm_xywh = predicted_bb_unorm.reshape(shape[0] ,-1,4)
+            ############################33
+
+            gt_bb_unorm_xywh = norm_train_max_min(y, max1, min1, True)
+
+            if metric == 'giou':
+                gt_bb_unorm_tlbr = xywh_tlbr(gt_bb_unorm_xywh)
+                predicted_bb_unorm_tlbr = xywh_tlbr(predicted_bb_unorm_xywh)
+                temp = giou( gt_bb_unorm_tlbr, predicted_bb_unorm_tlbr)   
+            elif metric == 'ciou':
+                temp = ciou( gt_bb_unorm_xywh, predicted_bb_unorm_xywh)
+            elif metric == 'diou':
+                temp = diou( gt_bb_unorm_xywh, predicted_bb_unorm_xywh)
+
+            gious_dious_cious.append(np.squeeze(1 - temp))
+        
+        output_in_time = np.concatenate(gious_dious_cious)
+
+    if errortype == 'error_diff':
+        output = np.sum(np.diff(output_in_time, axis =1), axis=1)
+    elif errortype == 'error_summed':
+        output = np.sum(output_in_time, axis=1)
+    elif errortype == 'error_flattened':
+        output = output_in_time.reshape(-1,1)
+    else:
+        pass 
+    
+    return output, output_in_time
+
+
+
+
+def combine_time(testdicts, models, errortype, modeltype, max1 =None, min1 = None):
+    """
+    This function is selecting the first frame to be the frame of interest in multi output 
+    when using pedestrain motion in time to determine abnormal events.
+
+    Function also flattens the person and tells allows me to combine pedestrains at the same frame 
+    from different trajactories. 
+    """
     
     vid_loc, person_id, frame_loc, abnormal_gt_frame, abnormal_event_person, gt_bbox, pred_trajs = [],[],[],[],[], [],[]
 
@@ -327,18 +416,22 @@ def combine_time(testdicts, models, errortype, modeltype='bitrap', max1 =None, m
                 pred_trajs.append(testdict['pred_trajs'].reshape(-1,4) )
         else:
             for testdict, model in zip(testdicts, models):
+                # Might be good to replace this
                 x,_ = norm_train_max_min( testdict, max1 = max1, min1 = min1)
+                shape =  x.shape
                 predicted_bb = model.predict(x)
-                predicted_bb_unorm = norm_train_max_min(predicted_bb, max1, min1, True)
+                predicted_bb_unorm_xywh = norm_train_max_min(predicted_bb, max1, min1, True)
+                predicted_bb_unorm_xywh = predicted_bb_unorm_xywh.reshape(shape[0] ,-1,4)
+                ########################
 
                 if errortype =='error_diff' or errortype == 'error_summed':
-                    pred_trajs.append(predicted_bb_unorm)
+                    pred_trajs.append(predicted_bb_unorm_xywh)
 
-                    print('check if the size of pred_tras is correct')
-                    quit()
+                    # print('check if the size of pred_tras is correct')
+                    # quit()
 
                 elif errortype =='error_flattened':
-                    pred_trajs.append(predicted_bb_unorm.reshape(-1,4) )# This is in xywh
+                    pred_trajs.append(predicted_bb_unorm_xywh.reshape(-1,4) )# This is in xywh
             
 
 
