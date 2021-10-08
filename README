@@ -8,7 +8,7 @@ seq: size of sequence, 20, 5 etc int of sequence
 model_type_dataset_seq.h5
 example: lstm_xywh_ped1_20.h5
 
-To Do List 
-1) Make sure that the old_experiment_3A_and_3b.py code can run 
-2) Fix the plotting functions
-3) Fix wandb
+1) Generate trajactery data 
+2) Run BiTrap and LSTM
+3) Run the Main file
+4) Change the parameters of config.py 

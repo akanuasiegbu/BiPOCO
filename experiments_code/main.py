@@ -4,7 +4,6 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 
 import tensorflow as tf
-# from tensorflow.keras.layers import Lambda
 from tensorflow import keras
 import os, sys, time
 from os.path import join
@@ -12,11 +11,7 @@ from custom_functions.utils import make_dir, SaveTextFile, write_to_txt, SaveAuc
 
 # Is hyperparameters and saving files config file
 from config import hyparams, loc, exp
-# Design intent
- # But hyparas as constants that can be called anywhere
-# I only want to call loc here and not anywhere else
 
-## Might delete havent used yet
 from custom_metrics import bb_intersection_over_union, bb_intersection_over_union_np
 from coordinate_change import xywh_tlbr, tlbr_xywh
 from TP_TN_FP_FN import *
@@ -56,8 +51,6 @@ def gpu_check():
     """
     return len(tf.config.experimental.list_physical_devices('GPU')) > 0
 
-# I want to able to call this loss and other losses into function
-# Where is the best place to put this function
 
 # def loss(y_true, y_pred):
 #     when_y_1 = y_true*tf.keras.backend.log(y_pred)*(1/weight_ratio)
@@ -85,16 +78,13 @@ def lstm_train(traindict):
                                                                     test_size = hyparams['networks']['lstm']['val_ratio']
                                                                     )
     
-    # print(train['x'].shape)
-    # quit()
-    # took out to make tensorify func universal
-    # used to do train test split in tensorify function
+    # train test split in tensorify function
     train_data,val_data = tensorify(    train, 
                                         val,
                                         batch_size = hyparams['batch_size']
                                         )
 
-    #naming convection
+    #naming convention
     nc = [  loc['nc']['date'],
             loc['nc']['model_name'],
             loc['nc']['data_coordinate_out'],
@@ -104,18 +94,18 @@ def lstm_train(traindict):
             ] # Note that frames is the sequence input
 
     # folders not saved by dates
-    make_dir(loc['model_path_list']) # Make directory to save model, no deped
+    make_dir(loc['model_path_list']) # Make directory to save model
 
-    # print(loc['model_path_list'])
+    # create save link
     model_loc = join(   os.path.dirname(os.getcwd()),
                         *loc['model_path_list']
-                        ) # create save link
+                        ) 
 
    
 
     history, model = lstm_network(  train_data,
                                     val_data,
-                                    model_loc=model_loc, ### Fix this line
+                                    model_loc=model_loc, 
                                     nc = nc,
                                     epochs=hyparams['epochs']
                                     )
@@ -124,7 +114,7 @@ def lstm_train(traindict):
     plot_loc = join(    os.path.dirname(os.getcwd()),
                         *loc['metrics_path_list']
                         )
-    # Note that loss plot is saved to plot_lcc
+    # loss plot is saved to plot_loc
     loss_plot(history, plot_loc, nc, save_wandb=False)
 
     return model
@@ -145,7 +135,7 @@ def ped_auc_to_frame_auc_data(model, testdicts, metric, avg_or_max, modeltype, t
     """
     if not test_bin:
         # calc iou prob
-        # Note for iou, giou, ciou and diou. used i-iou, 1-giou, 1-ciou, 1-diou etc 
+        # for iou, giou, ciou and diou. used i-iou, 1-giou, 1-ciou, 1-diou etc 
         # because abnormal pedestrain would have a higher score
         if metric == 'iou':
             prob, prob_along_time = iou_as_probability(testdicts, model, errortype = hyparams['errortype'], max1 = max1, min1= min1)
@@ -205,7 +195,7 @@ def ped_auc_to_frame_auc_data(model, testdicts, metric, avg_or_max, modeltype, t
         vid_loc = testdict['video_file'][test_bin_index].reshape(-1,1) #videos locations
         frame_loc = testdict['frame_y'][test_bin_index].reshape(-1,1) # frame locations
     
-    # encoding video and the frame together 
+    # encoding video and frame 
     vid_frame = np.append(vid_loc, frame_loc, axis=1)
 
 
@@ -215,10 +205,10 @@ def ped_auc_to_frame_auc_data(model, testdicts, metric, avg_or_max, modeltype, t
     unique, unique_inverse, unique_counts = np.unique(vid_frame, axis=0, return_inverse=True, return_counts=True)
 
 
-    #  finds where repeats happened and gives id for input
-    # into unique_inverse
+    #  finds where repeats happened and gives id for input into unique_inverse
     
-    repeat_inverse_id = np.where(unique_counts>1)[0] # this works because removing those greater than 1
+    # this works because removing those greater than 1
+    repeat_inverse_id = np.where(unique_counts>1)[0] 
 
     
     # Pedestrain AUC equals Frame AUC
@@ -368,9 +358,6 @@ def plot_frame_wise_scores(out_frame):
         ax.set_xlabel('Frames')
         ax.set_ylabel('Anomaly Score' )
         fig.savefig('testing_{}.jpg'.format(key[:-4]))  
-
-            # https://stackoverflow.com/questions/14088687/how-to-change-plot-background-color
-            # https://stackoverflow.com/questions/9957637/how-can-i-set-the-background-color-on-specific-areas-of-a-pyplot-figure/9957832 
 
 
 

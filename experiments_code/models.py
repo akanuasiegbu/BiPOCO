@@ -49,7 +49,6 @@ def lstm_network(train_data, val_data, model_loc, nc,  epochs=300):
         else:
             cb = [checkpoint_cb]
 
-    #     lstm_20.compile(optimizer=opt, loss=losses.GIoULoss(), metrics=bb_intersection_over_union)
         # if use iou metric need to conver to tlbr
         lstm_20.compile(optimizer=opt, loss=hyparams['networks']['lstm']['loss'])
         lstm_20_history = lstm_20.fit(train_data,
