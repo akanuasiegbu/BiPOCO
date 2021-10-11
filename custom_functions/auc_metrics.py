@@ -101,12 +101,15 @@ def anomaly_metric(prob, avg_or_max, pred_trajs, gt_box, vid_loc, frame_loc, per
     out['pred_bbox'] = xywh_tlbr(np.array(bbox_list, dtype=object)) #  Note that this can be diff shapes in diff index
     out['abnormal_ped_pred'] = np.array(abnormal_ped).reshape(-1,1)
     out['gt_bbox'] = xywh_tlbr(np.array(gt))
-    out['prob_with_time'] = np.squeeze( np.array(prob_with_time) )
-    out['prob_l2'] = np.array(prob_l2_list)
-    out['prob_iou'] = np.array(prob_iou_list)
-    out['prob_giou'] = np.array(prob_giou_list)
-    out['prob_ciou'] = np.array(prob_ciou_list)
-    out['prob_diou'] = np.array(prob_diou_list)
+    
+    if exp['plot_images']:
+        out['prob_with_time'] = np.squeeze( np.array(prob_with_time) )
+        out['prob_l2'] = np.array(prob_l2_list)
+        out['prob_iou'] = np.array(prob_iou_list)
+        out['prob_giou'] = np.array(prob_giou_list)
+        out['prob_ciou'] = np.array(prob_ciou_list)
+        out['prob_diou'] = np.array(prob_diou_list)
+        
     return out
 
 

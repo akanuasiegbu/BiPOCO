@@ -1,8 +1,47 @@
+from os import makedirs
 import cv2
+import os
 import numpy as np
 from os.path import join
 from matplotlib import pyplot as plt
 from experiments_code.config import hyparams, loc, exp
+from custom_functions.utils import make_dir
+
+def generate_images_with_bbox(testdicts,out_frame, visual_path):
+    # testdict:
+    # outframe:
+    # visual path: 
+    # Function does not return anything
+    visual_plot_loc = join( os.path.dirname(os.getcwd()), *visual_path )
+    if exp['data'] =='avenue':
+        for i in range(1,22):
+            path = visual_path.copy()
+            path.append('{:02d}'.format(i))
+            make_dir(path)
+            
+            if not hyparams['errortype']=='error_flattened':
+
+                path_timeseries = visual_path.copy()
+                path_timeseries.append('{:02d}_time_series'.format(i))
+                make_dir(path_timeseries)
+
+
+    elif exp['data']=='st':
+        for txt in np.unique(testdicts[0]['video_file']):
+            path = visual_path.copy()
+            path.append('{}'.format(txt[:-4]))
+            make_dir(path)
+
+            if not hyparams['errortype']=='error_flattened':
+                path_timeseries = visual_path.copy()
+                path_timeseries.append('{}_time_series'.format(txt[:-4]))
+                make_dir(path_timeseries)
+            
+    # This plots the data for visualizations
+    pic_locs = loc['data_load'][exp['data']]['pic_loc_test']
+    plot_vid( out_frame, pic_locs, visual_plot_loc, exp['data'] )
+    
+
 
 def plot_frame_from_image(pic_loc, bbox_preds, save_to_loc, vid, frame, idy, prob,abnormal_frame, abnormal_ped, gt_bboxs = None):
     """

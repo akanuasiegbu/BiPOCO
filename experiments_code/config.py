@@ -7,9 +7,9 @@ exp = { '1': False,
         # want an adaptive model saved based on arch size for model_loc
         'data': 'avenue', #st, avenue,hr-st
         'data_consecutive': True,
-        'model_name': 'bitrap', #lstm_network, bitrap, bitrap_640_360
+        'model_name': 'lstm_network', #lstm_network, bitrap, bitrap_640_360
         'K': 1,
-        'plot_images':True
+        'plot_images':True # Plot images
         }
 
 
@@ -19,15 +19,13 @@ hyparams = {
     'buffer_size': 10000,
  
     'frames': 5,
-    'input_seq':25,
-    'pred_seq':25,
+    'input_seq':3,
+    'pred_seq':3,
     'metric': 'l2', #giou,l2, ciou diou,iou
     'avg_or_max': 'avg', #avg or max
     'errortype': 'error_flattened', #'error_diff' or 'error_summed' or 'error_flattened'
 
     'to_xywh': True, # This is assuming file is in tlbr format
-    # 'max':913.0, # wonder better way to pick
-    # 'min':-138.5, # wonder better way to pick
 
     'networks': {
         'lstm':{
@@ -41,26 +39,24 @@ hyparams = {
         },
 
 
-        'binary_classifier':{
-            'neurons': 30,
-            'dropout':0.3,
-            'lr': 0.0001, #0.00001
-            'save_model': False,
-            'early_stopping':False,
-            'mointor': 'loss',
-            'min_delta':0.0000005,
-            'batch_size': 128,
-            'patience':30,
-            'wandb': False, # want to move this out of here and create a seperate wandb file
-            'seed':40,
-            'abnormal_split':0.5, # Split for the data into normal and abnormal
-            'val_ratio':0.3, #guarantee the ratio of normal and abnormal frames
-                            # are the same for validatin set and training set.
-                            # so val_ratio. Think val_ratio(normal) + val_ratio(abnormal ) = val_ratio(normal + abnormal)
+        # 'binary_classifier':{
+        #     'neurons': 30,
+        #     'dropout':0.3,
+        #     'lr': 0.0001, #0.00001
+        #     'save_model': False,
+        #     'early_stopping':False,
+        #     'mointor': 'loss',
+        #     'min_delta':0.0000005,
+        #     'batch_size': 128,
+        #     'patience':30,
+        #     'wandb': False, # want to move this out of here and create a seperate wandb file
+        #     'seed':40,
+        #     'abnormal_split':0.5, # Split for the data into normal and abnormal
+        #     'val_ratio':0.3, #guarantee the ratio of normal and abnormal frames
+        #                     # are the same for validatin set and training set.
+        #                     # so val_ratio. Think val_ratio(normal) + val_ratio(abnormal ) = val_ratio(normal + abnormal)
 
-        }
-
-
+        # }
     }
 
 }
@@ -111,9 +107,7 @@ loc =  {
         'data_coordinate_out': 'xywh',
         'dataset_name': exp['data'], # avenue, st             
         'date': date,
-        },    # is nc the best way to propate and save things as same name
-    # Might want to automatically  create a new folder with model arch saved
-    # as a text file as well as in folder name
+        },   
 
     'data_load':{
             'avenue':{
@@ -125,11 +119,6 @@ loc =  {
                 'pic_loc_test': '/mnt/roahm/users/akanu/dataset/Anomaly/Avenue_Dataset/frames_of_vid/test/'
                 },
 
-            #Need to rerun ped1
-            # 'ped1':{
-            #     'train_file':"/mnt/roahm/users/akanu/dataset/Anomaly/UCSD_Anomaly_Dataset.v1p2/UCSDped1/Txt_Data/Train_Box_ped1/",
-            #     "test_file": "/mnt/roahm/users/akanu/dataset/Anomaly/UCSD_Anomaly_Dataset.v1p2/UCSDped1/Txt_Data/Test_Box_ped1/",
-            #     },
             'st':{
                 'train_file':"/mnt/roahm/users/akanu/projects/anomalous_pred/output_deepsort/st/train_txt/",
                 "test_file": "/mnt/roahm/users/akanu/projects/anomalous_pred/output_deepsort/st/test_txt/",

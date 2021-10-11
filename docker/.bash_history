@@ -5245,3 +5245,35 @@ cd experiments_code/
 ls
 python main.py 
 exit
+python
+clear
+ls
+cd experiments_code/
+ls
+python main.py 
+python main.py 
+clear
+ls
+python main.py 
+python main.py 
+clear
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+clear
+clear
+ls
+cd experiments_code/
+ls
+python main.py 
+python main.py 
+python main.py 
+cldar
+nvidia-smi
+clear
+ls
+cd experiments_code/
+python main.py 
+python main.py 

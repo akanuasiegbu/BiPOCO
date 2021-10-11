@@ -15,7 +15,7 @@ from load_data import norm_train_max_min
 from load_data_binary import *
 
 
-def data_lstm(train_file, test_file, input_seq, pred_seq):
+def data_lstm(train_file, test_file, input_seq, pred_seq, window=1):
 
     # returns a dict file
     loc = Files_Load(train_file,test_file)
@@ -26,7 +26,8 @@ def data_lstm(train_file, test_file, input_seq, pred_seq):
                         data_consecutive = exp['data_consecutive'], 
                         pad = 'pre', 
                         to_xywh = hyparams['to_xywh'],
-                        testing = False
+                        testing = False,
+                        window = window
                         )
 
     testdict = Boxes(   loc_files = loc['files_test'], 
@@ -36,7 +37,8 @@ def data_lstm(train_file, test_file, input_seq, pred_seq):
                         data_consecutive = exp['data_consecutive'],
                         pad = 'pre',
                         to_xywh = hyparams['to_xywh'],
-                        testing = True
+                        testing = True,
+                        window = window 
                         )
                         
     return traindict, testdict

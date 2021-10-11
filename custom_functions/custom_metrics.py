@@ -1,9 +1,5 @@
 """
-Go back and figure out what to delete
-wheather its coordinate_change or custom_metrics
-because both files are doing the same thing
-expect one is in tensorflow and other is in
-numpy 
+Both Coordinate_change.py and custom_metrics.py doing same/similiar
 
 """
 import tensorflow.keras.backend as kb

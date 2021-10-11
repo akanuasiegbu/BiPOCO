@@ -123,7 +123,7 @@ def load_pkl(data_loc, data_name):
 
 
 
-def Boxes(loc_files, txt_names, input_seq, pred_seq,data_consecutive, pad ='pre', to_xywh = False, testing= False ):
+def Boxes(loc_files, txt_names, input_seq, pred_seq,data_consecutive, pad ='pre', to_xywh = False, testing= False, window =1 ):
     """
     This file process the bounding box data and creates a numpy array that
     can be put into a tensor
@@ -215,8 +215,7 @@ def Boxes(loc_files, txt_names, input_seq, pred_seq,data_consecutive, pad ='pre'
 
                     
                     
-                for i in range(0, person_seq_len - input_seq - pred_seq + 1):
-                # for i in range(0, person_seq_len - input_seq):
+                for i in range(0, person_seq_len - input_seq - pred_seq + 1, window):
     
                     
 
@@ -337,13 +336,6 @@ def Boxes(loc_files, txt_names, input_seq, pred_seq,data_consecutive, pad ='pre'
 
             else:
                 print('error')
-#     np.random.seed(49)
-#     rand = np.random.permutation(len(x_ppl_box))
-#     datadict['x_ppl_box'] = np.array(x_ppl_box)[rand]
-#     datadict['y_ppl_box'] = np.array(y_ppl_box)[rand]
-#     datadict['frame_ppl_id'] = np.array(frame_ppl_id)[rand]
-#     datadict['video_file'] = np.array(video_file)[rand]
-#     datadict['abnormal'] = np.array(abnormal)[rand]
 
     datadict['x_ppl_box'] = np.array(x_ppl_box)
     datadict['y_ppl_box'] = np.array(y_ppl_box)
