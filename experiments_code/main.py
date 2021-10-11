@@ -28,7 +28,7 @@ from sklearn.metrics import confusion_matrix
 import more_itertools as mit
 
 # Models
-from models import lstm_network, binary_network
+from models import lstm_network, lstm_train
 import wandb
 from custom_functions.ped_sequence_plot import ind_seq_dict, plot_sequence, plot_frame
 
@@ -51,73 +51,6 @@ def gpu_check():
     """
     return len(tf.config.experimental.list_physical_devices('GPU')) > 0
 
-
-# def loss(y_true, y_pred):
-#     when_y_1 = y_true*tf.keras.backend.log(y_pred)*(1/weight_ratio)
-#     neg_y_pred = Lambda(lambda x: -x)(y_pred)
-#     when_y_0 = ( 1+Lambda(lambda x: -x)(y_true))*tf.keras.backend.log(1+neg_y_pred )
-
-#     weighted_cross_entr = Lambda(lambda x: -x)(when_y_0+when_y_1)
-#     return weighted_cross_entr
-
-def lstm_train(traindict):
-    """
-    All this is doing is training the lstm network.
-    After training make plots to see results. (Make a plotter class or functions)
-    """
-    train_x,train_y = norm_train_max_min(   data = traindict,
-                                            # max1=hyparams['max'],
-                                            # min1=hyparams['min']
-                                            max1 = max1,
-                                            min1 = min1
-                                        )
-    
-    train, val = {}, {}
-    train['x'], val['x'],train['y'],val['y'] = train_test_split(    train_x,
-                                                                    train_y,
-                                                                    test_size = hyparams['networks']['lstm']['val_ratio']
-                                                                    )
-    
-    # train test split in tensorify function
-    train_data,val_data = tensorify(    train, 
-                                        val,
-                                        batch_size = hyparams['batch_size']
-                                        )
-
-    #naming convention
-    nc = [  loc['nc']['date'],
-            loc['nc']['model_name'],
-            loc['nc']['data_coordinate_out'],
-            loc['nc']['dataset_name'],
-            hyparams['input_seq'],
-            hyparams['pred_seq']
-            ] # Note that frames is the sequence input
-
-    # folders not saved by dates
-    make_dir(loc['model_path_list']) # Make directory to save model
-
-    # create save link
-    model_loc = join(   os.path.dirname(os.getcwd()),
-                        *loc['model_path_list']
-                        ) 
-
-   
-
-    history, model = lstm_network(  train_data,
-                                    val_data,
-                                    model_loc=model_loc, 
-                                    nc = nc,
-                                    epochs=hyparams['epochs']
-                                    )
-
-    make_dir(loc['metrics_path_list'])
-    plot_loc = join(    os.path.dirname(os.getcwd()),
-                        *loc['metrics_path_list']
-                        )
-    # loss plot is saved to plot_loc
-    loss_plot(history, plot_loc, nc, save_wandb=False)
-
-    return model
 
 def ped_auc_to_frame_auc_data(model, testdicts, metric, avg_or_max, modeltype, test_bin=None):
     """
@@ -412,9 +345,11 @@ def frame_traj_model_auc(model, testdicts, metric, avg_or_max, modeltype):
     plot_loc = join( os.path.dirname(os.getcwd()), *path_list )
     joint_txt_file_loc = join( os.path.dirname(os.getcwd()), *path_list[:-1] )
 
-    generate_images_with_bbox(testdicts,out_frame, visual_path)
-    
-    l =5
+    # This plots the result of bbox in the images 
+    if exp['plot_images']:
+        generate_images_with_bbox(testdicts,out_frame, visual_path)
+
+    generate_metric_plots(test_auc_frame, metric, nc, plot_loc)   
     # else:
     #     file_avg_metrics = SaveTextFile(plot_loc, metric)
     #     file_avg_metrics.save(output_with_metric, auc_frame_human)
@@ -422,177 +357,6 @@ def frame_traj_model_auc(model, testdicts, metric, avg_or_max, modeltype):
     #     file_with_auc.save(auc_frame_human)
 
     #     print(joint_txt_file_loc)
-
-    # For visualzing 
-    # This makes folders for the videos
-
-    # if exp['plot_images']:
-    #     visual_plot_loc = join( os.path.dirname(os.getcwd()), *visual_path )
-    #     if exp['data'] =='avenue':
-    #         for i in range(1,22):
-    #             path = visual_path.copy()
-    #             path.append('{:02d}'.format(i))
-    #             make_dir(path)
-                
-    #             if not hyparams['errortype']=='error_flattened':
-
-    #                 path_timeseries = visual_path.copy()
-    #                 path_timeseries.append('{:02d}_time_series'.format(i))
-    #                 make_dir(path_timeseries)
-
-
-    #     elif exp['data']=='st':
-    #         for txt in np.unique(testdicts[0]['video_file']):
-    #             path = visual_path.copy()
-    #             path.append('{}'.format(txt[:-4]))
-    #             make_dir(path)
-
-    #             if not hyparams['errortype']=='error_flattened':
-    #                 path_timeseries = visual_path.copy()
-    #                 path_timeseries.append('{}_time_series'.format(txt[:-4]))
-    #                 make_dir(path_timeseries)
-                
-        
-
-
-    #     # This plots the data for visualizations
-    #     pic_locs = loc['data_load'][exp['data']]['pic_loc_test']
-    #     plot_vid( out_frame, pic_locs, visual_plot_loc, exp['data'] )
-        
-    
-    # ped_wrong_represent = incorrect_frame_represent(out_frame)
-    # plot_vid( ped_wrong_represent, pic_locs, visual_plot_loc, exp['data'] )
-
-
-    # quit()
-
-    # uncomment to plot video frames
-    # print("Number of abnormal people after maxed {}".format(sum(test_auc_frame['y'])))
-    print("Number of abnormal people after maxed {}".format(len(np.where(test_auc_frame['y'] == 1 )[0] ) ))
-
-   
-
-
-    #### Per bounding box
-    nc_per_human = nc.copy()
-    nc_per_human[0] = loc['nc']['date'] + '_per_bounding_box'
-    # y_pred_per_human = iou_as_probability(testdict, model)
-
-    # abnormal_index = np.where(testdict['abnormal_ped_pred'] == 1)
-    # normal_index = np.where(testdict['abnormal_ped_pred'] == 0)
-    
-    abnormal_index = np.where(test_auc_frame['y_pred_per_human'] == 1)[0]
-    normal_index = np.where(test_auc_frame['y_pred_per_human'] == 0)[0]
-    
-    abnormal_index_frame = np.where(test_auc_frame['y'] == 1)[0]
-    normal_index_frame = np.where(test_auc_frame['y'] == 0)[0]
-    
-    if metric == 'iou':
-        ylabel = '1-IOU'
-
-    elif metric == 'l2':
-        ylabel = 'L2 Error'
-
-    elif metric =='giou':
-        ylabel ='giou'
-
-    elif metric =='ciou':
-        ylabel = 'ciou'
-
-    elif metric =='diou':
-        ylabel = 'diou'
-
-    index = [abnormal_index, normal_index]
-    ped_type = ['abnormal_ped', 'normal_ped']
-    xlabel = ['Detected Abnormal Pedestrains', 'Detected Normal Pedestrains']
-    titles =['Abnormal', 'Normal']
-
-
-    ##############
-    # # DELETE OR MOVE TO A Different place
-    index = [abnormal_index_frame, normal_index_frame ]
-    xlabel = ['Abnormal Frames', 'Detected Normal Frames']
-    ped_type = ['abnormal_ped_frame', 'normal_ped_frame']
-    wandb_name = ['rocs', 'roc_curve']
-    
-    y_true = test_auc_frame['y']
-    y_pred = test_auc_frame['x']
-
-    # Uncomment to make iou plots
-    ################################################
-
-    for indices, ped_, x_lab, title in zip(index, ped_type, xlabel, titles ):
-        plot_iou(   prob_iou = test_auc_frame['x_pred_per_human'][indices],
-                    gt_label = test_auc_frame['y_pred_per_human'][indices],
-                    xlabel = x_lab,
-                    ped_type = ped_,
-                    plot_loc = plot_loc,
-                    nc = nc_per_human,
-                    ylabel = ylabel,
-                    title = title
-                    )        
-    # xlabel = ['Detected Abnormal Pedestrains', 'Detected Normal Pedestrains']
-    index = [abnormal_index_frame, normal_index_frame ]
-    xlabel = ['Abnormal Frames', 'Detected Normal Frames']
-    ped_type = ['abnormal_ped_frame', 'normal_ped_frame']
-
-    for indices, ped_, x_lab, title in zip(index, ped_type, xlabel, titles ):
-        plot_iou(   prob_iou = np.sum(test_auc_frame['std_per_frame'][indices], axis = 1),
-                    gt_label = test_auc_frame['y'][indices],
-                    xlabel = x_lab,
-                    ped_type = '{}_std'.format(ped_),
-                    plot_loc = plot_loc,
-                    nc = nc,
-                    ylabel = 'Standard Deviation Summed',
-                    title = title
-                    )
-
-    for indices, ped_, x_lab, title in zip(index, ped_type, xlabel, titles ):
-        for i, axis in zip(range(0,4), ['Mid X', 'Mid Y', 'W', 'H']):
-            plot_iou(   prob_iou = test_auc_frame['std_per_frame'][indices][:,i],
-                        gt_label = test_auc_frame['y'][indices],
-                        xlabel = x_lab,
-                        ped_type = '{}_std_axis_{}'.format(ped_, i),
-                        plot_loc = plot_loc,
-                        nc = nc,
-                        ylabel = 'Standard Deviation {}'.format(axis),
-                        title = '{}_axis_{}'.format(title, i)
-                        )
-
-    for indices, ped_, x_lab, title in zip(index, ped_type, xlabel, titles ):
-        plot_iou(   prob_iou = test_auc_frame['std_iou_or_l2_per_frame'][indices],
-                    gt_label = test_auc_frame['y'][indices],
-                    xlabel = x_lab,
-                    ped_type = '{}_std_{}'.format(ped_, hyparams['metric']),
-                    plot_loc = plot_loc,
-                    nc = nc,
-                    ylabel = 'Standard Deviation {}'.format(hyparams['metric']),
-                    title = title 
-                    )
-
-
-    for indices, ped_, x_lab, title in zip(index, ped_type, xlabel, titles ):
-        plot_iou(   prob_iou = test_auc_frame['x'][indices],
-                    gt_label = test_auc_frame['y'][indices],
-                    xlabel = x_lab,
-                    ped_type = ped_,
-                    plot_loc = plot_loc,
-                    nc = nc,
-                    ylabel = ylabel,
-                    title = title
-                    )        
-    
-    ###################################################
-    # This is where the ROC Curves are plotted 
-    y_true = test_auc_frame['y']
-    y_pred = test_auc_frame['x']
-
-    # y_true_per_human = testdict['abnormal_ped_pred']
-    y_true_per_human = test_auc_frame['y_pred_per_human']
-    y_pred_per_human = test_auc_frame['x_pred_per_human']
-    #####################################################################
-    roc_plot( y_true_per_human, y_pred_per_human, plot_loc, nc_per_human, wandb_name)
-    roc_plot( y_true, y_pred, plot_loc, nc, wandb_name)
 
     return auc_frame_human
 
@@ -769,7 +533,7 @@ def main():
                                                     )
     else:
         # returning model right now but might change that in future and load instead
-        lstm_model = lstm_train(traindict)
+        lstm_model = lstm_train(traindict, max1, min1)
 
     #Load Data
     # pkldicts_temp = load_pkl('/home/akanu/output_bitrap/avenue_unimodal/gaussian_avenue_in_5_out_1_K_1.pkl')
