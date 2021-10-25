@@ -1,4 +1,4 @@
-import os
+import os, sys, time
 import tensorflow as tf
 from tensorflow import keras
 
@@ -7,9 +7,72 @@ from tensorflow.keras.layers import Lambda
 import wandb 
 from wandb.keras import WandbCallback
 
+from os.path import join
+from custom_functions.utils import make_dir
+
 
 # To Do List
 ## Import time and make
+
+def lstm_train(traindict, max1, min1):
+    """
+    All this is doing is training the lstm network.
+    After training make plots to see results. (Make a plotter class or functions)
+    """
+    train_x,train_y = norm_train_max_min(   data = traindict,
+                                            # max1=hyparams['max'],
+                                            # min1=hyparams['min']
+                                            max1 = max1,
+                                            min1 = min1
+                                        )
+    
+    train, val = {}, {}
+    train['x'], val['x'],train['y'],val['y'] = train_test_split(    train_x,
+                                                                    train_y,
+                                                                    test_size = hyparams['networks']['lstm']['val_ratio']
+                                                                    )
+    
+    # train test split in tensorify function
+    train_data,val_data = tensorify(    train, 
+                                        val,
+                                        batch_size = hyparams['batch_size']
+                                        )
+
+    #naming convention
+    nc = [  loc['nc']['date'],
+            loc['nc']['model_name'],
+            loc['nc']['data_coordinate_out'],
+            loc['nc']['dataset_name'],
+            hyparams['input_seq'],
+            hyparams['pred_seq']
+            ] # Note that frames is the sequence input
+
+    # folders not saved by dates
+    make_dir(loc['model_path_list']) # Make directory to save model
+
+    # create save link
+    model_loc = join(   os.path.dirname(os.getcwd()),
+                        *loc['model_path_list']
+                        ) 
+
+   
+
+    history, model = lstm_network(  train_data,
+                                    val_data,
+                                    model_loc=model_loc, 
+                                    nc = nc,
+                                    epochs=hyparams['epochs']
+                                    )
+
+    make_dir(loc['metrics_path_list'])
+    plot_loc = join(    os.path.dirname(os.getcwd()),
+                        *loc['metrics_path_list']
+                        )
+    # loss plot is saved to plot_loc
+    loss_plot(history, plot_loc, nc, save_wandb=False)
+
+    return model
+
 
 def lstm_network(train_data, val_data, model_loc, nc,  epochs=300):
     """
@@ -193,3 +256,10 @@ def binary_network(train_bm, val_bm, model_loc, nc,
         return bm_history, model
 
 
+# def loss(y_true, y_pred):
+#     when_y_1 = y_true*tf.keras.backend.log(y_pred)*(1/weight_ratio)
+#     neg_y_pred = Lambda(lambda x: -x)(y_pred)
+#     when_y_0 = ( 1+Lambda(lambda x: -x)(y_true))*tf.keras.backend.log(1+neg_y_pred )
+
+#     weighted_cross_entr = Lambda(lambda x: -x)(when_y_0+when_y_1)
+#     return weighted_cross_entr

@@ -305,6 +305,9 @@ def frame_traj_model_auc(model, testdicts, metric, avg_or_max, modeltype):
     testdicts: is the input data dict
     metric: iou or l2, giou, ciou,diou metric
     avg_or_max: used when looking at same person over frame, for vertical comparssion
+
+    return:
+    auc_human_frame: human and frame level auc
     """
 
     # Note that this return ious as a prob 
@@ -358,13 +361,23 @@ def frame_traj_model_auc(model, testdicts, metric, avg_or_max, modeltype):
 
     #     print(joint_txt_file_loc)
 
-    return auc_frame_human
+    y_true = test_auc_frame['y']
+    y_pred = test_auc_frame['x']
+    y_true_per_human = test_auc_frame['y_pred_per_human']
+    y_pred_per_human = test_auc_frame['x_pred_per_human']
+
+
+    fpr, tpr, thresholds = roc_curve(y_true, y_pred)
+    AUC_frame = auc(fpr, tpr)
+    fpr, tpr, thresholds = roc_curve(y_true_per_human, y_pred_per_human)
+    AUC_human = auc(fpr,tpr)
+    auc_human_frame = np.array([AUC_human, AUC_frame])
+    return auc_human_frame
 
 
 
 
 
-# def trouble_shot(testdict, model, frame, ped_id, vid):
 def plot_traj_gen_traj_vid(testdict, model):
     """
     testdict: the dict
@@ -382,21 +395,7 @@ def plot_traj_gen_traj_vid(testdict, model):
     ped_id = 6
     
     vid = '01_0014'
-    person_seq = ind_seq_dict(testdict, '{}'.format(vid), frame,  ped_id) # this is a slow search I would think
-    # vid = '02'
-    # loc_videos = loc['data_load'][exp['data']]['test_vid']
-    
-
-    # Video to select ,not using config file to give freedom to select
-
-    # loc_videos = "/mnt/roahm/users/akanu/projects/anomalous_pred/output_deepsort/st/test_vid/{}_st_output_test.avi".format(vid)
-    # loc_videos = "/mnt/roahm/users/akanu/projects/anomalous_pred/output_deepsort/avenue/test_vid/{}_output_yolo_test.avi".format(vid)
-    # loc_videos = "/mnt/roahm/users/akanu/dataset/Anomaly/Avenue_Dataset/testing_videos/{}.avi".format(vid)
-    # loc_videos = '/mnt/roahm/users/akanu/projects/Deep-SORT-YOLOv4/tensorflow2.0/deep-sort-yolov4/input_video/st_test/{}.avi'.format(vid)
-
-
-
-    
+    person_seq = ind_seq_dict(testdict, '{}'.format(vid), frame,  ped_id) # this is a slow search I would think  
     
     ped_loc[-1] =  '{}'.format(vid) + '_' + '{}'.format(frame)+ '_' + '{}'.format(ped_id)
     make_dir(ped_loc)
@@ -412,23 +411,16 @@ def plot_traj_gen_traj_vid(testdict, model):
     #     indices = np.array(test_auc_frame['x'][:,1], dtype=int)
     #     temp_dict[i] = testdict[i][indices]
 
-
-
     person_seq = ind_seq_dict(testdict, '{}'.format(vid), frame,  ped_id) # this is a slow search I would think
     # person_seq = ind_seq_dict(temp_dict, '{}'.format(vid), frame,  ped_id) # this is a slow search I would think
-    
-      
 
-    
 
     # bbox_pred = norm_train_max_min(bbox_pred_norm, max1, min1, undo_norm=True)
     bbox_pred = np.expand_dims(person_seq['pred_trajs'], axis=0)
     iou_unorm = bb_intersection_over_union_np(  xywh_tlbr(bbox_pred),
                                                 xywh_tlbr(np.expand_dims(person_seq['y_ppl_box'], axis=0) )
                                                 )
-                                        
-    # print('bbox_pred in standard coordinates predicted {}'.format(xywh_tlbr(bbox_pred)))
-    # print('bbox gt {}'.format(xywh_tlbr(np.expand_dims(person_seq['y_ppl_box'], axis=0))) )
+
     print('iou not normalized  which is correct{}'.format(iou_unorm))
     
     # # see vid frame i
@@ -469,11 +461,8 @@ def gen_vid(vid_name, pic_loc, frame_rate):
     
 
 def main():
-    
-    # overlay_roc_curves()
-    # quit()
-    # To-Do add input argument for when loading 
-    load_lstm_model = True
+
+    load_lstm_model = False
     model_loc = join(   os.path.dirname(os.getcwd()),
                         *loc['model_path_list']
                         ) # create save link
@@ -509,7 +498,7 @@ def main():
         min1 = traindict['x_ppl_box'].min() if traindict['y_ppl_box'].min() >= traindict['x_ppl_box'].min() else traindict['y_ppl_box'].min()
 
 
-        traindict, testdict = data_lstm(    loc['data_load'][exp['data']]['train_file'],
+        traindict_win, testdict_win = data_lstm(    loc['data_load'][exp['data']]['train_file'],
                                 loc['data_load'][exp['data']]['test_file'],
                                 hyparams['input_seq'], hyparams['pred_seq'],
                                 window = hyparams['input_seq'] 
@@ -539,20 +528,12 @@ def main():
     # pkldicts_temp = load_pkl('/home/akanu/output_bitrap/avenue_unimodal/gaussian_avenue_in_5_out_1_K_1.pkl')
     
     
-    # run_quick()
 
     # pkldicts = []
-    # pkldicts.append(load_pkl(loc['pkl_file']['avenue_template'].format(20,5)))
-    # pkldicts.append(load_pkl(loc['pkl_file']['avenue_template'].format(20,10)))
     # pkldicts.append(load_pkl(loc['pkl_file']['avenue_template'].format(5,5)))
-    # pkldicts.append(load_pkl(loc['pkl_file']['avenue_template'].format(5,10)))
-    
+
     # modelfile = '/home/akanu/results_all_datasets/experiment_traj_model/saved_model_consecutive/07_05_2021_lstm_network_xywh_avenue_{}_{}.h5'.format(hyparams['input_seq'], hyparams['pred_seq'])
 
-    # lstm_model = tf.keras.models.load_model(     modelfile,  
-    #                                         custom_objects = {'loss':'mse'}, 
-    #                                         compile=True
-    #                                         )
         
 
     frame_traj_model_auc([lstm_model], [testdict], hyparams['metric'], hyparams['avg_or_max'], exp['model_name'])
@@ -568,26 +549,43 @@ def main():
     # plot_traj_gen_traj_vid(pkldict,lstm_model)
 
     
-def run_quick():
+def run_quick(window_not_one = False):
+    """
+    window: changes the window size
+    """
+    
     global max1, min1
 
     max1 = None
     min1 = None
-    in_lens = [3] #,5,13,25]
-    out_lens = [3] #,5,13,25]
+    # change this to run diff configs
+    # in_lens = [3,5,13,25]
+    # out_lens = [3, 5,13,25]
+    in_lens = [13]
+    out_lens = [13]
+    errors_type = ['error_summed', 'error_flattened']
+    metrics = ['iou', 'giou', 'l2']
+
     for in_len, out_len in zip(in_lens, out_lens):
         hyparams['input_seq'] = in_len
         hyparams['pred_seq'] = out_len
         print('{} {}'.format(hyparams['input_seq'], hyparams['pred_seq']))
         # continue
         if exp['data']=='st' and exp['model_name']=='bitrap':
-            pklfile = loc['pkl_file']['st_template'].format(hyparams['input_seq'], hyparams['pred_seq'], exp['K'])
+            if window_not_one:
+                pklfile = loc['pkl_file']['st_template_skip'].format(hyparams['input_seq'], hyparams['pred_seq'],exp['K'], hyparams['input_seq'])
+            else:
+                pklfile = loc['pkl_file']['st_template'].format(hyparams['input_seq'], hyparams['pred_seq'], exp['K'])
 
         elif exp['data']=='avenue' and exp['model_name']=='bitrap':
-            pklfile = loc['pkl_file']['avenue_template'].format(hyparams['input_seq'], hyparams['pred_seq'],exp['K'])
+            if window_not_one:
+                pklfile = loc['pkl_file']['avenue_template_skip'].format(hyparams['input_seq'], hyparams['pred_seq'],exp['K'], hyparams['input_seq'])
+                print('I am here window not one')
+            else:
+                pklfile = loc['pkl_file']['avenue_template'].format(hyparams['input_seq'], hyparams['pred_seq'],exp['K'])
 
         elif exp['data']=='avenue' and exp['model_name']=='lstm_network':
-            if in_lens in [3,13,25]:
+            if in_len in [3,13,25]:
                 modelfile = '/home/akanu/results_all_datasets/experiment_traj_model/saved_model_consecutive/07_05_2021_lstm_network_xywh_avenue_{}_{}.h5'.format(hyparams['input_seq'], hyparams['pred_seq'])
             else:
                 modelfile = '/home/akanu/results_all_datasets/experiment_traj_model/saved_model_consecutive/05_18_2021_lstm_network_xywh_avenue_{}_{}.h5'.format(hyparams['input_seq'], hyparams['pred_seq'])
@@ -609,12 +607,13 @@ def run_quick():
             max1 = traindict['x_ppl_box'].max() if traindict['y_ppl_box'].max() <= traindict['x_ppl_box'].max() else traindict['y_ppl_box'].max()
             min1 = traindict['x_ppl_box'].min() if traindict['y_ppl_box'].min() >= traindict['x_ppl_box'].min() else traindict['y_ppl_box'].min()
 
-            # Changes the window to run
-            # traindict, testdict = data_lstm(    loc['data_load'][exp['data']]['train_file'],
-            #                                     loc['data_load'][exp['data']]['test_file'],
-            #                                     hyparams['input_seq'], hyparams['pred_seq'],
-            #                                     window = hyparams['input_seq']
-            #                                     )
+            if window_not_one:
+                # Changes the window to run
+                traindict, testdict = data_lstm(    loc['data_load'][exp['data']]['train_file'],
+                                                    loc['data_load'][exp['data']]['test_file'],
+                                                    hyparams['input_seq'], hyparams['pred_seq'],
+                                                    window = hyparams['input_seq']
+                                                    )
 
         
         elif exp['model_name'] == 'bitrap':
@@ -622,12 +621,12 @@ def run_quick():
             pkldicts = load_pkl(pklfile, exp['data'])
             model = 'bitrap'
         
-        for error in ['error_diff', 'error_summed', 'error_flattened']:
-        # for error in ['error_flattened']:
+        # for error in  ['error_diff', 'error_summed', 'error_flattened']:
+        for error in errors_type:
             hyparams['errortype'] = error
             auc_metrics_list = []
             print(hyparams['errortype'])
-            for metric in ['giou', 'l2', 'iou']:
+            for metric in metrics:
                 hyparams['metric'] = metric
                 print(hyparams['metric'])
                 if exp['model_name'] == 'bitrap':
@@ -644,8 +643,11 @@ def run_quick():
             auc_together=np.array(auc_metrics_list)
 
 
-            auc_slash_format.save(auc_together)
             auc_slash_format = SaveAucTxtTogether(joint_txt_file_loc)
+            auc_slash_format.save(auc_together)
+
+            # auc_slash_format = SaveAucTxt(joint_txt_file_loc)
+
 
 
    
@@ -778,7 +780,8 @@ def overlay_roc_curves():
 if __name__ == '__main__':
     # print('GPU is on: {}'.format(gpu_check() ) )
     start = time.time()
-    main()
+    # main()
+    run_quick(window_not_one=False)
     end = time.time()
     # print(end - start)
 

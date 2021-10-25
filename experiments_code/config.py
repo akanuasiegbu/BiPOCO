@@ -5,9 +5,9 @@ exp = { '1': False,
         '3_1': False,
         '3_2': False,
         # want an adaptive model saved based on arch size for model_loc
-        'data': 'avenue', #st, avenue,hr-st
+        'data': 'st', #st, avenue,hr-st
         'data_consecutive': True,
-        'model_name': 'lstm_network', #lstm_network, bitrap, bitrap_640_360
+        'model_name': 'lstm_network', #lstm_network, bitrap
         'K': 1,
         'plot_images':True # Plot images
         }
@@ -19,8 +19,8 @@ hyparams = {
     'buffer_size': 10000,
  
     'frames': 5,
-    'input_seq':3,
-    'pred_seq':3,
+    'input_seq':25,
+    'pred_seq':25,
     'metric': 'l2', #giou,l2, ciou diou,iou
     'avg_or_max': 'avg', #avg or max
     'errortype': 'error_flattened', #'error_diff' or 'error_summed' or 'error_flattened'
@@ -82,7 +82,7 @@ if exp['data_consecutive']:
     metrics_path_list = ['results_all_datasets', 'experiment_{}'.format(name_exp), 'metrics_plot_consecutive']
     visual_trajectory_list = ['results_all_datasets', 'experiment_{}'.format(name_exp), 'visual_trajectory_consecutive', '{}_{}_{}_{}_{}'.format(date, exp['data'], time, hyparams['input_seq'], hyparams['pred_seq'])]
     
-    if exp['model_name'] == 'bitrap' or exp['model_name'] == 'bitrap_640_360' or exp['model_name'] == 'bitrap_1080_1020':
+    if exp['model_name'] == 'bitrap':
          model_path_list = ['results_all_datasets', 'experiment_{}'.format(name_exp), 'saved_model_consecutive']
          metrics_path_list = ['results_all_datasets', 'experiment_{}'.format(name_exp), 'metrics_plot_consecutive_bitrap']
          visual_trajectory_list = ['results_all_datasets', 'experiment_{}'.format(name_exp), 'visual_trajectory_consecutive_bitrap', '{}_{}_{}_{}'.format(date, exp['data'], hyparams['input_seq'], hyparams['pred_seq'])]
@@ -138,13 +138,16 @@ loc =  {
         'avenue': "/home/akanu/output_bitrap/avenue_unimodal/gaussian_avenue_in_{}_out_{}_K_{}.pkl".format(hyparams['input_seq'],
                                                                                              hyparams['pred_seq'],
                                                                                              exp['K']),
+
         'avenue_template': "/home/akanu/output_bitrap/avenue_unimodal/gaussian_avenue_in_{}_out_{}_K_{}.pkl",
+        'avenue_template_skip': "/home/akanu/output_bitrap/avenue_unimodal/gaussian_avenue_in_{}_out_{}_K_{}_skip_{}.pkl",
 
         'st': "/home/akanu/output_bitrap/st_unimodal/gaussian_st_in_{}_out_{}_K_{}.pkl".format(hyparams['input_seq'],
                                                                                              hyparams['pred_seq'],
                                                                                              exp['K']),
 
-        'st_template': "/home/akanu/output_bitrap/st_unimodal/gaussian_st_in_{}_out_{}_K_{}.pkl"
+        'st_template': "/home/akanu/output_bitrap/st_unimodal/gaussian_st_in_{}_out_{}_K_{}.pkl",
+        'st_template_skip': "/home/akanu/output_bitrap/st_unimodal/gaussian_st_in_{}_out_{}_K_{}_skip_{}.pkl",
                                                                                              
                                     
     }

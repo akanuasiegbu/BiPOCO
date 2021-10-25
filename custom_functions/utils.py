@@ -69,7 +69,7 @@ class SaveAucTxt(object):
         else:
             metric = self.metric
         with open(self._directory, 'a') as with_as_write:
-            with_as_write.write('{} {:.4f} {:.4f}\n'.format(metric, auc[1], auc[0]))
+            with_as_write.write('{} {:.4f} {:.4f}\n'.format(metric, auc[0], auc[1]))
 
 class SaveAucTxtTogether(object):
     def __init__(self, save_path):
@@ -86,8 +86,10 @@ class SaveAucTxtTogether(object):
     def save(self, auc):
 
         with open(self._directory, 'a') as with_as_write:
-            with_as_write.write('{:.4f}/{:.4f}/{:.4f}/{:.4f}/{:.4f}\n'.format(*auc[:,1]))
-            with_as_write.write('{:.4f}/{:.4f}/{:.4f}/{:.4f}/{:.4f}\n'.format(*auc[:,0]))
+            # with_as_write.write('{:.4f}/{:.4f}/{:.4f}\n'.format(*auc[:,0])) # Human
+            # with_as_write.write('{:.4f}/{:.4f}/{:.4f}\n'.format(*auc[:,1]))
+            with_as_write.write('&{:.3f} &{:.3f} &{:.3f}\n'.format(*auc[:,0])) # Human
+            with_as_write.write('&{:.3f} &{:.3f} &{:.3f}\n'.format(*auc[:,1]))
 
 
 

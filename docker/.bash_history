@@ -5277,3 +5277,138 @@ ls
 cd experiments_code/
 python main.py 
 python main.py 
+clear
+ls
+nvidia-smi
+clear
+ls
+ls
+cd experiments_code/
+ls
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+clear
+ls
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+clear
+python -m pdb main.py 
+clear
+ls
+python -m pdb main.py 
+nvidia-
+nvidia-smi
+ckear
+clear
+ls
+cd experiments_code/
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+clear
+python -m pdb main.py 
+clear
+ls
+ls
+cd experiments_code/
+ls
+ls
+python -m pdb main.py 
+ cler
+clera
+clear
+ls
+clear
+python -m pdb main.py 
+clear
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+exit
+exit
+exit
+nvidia-smi
+clear
+ls
+cd experiments_code/
+ls
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+clear
+python -m pdb main.py 
+clear
+python -m pdb main.py 
+clear
+ls
+python main.py 
+clear
+python main.py 
+python main.py 
+clear
+python main.py 
+python main.py 
+python main.py 
+exit
+nvidia-smi
+clear
+ls
+cd experiments_code/
+ls
+ls
+python -m pdb main.py 
+clear
+python main.py 
+exit
+nvidia-smi
+clear
+ls
+cd experiments_code/
+ls
+python main.py 
+ls
+cd ~
+exit
+clear
+cd experiments_code/
+ls
+python main.py 
+clear
+ls
+cd experiments_code/
+python main.py 
+clear
+nvidia-smi
+cd docker/
+cd ..
+ls
+cd experiments_code/
+clear
+python main.py 
+nvidia-smi
+clear
+ls
+cd experiments_code/
+python main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python main.py 
+pip list
+ls
+nvidia-smi
+clear
+ls
+ls
+cd ex
+cd experiments_code/
+ls
+python main.py 
+python main.py 

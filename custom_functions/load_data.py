@@ -195,7 +195,7 @@ def Boxes(loc_files, txt_names, input_seq, pred_seq,data_consecutive, pad ='pre'
             # Block
             if testing: 
                 # Have this here because I changed anomaly to abnormal_ped
-                # And did not want to retrain on same data.
+                # And did not need to retrain model, so testing data has slighting diff format same data.
                 # So currently testing data has slightly different format
                 # different column title and additional column (abnormal_gt)
                 # For training we know abnormal_gt is 0 because training is normal
