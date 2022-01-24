@@ -8,3 +8,5 @@ results_all_datasets
 output_deepsort
 output_bitrap
 __pycache__
+output_pose_json_appended
+*.*
