@@ -14,7 +14,7 @@ from os import listdir
 from os.path import isfile, join, isdir
 import cv2
 from load_data import Files_Load
-from experiments_code.config import hyparams, loc, exp
+from config.config import hyparams, loc, exp
 
 def vid_to_frames(vid_loc,  pic_loc):
     """
@@ -29,24 +29,23 @@ def vid_to_frames(vid_loc,  pic_loc):
         if ret != True:
             break
 
-        cv2.imwrite(pic_loc + '/' +'{:02d}.jpg'.format(frame_index) , frame)
+        cv2.imwrite(pic_loc + '/' +'{:04d}.jpg'.format(frame_index) , frame)
         frame_index += 1
 
 
 
-
-def convert_spec_frames_to_vid(loc, save_vid_loc, vid_name, frame_rate):
+def convert_spec_frames_to_vid(visual_plot_loc, save_vid_loc, vid_name, frame_rate):
     """
-    loc : Directory that is looked at. 
+    visual_plot_loc : Directory that is looked at. 
     save_vid_loc : Directory that video is saved too
     frame_rate: frame rate for produced video
     """
     all_frames = []
     # loop over all the images in the folder
-    for c in sorted(listdir(loc)):
+    for c in sorted(listdir(visual_plot_loc)):
         # if c[0] not in ['0', '1', '2', '3','4', '5','6','7','8','9']:
                 # continue
-        img_path = join(loc, c)
+        img_path = join(visual_plot_loc, c)
         img = cv2.imread(img_path)
         height,width,layers = img.shape
         size = (width, height)
@@ -91,22 +90,21 @@ def conver_data_vid(loc, save_vid_loc):
             out.release()
 
 def make_dir(dir_list):
-    try:
-        print(os.makedirs(join( '/mnt/roahm/users/akanu/dataset/Anomaly/Avenue_Dataset/',
-                                *dir_list )) )
-    except OSError:
-        print('Creation of the directory {} failed'.format( join(os.path.dirname(os.getcwd()),
-                                                            *dir_list) ) )
-    else:
-        print('Successfully created the directory {}'.format(   join(os.path.dirname(os.getcwd()),
-                                                                *dir_list) ) )
+    folder = join( '/mnt/roahm/users/akanu/dataset/Anomaly/Avenue_Dataset/',
+                                *dir_list )
+
+    if not os.path.exists(folder):
+        os.makedirs(folder)
+        return True
+    
+    return False
 
 
 
 if __name__ =='__main__':
     train_file = loc['data_load'][exp['data']]['train_vid']
     test_file = loc['data_load'][exp['data']]['test_vid']    
-    test = False
+    test = True
 
     if test:
         file = test_file
@@ -114,6 +112,7 @@ if __name__ =='__main__':
         file = train_file
 
     for vid in sorted(listdir(file)):
+        print(vid)
 
         if test:
             dir_list = ['frames_of_vid', 'test', '{:02d}'.format(int(vid[:-4]))]

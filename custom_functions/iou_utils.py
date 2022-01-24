@@ -1,7 +1,7 @@
 import numpy as np
 from custom_metrics import bb_intersection_over_union, bb_intersection_over_union_np
 from load_data import norm_train_max_min, load_pkl
-from experiments_code.config import hyparams, loc, exp
+from config.config import hyparams, loc, exp
 from coordinate_change import xywh_tlbr, tlbr_xywh
 
 

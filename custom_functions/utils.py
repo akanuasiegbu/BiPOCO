@@ -1,20 +1,30 @@
 import os, sys, time
 from os.path import join
 import numpy as np
-from config import hyparams, loc, exp
+from config.config import hyparams, loc, exp
 from sklearn.metrics import roc_curve, auc
 
-def make_dir(dir_list):
+def make_dir(dir_list, dir_path='default'):
     try:
-        print(os.makedirs(join( os.path.dirname(os.getcwd()),
-                                *dir_list )) )
+        if dir_path == 'default':
+            print(os.makedirs(join( os.path.dirname(os.getcwd()),
+                                    *dir_list )) )
+        else:
+            print(os.makedirs(join( dir_path, *dir_list )) )
+        
     except OSError:
-        print('Creation of the directory {} failed'.format( join(os.path.dirname(os.getcwd()),
+        if dir_path == 'default':
+            print('Creation of the directory {} failed'.format( join(os.path.dirname(os.getcwd()),
                                                             *dir_list) ) )
-    else:
-        print('Successfully created the directory {}'.format(   join(os.path.dirname(os.getcwd()),
-                                                                *dir_list) ) )
+        else:
+            print('Creation of the directory {} failed'.format( join(dir_path,  *dir_list) ) )
 
+    else:
+        if dir_path == 'default':
+            print('Successfully created the directory {}'.format(   join(os.path.dirname(os.getcwd()),
+                                                                *dir_list) ) )
+        else:
+            print('Successfully created the directory {}'.format(   join(dir_path,  *dir_list) ) )
 
 class SaveTextFile(object):
     def __init__(self, save_path, metric, header_=True):

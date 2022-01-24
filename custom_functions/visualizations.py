@@ -4,7 +4,7 @@ import os
 import numpy as np
 from os.path import join
 from matplotlib import pyplot as plt
-from experiments_code.config import hyparams, loc, exp
+from config.config import hyparams, loc, exp
 from custom_functions.utils import make_dir
 
 def generate_images_with_bbox(testdicts,out_frame, visual_path):
@@ -79,7 +79,7 @@ def plot_frame_from_image(pic_loc, bbox_preds, save_to_loc, vid, frame, idy, pro
     cv2.imwrite(save_to_loc + '/' + '{}'.format(vid) + '/' + '{}__{}_{}_{:.4f}.jpg'.format(vid, frame, idy, prob), img)
 
 
-def plot_error_in_time(prob_with_time, time_series_plot_loc, vid, frame, idy):
+def plot_error_in_time(prob_with_time, time_series_plot_loc, vid, frame, idy, is_traj_abnormal=False):
     fig,ax = plt.subplots(nrows=1, ncols=1)
     ax.plot(prob_with_time, '-*', label='error summed')
     ax.plot(np.diff(prob_with_time), '-o', label='error diff')
@@ -88,12 +88,15 @@ def plot_error_in_time(prob_with_time, time_series_plot_loc, vid, frame, idy):
     ax.set_title('video:{} frame:{} idy:{}'.format(vid, frame, idy ))
     ax.legend()
 
-    img_path = join(    time_series_plot_loc,  '{}_time_series'.format(vid),
-                        '{}_{}_{}.jpg'.format(vid,frame,idy))
+    if is_traj_abnormal:
+        plot_name = 'vid_{}_sframe_{:02d}_id_{:02d}_abnorm.jpg'.format(vid,frame,idy)
+    else:
+        plot_name = 'vid_{}_sframe_{:02d}_id_{:02d}.jpg'.format(vid,frame,idy)
+                
+    img_path = join( time_series_plot_loc, '{}_time_series'.format(vid), plot_name)
 
     fig.savefig(img_path)
     plt.close(fig)
-
 
 def plot_vid(out_frame, pic_locs, visual_plot_loc, data):
 
@@ -128,3 +131,33 @@ def plot_vid(out_frame, pic_locs, visual_plot_loc, data):
                                 gt_bboxs = gt_bbox)
         if not hyparams['errortype']=='error_flattened':
             plot_error_in_time(prob_with_time, visual_plot_loc, vid[0][:-4], int(frame[0]), int(idy[0]))
+
+
+
+
+def plot_sequence(person_seq, max1, min1,pic_locs, visual_plot_loc, xywh=False):
+    gt_bboxs = person_seq['y_ppl_box']
+    bbox_preds = person_seq['pred_trajs']
+    frame_y = person_seq['frame_y']
+
+
+
+
+    if xywh:
+        gt_bboxs[:,0]  =  gt_bboxs[:,0]  -  gt_bboxs[:,2]/2
+        gt_bboxs[:,1]  =  gt_bboxs[:,1]  -  gt_bboxs[:,3]/2 # Now we are at tlwh
+        gt_bboxs[:,2:] =  gt_bboxs[:,:2] +  gt_bboxs[:,2:]
+
+        bbox_preds[:,0]  =  bbox_preds[:,0]  -  bbox_preds[:,2]/2
+        bbox_preds[:,1]  =  bbox_preds[:,1]  -  bbox_preds[:,3]/2 # Now we are at tlwh
+        bbox_preds[:,2:] =  bbox_preds[:,:2] +  bbox_preds[:,2:]
+
+    for bbox_pred, gt_bbox, frame in zip(bbox_preds, gt_bboxs, frame_y):
+        current_image_loc = pic_locs + '{:03d}.jpg'.format(frame)
+        img = cv2.imread(current_image_loc)
+        cv2.rectangle(img, (int(bbox_pred[0]), int(bbox_pred[1])), (int(bbox_pred[2]), int(bbox_pred[3])),(0,255,255), 2)
+        cv2.rectangle(img, (int(gt_bbox[0]), int(gt_bbox[1])), (int(gt_bbox[2]), int(gt_bbox[3])),(0,255,0), 2)
+        cv2.imwrite(visual_plot_loc + '/{}.jpg'.format(frame), img)
+
+        
+

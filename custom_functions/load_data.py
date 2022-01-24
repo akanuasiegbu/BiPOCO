@@ -55,16 +55,11 @@ def Files_Load(train_file,test_file):
 # def load_pkl(loc_files ):
 def load_pkl(data_loc, data_name):
     
-    # data_loc = '/home/akanu/output_bitrap/avenue/gaussian_avenue_640_360_trained_normal_data.pkl'
-    # data_loc = '/home/akanu/output_bitrap/avenue/gaussian_avenue_in_5_out_10.pkl'
     temp, datadict = {}, {}
     
     with open(data_loc, 'rb') as f:
         data = pickle.load(f)
-    # outputs = { 'X_global': all_X_globals, 'video_file': all_video_files,'abnormal':  all_abnormal,
-    #                         'id_x':all_id_x, 'id_y': all_id_y , 'frame_x':all_frame_x, 'frame_y':all_frame_y,
-    #                         'pred_trajs': all_pred_trajs, 'gt_trajs':all_gt_trajs,'distributions':distribution}
-    # # creates empty list
+
     for key in data.keys():
         if key == 'distributions':
             continue
@@ -72,7 +67,6 @@ def load_pkl(data_loc, data_name):
         temp[key] = []
         datadict[key] = 0
     
-    # adds data
     for key in temp.keys():
         data_keyed = data[key]
 
@@ -82,7 +76,7 @@ def load_pkl(data_loc, data_name):
                 preds = []
                 for pred in data_elem:
                     preds.append(pred[0])
-                temp[key].append(np.array(preds).reshape(-1,4) ) # picking one of the 20 right here
+                temp[key].append(np.array(preds).reshape(-1, preds[0].shape[0]) ) 
             elif key == 'video_file':
                 if data_name =='avenue':
                     temp[key].append('{:02d}.txt'.format(data_elem))
@@ -95,20 +89,20 @@ def load_pkl(data_loc, data_name):
                     else:
                         print('Error in load_pkl')
                         quit()
+                elif data_name == 'corridor':
+                    temp[key].append('{:06d}.txt'.format(data_elem))
+
 
             else:
                 temp[key].append(data_elem)
 
-    # puts data in array
     for key in temp.keys():
-        # print(key)
         datadict[key] = np.array(temp[key])
 
-    temp = None #clears temp array
-    
+    temp = None 
     #  rename keys
     datadict['x_ppl_box'] = datadict.pop('X_global')
-    datadict['y_ppl_box'] = datadict.pop('gt_trajs') #.reshape(-1,4)
+    datadict['y_ppl_box'] = datadict.pop('gt_trajs')#.reshape(-1,4)
 
     # add frame_ppl_id key
     frame_ppl_id = []
@@ -397,3 +391,12 @@ def norm_train_max_min(data, max1, min1, undo_norm=False):
         xx = (data['x_ppl_box'] - min1)/(max1 - min1)
         yy = (data['y_ppl_box'] - min1)/(max1 - min1)
         return xx,yy
+
+if __name__ == '__main__':
+    
+    load ='/home/akanu/output_bitrap/avenue_unimodal_pose/gaussian_avenue_in_3_out_3_K_1_pose.pkl'
+    # load = '/home/akanu/output_bitrap/avenue_unimodal/gaussian_avenue_in_3_out_3_K_1.pkl'
+    res = load_pkl(load, 'avenue')
+    
+    print('done')
+
