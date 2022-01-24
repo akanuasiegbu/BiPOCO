@@ -4,7 +4,7 @@ Will move to other locations if I end up using them alot
 """
 
 import numpy as np
-from config import hyparams, loc, exp
+from config.config import hyparams, loc, exp
 from matplotlib import pyplot as plt
 from os.path import join
 
