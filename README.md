@@ -1,7 +1,7 @@
 # BiPOCO: Bi-directional Trajectory Prediction with Pose Constraints for Pedestrian Anomaly Detection
 
 ## Clone Repo
-git clone --recurse-submodules [https://github.com/chaconinc/MainProject](https://github.com/akanuasiegbu/BiPOCO.git)
+git clone --recurse-submodules https://github.com/akanuasiegbu/BiPOCO.git
 
 
 
