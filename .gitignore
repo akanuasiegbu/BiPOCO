@@ -1,6 +1,5 @@
 results_all_datasets
 **/wandb/*
-.gitignore
 .ipynb_checkpoints
 .jupyter
 .local
@@ -9,4 +8,3 @@ output_deepsort
 output_bitrap
 __pycache__
 output_pose_json_appended
-*.*
