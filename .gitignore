@@ -8,3 +8,6 @@ output_deepsort
 output_bitrap
 __pycache__
 output_pose_json_appended
+experiments_code/quickfigs
+*.vscode*
+
