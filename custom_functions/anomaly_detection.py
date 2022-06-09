@@ -4,16 +4,21 @@ import numpy as np
 
 # Plotting Metrics
 from sklearn.metrics import roc_curve, auc
+from matplotlib import pyplot as plt
 
-#Currentfolder
+#Current Folder
 from custom_functions.coordinate_change import xywh_tlbr
 from custom_functions.metrics_plot import generate_metric_plots
-from custom_functions.visualizations import plot_frame_from_image, plot_vid, generate_images_with_bbox
 from custom_functions.utils import make_dir, SaveTextFile, SaveAucTxt, SaveAucTxtTogether
-from custom_functions.visualizations import plot_sequence
-from custom_functions.auc_metrics import iou_as_probability, l2_error, giou_ciou_diou_as_metric
+# from custom_functions.visualizations import plot_frame_from_image, plot_vid, generate_images_with_bbox
+# from custom_functions.visualizations import plot_sequence
+from custom_functions.auc_metrics import iou_as_probability, l2_norm_or_l2_error_weighted, giou_ciou_diou_as_metric, oks_similarity
 # From different folders
 from config.config import hyparams, loc, exp
+
+# For running if __name__ == '__main__'
+from config.max_min_class_global import Global_Max_Min
+from custom_functions.load_data import load_pkl
 
 
 def frame_traj_model_auc(model, testdicts, metric, avg_or_max, modeltype, norm_max_min):
@@ -45,25 +50,25 @@ def frame_traj_model_auc(model, testdicts, metric, avg_or_max, modeltype, norm_m
     if test_auc_frame == 'not possible':
         quit()
     
-    path_list = loc['metrics_path_list'].copy()
-    visual_path = loc['visual_trajectory_list'].copy()
-    for path in [path_list, visual_path]:
-        path.append('{}_{}_in_{}_out_{}_K_{}'.format(loc['nc']['date'], exp['data'], hyparams['input_seq'],
-                                                            hyparams['pred_seq'],exp['K'] ))
-        path.append('{}_{}_{}_in_{}_out_{}_{}'.format(  loc['nc']['date'],
-                                                        metric,
-                                                        avg_or_max, 
-                                                        hyparams['input_seq'], 
-                                                        hyparams['pred_seq'],
-                                                        hyparams['errortype'] ) )
+    # path_list = loc['metrics_path_list'].copy()
+    # visual_path = loc['visual_trajectory_list'].copy()
+    # for path in [path_list, visual_path]:
+    #     path.append('{}_{}_in_{}_out_{}_K_{}'.format(loc['nc']['date'], exp['data'], hyparams['input_seq'],
+    #                                                         hyparams['pred_seq'],exp['K'] ))
+    #     path.append('{}_{}_{}_in_{}_out_{}_{}'.format(  loc['nc']['date'],
+    #                                                     metric,
+    #                                                     avg_or_max, 
+    #                                                     hyparams['input_seq'], 
+    #                                                     hyparams['pred_seq'],
+    #                                                     hyparams['errortype'] ) )
 
-    make_dir(path_list)
-    plot_loc = join( os.path.dirname(os.getcwd()), *path_list )
-    joint_txt_file_loc = join( os.path.dirname(os.getcwd()), *path_list[:-1] )
+    # make_dir(path_list)
+    # plot_loc = join( os.path.dirname(os.getcwd()), *path_list )
+    # joint_txt_file_loc = join( os.path.dirname(os.getcwd()), *path_list[:-1] )
 
     # This plots the result of bbox in the images 
-    if exp['plot_images']:
-        generate_images_with_bbox(testdicts,out_frame, visual_path)
+    # if exp['plot_images']:
+    #     generate_images_with_bbox(testdicts,out_frame, visual_path)
 
     # generate_metric_plots(test_auc_frame, metric, nc, plot_loc)   
     # else:
@@ -82,6 +87,19 @@ def frame_traj_model_auc(model, testdicts, metric, avg_or_max, modeltype, norm_m
 
     fpr, tpr, thresholds = roc_curve(y_true, y_pred)
     AUC_frame = auc(fpr, tpr)
+
+    # Temp location
+    fig,ax = plt.subplots(nrows=1, ncols=1)
+    ax.plot(fpr, tpr, linewidth=2, label ='AUC = {:.3f}'.format(AUC_frame) )
+    ax.plot([0, 1], [0, 1], 'k--')
+    ax.legend()
+    plt.xlabel('False Positive Rate')
+    plt.ylabel('True Positive Rate')
+    fig.savefig('roc_curve.jpg')
+
+    #Temp Location
+
+
     fpr, tpr, thresholds = roc_curve(y_true_per_human, y_pred_per_human)
     AUC_human = auc(fpr,tpr)
     auc_human_frame = np.array([AUC_human, AUC_frame])
@@ -90,7 +108,7 @@ def frame_traj_model_auc(model, testdicts, metric, avg_or_max, modeltype, norm_m
 
 
 
-def ped_auc_to_frame_auc_data(model, testdicts, metric, avg_or_max, modeltype, norm_max_min):
+def ped_auc_to_frame_auc_data(model, testdicts, metric, avg_or_max, modeltype, norm_max_min, norm_scores_vid_wise = True):
     """
     removes select points to reduce to frame AUC
     input:
@@ -109,11 +127,14 @@ def ped_auc_to_frame_auc_data(model, testdicts, metric, avg_or_max, modeltype, n
 
     elif metric == 'l2':
         
-        prob, prob_along_time = l2_error(testdicts = testdicts, models = model, errortype =hyparams['errortype'], max1=norm_max_min.max , min1= norm_max_min.min)
+        prob, prob_along_time = l2_norm_or_l2_error_weighted(testdicts = testdicts, models = model, errortype =hyparams['errortype'], max1=norm_max_min.max , min1= norm_max_min.min,
+                                                            use_kp_confidence = exp['use_kp_confidence'])
 
     elif metric == 'giou' or metric =='ciou' or metric =='diou':
         prob, prob_along_time = giou_ciou_diou_as_metric(testdicts = testdicts, models = model, metric=metric,errortype = hyparams['errortype'], max1 = norm_max_min.max,min1 = norm_max_min.min)
 
+    elif metric == 'oks':
+        prob, prob_along_time = oks_similarity(testdicts=testdicts, models=model, metric=metric, errortype=hyparams['errortype'], max1 = norm_max_min.max, min1 = norm_max_min.min)
 
     # Creates a represention to combine multiple time sequences  
     pkldicts = combine_time(    testdicts, models=model, errortype=hyparams['errortype'], 
@@ -127,6 +148,9 @@ def ped_auc_to_frame_auc_data(model, testdicts, metric, avg_or_max, modeltype, n
                             prob_in_time = prob_along_time
                         )
     
+    if norm_scores_vid_wise:
+        out = normalize_anomaly_scores_by_video(out)
+
     prob = out['prob'] 
     vid_loc = out['vid']
     frame_loc = out['frame']
@@ -203,9 +227,7 @@ def anomaly_metric(prob, avg_or_max, pkldicts, prob_in_time):
     Note if using error_diff or error_summed,
     because we use the first frame of the trajectory as represention (in combine_time). 
     Can be thought of as making overlapping trajectory nonoverlapping 
-    therefore there is max/avg does not affect probs 
-    
-    
+    therefore there is max/avg does not affect probs   
     """
     
     pred_trajs = pkldicts['pred_trajs']
@@ -216,7 +238,7 @@ def anomaly_metric(prob, avg_or_max, pkldicts, prob_in_time):
     abnormal_gt = pkldicts['abnormal_gt_frame']
     abnormal_person = pkldicts['abnormal_ped_pred']
     
-    dim = pred_trajs.shape[1]
+    dim = pred_trajs.shape[-1]
     vid_frame = np.append(vid_loc, frame_loc, axis=1)
     vid_frame_person = np.append(vid_frame, person_id, axis =1)
 
@@ -262,8 +284,8 @@ def anomaly_metric(prob, avg_or_max, pkldicts, prob_in_time):
         std.append( np.std(pred_trajs[same_vid_frame_person].reshape(-1,dim), axis=0) )
         std_iou_or_l2.append(np.std(prob[same_vid_frame_person]))
         abnormal_ped.append(abnormal_person[same_vid_frame_person][0]) #same person
-        bbox_list.append(np.array(bbox).reshape(-1,dim))
-        gt.append(np.array(gt_box_temp).reshape(-1,dim))
+        bbox_list.append(np.array(bbox).reshape(-1, dim))
+        gt.append(np.array(gt_box_temp).reshape(-1, dim))
 
 
     out = {}
@@ -277,7 +299,7 @@ def anomaly_metric(prob, avg_or_max, pkldicts, prob_in_time):
     out['abnormal_ped_pred'] = np.array(abnormal_ped)#.reshape(-1,1)
     if exp['pose']:
         out['pred_bbox'] = np.array(bbox_list, dtype=object) #  Note that this can be diff shapes in diff index
-        out['gt_bbox'] = np.array(gt)
+        out['gt_bbox'] = np.array(gt,dtype=object)
     else:
         out['pred_bbox'] = xywh_tlbr(np.array(bbox_list, dtype=object)) #  Note that this can be diff shapes in diff index
         out['gt_bbox'] = xywh_tlbr(np.array(gt))
@@ -287,12 +309,23 @@ def anomaly_metric(prob, avg_or_max, pkldicts, prob_in_time):
     return out
 
 
+def normalize_anomaly_scores_by_video(out):
+    prob = out['prob']
+    vid = out['vid']
 
+    unique, unique_inverse, unique_counts = np.unique(vid, axis=0, return_inverse=True, return_counts=True)
+    repeat_inverse_id = np.where(unique_counts >= 1)[0] 
 
+    for i in repeat_inverse_id:
+        same_vids = np.where(unique_inverse==i)[0]
+        prob_same_vid = prob[same_vids]
+        anomaly_score_max_vid = np.max(prob_same_vid) 
+        anomaly_score_min_vid = np.min(prob_same_vid) 
+        prob[same_vids] = ( prob[same_vids] - anomaly_score_min_vid )/( anomaly_score_max_vid - anomaly_score_min_vid )
 
+    out['prob'] = prob
 
-
-
+    return out
 
 
 
@@ -384,3 +417,15 @@ def combine_time(testdicts, models, errortype, modeltype, max1 =None, min1 = Non
 
 
     return pkldict
+
+
+if __name__ == '__main__':
+
+    in_len = 5
+    norm_max_min = Global_Max_Min()    
+    # Load data
+    load = '/home/akanu/output_bitrap/avenue_unimodal_pose/gaussian_avenue_in_{}_out_{}_K_1_pose.pkl'.format(in_len, in_len)
+    datas = load_pkl(load, 'avenue', True)
+    testdicts = [datas]
+
+    frame_traj_model_auc( 'bitrap', testdicts, hyparams['metric'], hyparams['avg_or_max'], exp['model_name'], norm_max_min)

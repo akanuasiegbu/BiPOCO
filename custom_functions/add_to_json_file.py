@@ -4,6 +4,7 @@ import numpy as np
 from skimage.measure import label, regionprops
 from custom_functions.visualizations_pose import vis_frame, Opt
 import cv2
+import os
 """
 Aim to append to json file 
 1) Append frame level abnormal label. check
@@ -14,16 +15,31 @@ Aim to append to json file
 
 # Import json files 
 
-def json_add_frame_level(traj_loc, mask_loc, vid_num, dataset ='avenue'):
+def json_add_frame_level(traj_loc, mask_loc, vid_num, save_dir, dataset ='avenue'):
     res = json.load(traj_loc)
-    mask_data = loadmat(mask_loc)
+    
+    if dataset == 'avenue':
+        mask_data = loadmat(mask_loc)
+    
+    elif dataset == 'st':
+        mat_data_mask = np.load(mask_loc.format(vid_num[0],vid_num[1]))
+
     frame_level = []
     
-    for mask in mask_data['volLabel'][0]:
-        if np.all(mask == 0):
-            frame_level.append(0)
-        else:
-            frame_level.append(1)
+    if dataset == 'avenue':
+        for mask in mask_data['volLabel'][0]:
+            if np.all(mask == 0):
+                frame_level.append(0)
+            else:
+                frame_level.append(1)
+        
+    elif dataset == 'st':
+        for i in range(0,len(mat_data_mask)):
+            if np.all(mat_data_mask[i,:,:] == 0):
+                frame_level.append(0)
+            else:
+                frame_level.append(1)
+            
 
     # image id starts at 0 and the frame_level array index starts at 0 
     frame_level = np.array(frame_level) 
@@ -40,6 +56,8 @@ def json_add_frame_level(traj_loc, mask_loc, vid_num, dataset ='avenue'):
         else:
             if dataset == 'avenue':
                 mask = mask_data['volLabel'][0,image_id_prev]
+            elif dataset == 'st':
+                mask = mat_data_mask[image_id_prev,:,:]
             
             abnormal_ped.append(find_anomaly(mask, temp_frame_bbox))
             temp_frame_bbox = []
@@ -50,6 +68,10 @@ def json_add_frame_level(traj_loc, mask_loc, vid_num, dataset ='avenue'):
     # accounting for last
     if dataset == 'avenue':
         mask = mask_data['volLabel'][0,image_id_prev]
+        abnormal_ped.append(find_anomaly(mask, temp_frame_bbox))
+
+    elif dataset == 'st':
+        mask = mat_data_mask[image_id_prev,:,:]
         abnormal_ped.append(find_anomaly(mask, temp_frame_bbox))
     
     abnormal_ped = np.concatenate(abnormal_ped)
@@ -64,9 +86,12 @@ def json_add_frame_level(traj_loc, mask_loc, vid_num, dataset ='avenue'):
         temp_list.append(pedestrain)
     
     print('here')
-    
-    with open('../output_pose_json_appended/{:02d}_append.json'.format(vid_num), 'w') as json_file:
-        json.dump(temp_list, json_file )
+    if dataset =='avenue':
+        with open('{}/{:02d}_append.json'.format(save_dir, vid_num), 'w') as json_file:
+            json.dump(temp_list, json_file )
+    elif dataset == 'st':
+        with open('{}/{:02d}_{:04d}_append.json'.format(save_dir, vid_num[0], vid_num[1]), 'w') as json_file:
+            json.dump(temp_list, json_file )
 
 def find_anomaly(mask_data, temp_frame_bbox):
     """
@@ -170,7 +195,9 @@ def plot_appended_json_file(traj_loc, vid_num):
         else:
             # call plotting function
             result_partial = { 'imgname':image_id_prev , 'result': temp_ped } 
-            frame = '/mnt/roahm/users/akanu/dataset/Anomaly/Avenue_Dataset/frames_of_vid/test/{:02d}/{:02d}.jpg'.format(vid_num, image_id_prev)
+            # frame = '/mnt/roahm/users/akanu/dataset/Anomaly/Avenue_Dataset/frames_of_vid/test/{:02d}/{:02d}.jpg'.format(vid_num, image_id_prev)
+            frame = '/mnt/workspace/datasets/shanghaitech/testing/frames/{:02d}_{:04d}/{:03d}.jpg'.format(vid_num[0], vid_num[1], image_id_prev)
+            print(frame)
             frame = cv2.imread(frame)
 
             imgs.append(vis_frame(frame, result_partial, Opt))
@@ -187,7 +214,8 @@ def plot_appended_json_file(traj_loc, vid_num):
     height, width, layers = frame.shape
     size = (width, height)
     fourcc = cv2.VideoWriter_fourcc(*'XVID')
-    save_vid = '../output_pose_json_appended/{:02d}.avi'.format(vid_num)
+    # save_vid = '../output_pose_json_appended/{:02d}.avi'.format(vid_num)
+    save_vid = '../output_pose_json_appended_st/{:02d}_{:04d}.avi'.format(vid_num[0], vid_num[1])
 
     out = cv2.VideoWriter(save_vid, fourcc, 25, size)
     
@@ -224,13 +252,32 @@ def bb_intersection_over_union(boxA, boxB):
     
 if __name__ == "__main__":
     
-    for i in range(1,22):
-    # can for loop this and append the json file
-        traj_loc = open('/mnt/roahm/users/akanu/projects/AlphaPose/avenue_alphapose_out/test/{}/alphapose-results.json'.format(i))
-        mask_loc = '/mnt/workspace/datasets/avenue/ground_truth_demo/testing_label_mask/{:1d}_label.mat'.format(i)
-        json_add_frame_level(traj_loc, mask_loc, vid_num = i, dataset = 'avenue')
+    #########################################################################################################################################
+    file_num = os.listdir('/mnt/roahm/users/akanu/projects/Deep-SORT-YOLOv4/tensorflow2.0/deep-sort-yolov4/input_video/st_test')
+    file_num.sort()
+    # file_num = file_num[1:3]
+    vid_nums = []
+    for i in file_num:
+        split =i.split('_')
+        vid_nums.append([int(split[0]), int(split[1][:-4])])
+    # This is for ShangahiTech
+    # for vid_num in vid_nums:
+    #     traj_loc = open('/mnt/roahm/users/akanu/projects/AlphaPose/st_alphapose_out/test/{:02d}_{:04d}.avi/alphapose-results.json'.format(vid_num[0], vid_num[1]))
+    #     mask_loc = '/mnt/workspace/datasets/shanghaitech/testing/test_pixel_mask/{:02d}_{:04d}.npy'.format(vid_num[0], vid_num[1])
+    #     json_add_frame_level(traj_loc, mask_loc, vid_num = vid_num, save_dir='../output_pose_json_appended_st', dataset = 'st')
+
+    for vid_num in vid_nums[12:]:
+        json_append_loc = open('../output_pose_json_appended_st/{:02d}_{:04d}_append.json'.format(vid_num[0], vid_num[1]))
+        plot_appended_json_file(json_append_loc, vid_num)
+
+    #################################################################################################################################
+    # for vid_num in range(1,22):
+    # # can for loop this and append the json file
+    #     traj_loc = open('/mnt/roahm/users/akanu/projects/AlphaPose/avenue_alphapose_out/test/{}/alphapose-results.json'.format(vid_num))
+    #     mask_loc = '/mnt/workspace/datasets/avenue/ground_truth_demo/testing_label_mask/{:1d}_label.mat'.format(vid_num)
+    #     json_add_frame_level(traj_loc, mask_loc, vid_num = vid_num, dataset = 'avenue')
     
     # # plot video to check
-    # for i in range(1,22):
-    #     json_append_loc= open('../output_pose_json_appended/{:02d}_append.json'.format(i))
-    #     plot_appended_json_file(json_append_loc, i)
+    # for vid_num in range(1,22):
+    #     json_append_loc= open('../output_pose_json_appended/{:02d}_append.json'.format(vid_num))
+    #     plot_appended_json_file(json_append_loc, vid_num)

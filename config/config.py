@@ -5,13 +5,14 @@ exp = { '1': False,
         '3_1': False,
         '3_2': False,
         # want an adaptive model saved based on arch size for model_loc
-        'data': 'avenue', #st, avenue, corridor
+        'data': 'hr-st', #st, avenue, corridor, hr-avenue, hr-st
         'data_consecutive': True,
         'model_name': 'bitrap', #lstm_network, bitrap
-        'load_lstm_model': True,
+        'pose':True,
+        'load_lstm_model': False,
+        'use_kp_confidence': True,
         'K': 1,
         'plot_images':False, # Plot images
-        'pose':True
         }
 
 
@@ -21,11 +22,11 @@ hyparams = {
     'buffer_size': 10000,
  
     'frames': 5,
-    'input_seq':3,
-    'pred_seq':3,
+    'input_seq': 5,
+    'pred_seq': 5,
     'metric': 'l2', #giou,l2, ciou diou,iou
     'avg_or_max': 'avg', #avg or max
-    'errortype': 'error_summed', #'error_diff' or 'error_summed' or 'error_flattened'
+    'errortype': 'error_flattened', #'error_diff' or 'error_summed' or 'error_flattened'
 
     'to_xywh': True, # This is assuming file is in tlbr format
 
@@ -91,7 +92,7 @@ if exp['data_consecutive']:
 
 else:
     model_path_list = ['results_all_datasets', 'experiment_{}'.format(name_exp), 'saved_model']
-    metrics_path_list ['results_all_datasets', 'experiment_{}'.format(name_exp), 'metrics_plot']
+    metrics_path_list = ['results_all_datasets', 'experiment_{}'.format(name_exp), 'metrics_plot']
     visual_trajectory_list = ['results_all_datasets', 'experiment_{}'.format(name_exp), 'visual_trajectory', '{}_{}_{}_{}_{}'.format(date, exp['data'], time, hyparams['input_seq'], hyparams['pred_seq'])]
 
 
@@ -159,6 +160,5 @@ loc =  {
                                                                                              
                                     
     }
-
 
 }

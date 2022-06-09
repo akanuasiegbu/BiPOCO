@@ -7,9 +7,12 @@ import math
 from custom_functions.load_data import load_pkl
 from custom_functions.utils import make_dir
 from custom_functions.ped_sequence_plot import ind_seq_dict  
+from config.config import hyparams, loc, exp
+
 
 RED = (0, 0, 255)
 GREEN = (0, 255, 0)
+DARK_GREEN = (0, 100, 0)
 BLUE = (255, 0, 0)
 CYAN = (255, 255, 0)
 YELLOW = (0, 255, 255)
@@ -34,7 +37,7 @@ def get_color_fast(idx):
     return color
 
 class Opt():
-    showbox = True
+    showbox = False
     tracking = True
 def vis_frame(frame, im_res, opt, format='coco'):
     '''
@@ -49,7 +52,7 @@ def vis_frame(frame, im_res, opt, format='coco'):
     	kp_num = len(im_res['result'][0]['keypoints'])
 
     
-    if kp_num == 17:
+    if kp_num == 17 or kp_num == 18:
         if format == 'coco':
             l_pair = [
                 (0, 1), (0, 2), (1, 3), (2, 4),  # Head
@@ -79,6 +82,7 @@ def vis_frame(frame, im_res, opt, format='coco'):
 
 
     for human in im_res['result']:
+        
         part_line = {}
         kp_preds = human['keypoints']
         if kp_num == 17:
@@ -87,24 +91,28 @@ def vis_frame(frame, im_res, opt, format='coco'):
             color = get_color_fast(int(abs(human['idx'])))
         else:
             if index == 0:
-                color = BLUE
+                color = WHITE #using blue to show input and white for predictions
+                # color = YELLOW #using blue to show input and white for predictions
+                # index += 1
             elif index == 1:
-                color = GREEN
+                color = GREEN # Ground truth
+                # continue
             index += 1
 
         # Draw bboxes
         if opt.showbox:
             if 'box' in human.keys():
                 bbox = human['box']
-                # bbox = [bbox[0], bbox[1], bbox[0]+bbox[2], bbox[1]+bbox[3]]#xmin,xmax,ymin,ymax # tlwh to tlbr
-                bbox = [bbox[0] - bbox[2]/2, bbox[1] - bbox[3]/2, bbox[0] + bbox[2]/2, bbox[1] + bbox[3]/2]   # midx_midy,w,h to tlbr
+                bbox = [bbox[0], bbox[1], bbox[0]+bbox[2], bbox[1]+bbox[3]]#xmin,xmax,ymin,ymax # tlwh to tlbr (alphapose format)
+                # bbox = [bbox[0] - bbox[2]/2, bbox[1] - bbox[3]/2, bbox[0] + bbox[2]/2, bbox[1] + bbox[3]/2]   # midx_midy,w,h to tlbr (bitrap format)
                 cv2.rectangle(img, (int(bbox[0]), int(bbox[1])), (int(bbox[2]),int(bbox[3])), color, 1)
             if human['abnormal_ped_pred'] == 1 and index == 0:
+            # if human['abnormal_pedestrain'] == 1:
                 cv2.putText(img, str(human['idx']) + 'ABNORM', (int(bbox[0]), int((bbox[1] ))), DEFAULT_FONT, 1, color, 2)
             elif index == 0 :
                 cv2.putText(img, str(human['idx'] ), (int(bbox[0]), int((bbox[1]))), DEFAULT_FONT, 1, color, 2)
 
-        # Draw keypoints
+        # # Draw keypoints
         for n in range(18):
             # if kp_scores[n] <= vis_thres:
             #     continue
@@ -124,6 +132,9 @@ def vis_frame(frame, im_res, opt, format='coco'):
                 # transparency = float(max(0, min(1, kp_scores[n])))
                 transparency = 0.85
             img = cv2.addWeighted(bg, transparency, img, 1 - transparency, 0)
+            # cv2.putText is temp
+            # cv2.putText(img, str(n), (int(cor_x), int((cor_y))), DEFAULT_FONT, .2, GREEN, 1)
+        
         # Draw limbs
         for i, (start_p, end_p) in enumerate(l_pair):
             if start_p in part_line and end_p in part_line:
@@ -152,7 +163,7 @@ def vis_frame(frame, im_res, opt, format='coco'):
                 img = cv2.addWeighted(bg, transparency, img, 1 - transparency, 0)
     return img
 
-def pkl_trajs_alphapose_trajs(trajs, show_input=False):
+def pkl_trajs_alphapose_trajs(trajs, show_input=False, vid='all'):
     """
     Run to put into vis_frame_format 
     """
@@ -160,35 +171,54 @@ def pkl_trajs_alphapose_trajs(trajs, show_input=False):
     input_seq = trajs['id_y'].shape[-1]
 
     for elem in range(len(trajs['pred_trajs'])):
+        if vid =='all':
+            pass
+        elif vid != trajs['video_file'][elem][:-4]:
+            continue 
+
         flatten_trajs = []
-       
+
         for seq_step in range(0,input_seq):
             poses_bbox= []
             pred_trajs = {}
             gt_trajs = {}
             
             if show_input:
-                gt_trajs['keypoints'] = trajs['x_ppl_box'][elem][seq_step,:-4].reshape(-1,2)
-                gt_trajs['box'] = trajs['x_ppl_box'][elem][seq_step,-4:]
+                if trajs['pred_trajs'][elem].shape[-1] == 38:
+                    gt_trajs['keypoints'] = trajs['x_ppl_box'][elem][seq_step,:-4].reshape(-1,2)
+                    gt_trajs['box'] = trajs['x_ppl_box'][elem][seq_step,-4:]
+                if trajs['pred_trajs'][elem].shape[-1] == 36:
+                    gt_trajs['keypoints'] = trajs['x_ppl_box'][elem][seq_step,:].reshape(-1,2)
+
                 gt_trajs['frame_x'] =  trajs['frame_x'][elem][seq_step]
                 gt_trajs['idx'] = trajs['id_x'][elem][seq_step]
                 gt_trajs['video_file'] = trajs['video_file'][elem][:-4]
                 gt_trajs['abnormal_gt_frame'] = 0 # not lookin at abnormal inputs
                 gt_trajs['abnormal_ped_input'] = trajs['abnormal_ped_input'][elem][seq_step]
-                
+                pred_trajs['abnormal_ped_pred'] = trajs['abnormal_ped_pred'][elem][seq_step]
+
                 poses_bbox.append(gt_trajs)
             
             else:
-                pred_trajs['keypoints'] = trajs['pred_trajs'][elem][seq_step,:-4].reshape(-1,2)
-                pred_trajs['box'] = trajs['pred_trajs'][elem][seq_step,-4:]
+                if trajs['pred_trajs'][elem].shape[-1] == 38:
+                    pred_trajs['keypoints'] = trajs['pred_trajs'][elem][seq_step,:-4].reshape(-1,2)
+                    pred_trajs['box'] = trajs['pred_trajs'][elem][seq_step,-4:]
+                if trajs['pred_trajs'][elem].shape[-1] == 36:
+                    pred_trajs['keypoints'] = trajs['pred_trajs'][elem][seq_step,:].reshape(-1,2)
+
                 pred_trajs['frame_y'] = trajs['frame_y'][elem][seq_step]
                 pred_trajs['idx'] = trajs['id_y'][elem][seq_step]
                 pred_trajs['video_file'] = trajs['video_file'][elem][:-4]
                 pred_trajs['abnormal_gt_frame'] = trajs['abnormal_gt_frame'][elem][seq_step]
                 pred_trajs['abnormal_ped_pred'] = trajs['abnormal_ped_pred'][elem][seq_step]
-    
-                gt_trajs['keypoints'] = trajs['y_ppl_box'][elem][seq_step,:-4].reshape(-1,2)
-                gt_trajs['box'] = trajs['y_ppl_box'][elem][seq_step,-4:]
+
+
+                if trajs['pred_trajs'][elem].shape[-1] == 38:
+                    gt_trajs['keypoints'] = trajs['y_ppl_box'][elem][seq_step,:-4].reshape(-1,2)
+                    gt_trajs['box'] = trajs['y_ppl_box'][elem][seq_step,-4:]
+                if trajs['pred_trajs'][elem].shape[-1] == 36:
+                    gt_trajs['keypoints'] = trajs['y_ppl_box'][elem][seq_step,:].reshape(-1,2)
+                
                 gt_trajs['frame_y'] =  trajs['frame_y'][elem][seq_step]
                 gt_trajs['idx'] = trajs['id_y'][elem][seq_step]
                 gt_trajs['video_file'] = trajs['video_file'][elem][:-4]
@@ -216,8 +246,7 @@ def plot_pose_traj_entire_dataset(combine_trajs, plotted_pose_traj_path, dataset
         if tag_abnormal:
             is_traj_abnormal = []
             for pedestrain in trajs:
-                temp_to_debug = pedestrain['result'][0]['abnormal_ped_pred']
-                is_traj_abnormal.append(temp_to_debug)
+                is_traj_abnormal.append(pedestrain['result'][0]['abnormal_ped_pred'])
             is_traj_abnormal = np.array(is_traj_abnormal)   
             is_traj_abnormal = np.any(is_traj_abnormal==1)
         else:
@@ -233,24 +262,37 @@ def plot_pose_traj_entire_dataset(combine_trajs, plotted_pose_traj_path, dataset
             idx = pedestrian['result'][0]['idx']
             if dataset == 'avenue':
                 frame_loc = '/mnt/roahm/users/akanu/dataset/Anomaly/Avenue_Dataset/frames_of_vid/test/{:02d}/{:04d}.jpg'.format(int(video_num), frame_num) 
-                
-                # Create traj directory
-                if is_traj_abnormal:
-                    path_list = [ 'vid_{}_sframe_{:02d}_id_{:02d}_abnorm'.format( video_num, trajs[0]['imgname'], idx ) ]
-                else:
-                    path_list = [ 'vid_{}_sframe_{:02d}_id_{:02d}'.format( video_num, trajs[0]['imgname'], idx ) ]
-                # loc = '/home/akanu/results_all_datasets/pose/avenue_whole_correct_anom_lab/video_{:02d}'.format(int(video_num))
-                loc = os.path.join(plotted_pose_traj_path, 'video_{:02d}'.format(int(video_num)) ) 
-                make_dir(path_list, loc )    
+            elif dataset == 'st':
+                frame_loc = os.path.join(loc['data_load']['st']['pic_loc_test'], '{}/{:03d}.jpg'.format(video_num, frame_num) )
+
+
+            # Create traj directory
+            if is_traj_abnormal:
+                path_list = [ 'vid_{}_sframe_{:02d}_id_{:02d}_abnorm'.format( video_num, trajs[0]['imgname'], idx ) ]
+                if show_input:
+                    path_list = [ 'vid_{}_eframe_{:02d}_id_{:02d}_abnorm'.format( video_num, trajs[-1]['imgname']+1, idx ) ]
+            else:
+                path_list = [ 'vid_{}_sframe_{:02d}_id_{:02d}'.format( video_num, trajs[0]['imgname'], idx ) ]
+                if show_input:
+                    path_list = [ 'vid_{}_eframe_{:02d}_id_{:02d}'.format( video_num, trajs[-1]['imgname']+1, idx ) ]
+                    
+            # loc = '/home/akanu/results_all_datasets/pose/avenue_whole_correct_anom_lab/video_{:02d}'.format(int(video_num))
+            location = os.path.join(plotted_pose_traj_path, 'video_{:02d}'.format(int(video_num)) ) 
+            make_dir(path_list, location )    
             
             orig_img = cv2.imread(frame_loc)    
             img = vis_frame(orig_img, pedestrian, opt)
             
             
             if is_traj_abnormal:
-                path = os.path.join( loc,'vid_{}_sframe_{:02d}_id_{:02d}_abnorm'.format( video_num, trajs[0]['imgname'], idx) )
+                path = os.path.join( location,'vid_{}_sframe_{:02d}_id_{:02d}_abnorm'.format( video_num, trajs[0]['imgname'], idx) )
+                if show_input:
+                    path = os.path.join( location,'vid_{}_eframe_{:02d}_id_{:02d}_abnorm'.format( video_num, trajs[-1]['imgname']+1, idx) )
             else:
-                path = os.path.join( loc,'vid_{}_sframe_{:02d}_id_{:02d}'.format( video_num, trajs[0]['imgname'], idx) )
+                path = os.path.join( location,'vid_{}_sframe_{:02d}_id_{:02d}'.format( video_num, trajs[0]['imgname'], idx) )
+                if show_input:
+                    path = os.path.join( location,'vid_{}_eframe_{:02d}_id_{:02d}'.format( video_num, trajs[-1]['imgname']+1, idx) )
+                
                 
             cv2.imwrite(os.path.join( path, '{:02d}.jpg'.format(frame_num)), img) 
                 
@@ -302,17 +344,20 @@ if __name__ == '__main__':
 
     opt = Opt()
     in_len = 13
-    
+    dataset ='st'
     # Load data
-    load = '/home/akanu/output_bitrap/avenue_unimodal_pose/gaussian_avenue_in_{}_out_{}_K_1_pose.pkl'.format(in_len, in_len)
-    datas = load_pkl(load, 'avenue')
+    # load = '/home/akanu/output_bitrap/avenue_unimodal_pose_hc/using_gt_pred_endpoint_incorrectly/gaussian_avenue_in_{}_out_{}_K_1_pose_hc_endpoint.pkl'.format(in_len, in_len)
+    load = '/home/akanu/output_bitrap/st_unimodal_pose_hc/using_incorrect_endpoint/gaussian_st_in_{}_out_{}_K_1_pose_hc_endpoint.pkl'.format(in_len, in_len)
+    datas = load_pkl(load, dataset)
     
-    vis_trajs = pkl_trajs_alphapose_trajs(datas)
-    plotted_pose_traj_path = '/home/akanu/results_all_datasets/pose/avenue_in_{}_out_{}'.format(in_len, in_len)
-    plot_pose_traj_entire_dataset(vis_trajs, plotted_pose_traj_path, tag_abnormal=True)
+    # vis_trajs = pkl_trajs_alphapose_trajs(datas)
+    vis_trajs = pkl_trajs_alphapose_trajs(datas, show_input=False, vid='01_0027')
+
+    plotted_pose_traj_path = '/home/akanu/results_all_datasets/pose_hc/06_06_st_in_{}_out_{}_pose_hc_endpoint'.format(in_len, in_len)
+    plot_pose_traj_entire_dataset(vis_trajs, os.path.join(plotted_pose_traj_path, 'images'), dataset = dataset,show_input=False, tag_abnormal=True)
     
-    save_pose_trajs_imgs_to_vids( imgs_path=plotted_pose_traj_path,
-                                  save_vid_path='/home/akanu/results_all_datasets/pose/avenue_whole_correct_vid_anom_lab'
+    save_pose_trajs_imgs_to_vids( imgs_path=os.path.join(plotted_pose_traj_path, 'images'),
+                                  save_vid_path=os.path.join(plotted_pose_traj_path, 'videos')
                                 )
     quit()
 

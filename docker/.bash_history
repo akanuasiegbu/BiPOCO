@@ -6363,3 +6363,2043 @@ clear
 python -m pdb main.py 
 python -m pdb main.py 
 exit
+clear
+ls
+cd experiments_code/
+ls
+ls
+clear
+ls
+cd ..
+cd custom_functions/
+ls
+python visualizations_pose.py 
+python visualizations_pose.py 
+python visualizations_pose.py 
+python visualizations_pose.py 
+python visualizations_pose.py 
+python visualizations_pose.py 
+clear
+ls
+exit
+clear
+exit
+clear
+cd custom_functions/
+python visualizations_pose.py 
+cledar
+clear
+ls
+clear
+python visualizations_pose.py 
+python visualizations_pose.py 
+clear
+ls
+cd ..
+ls
+cd experiments_code/
+clear
+ls
+cd ..
+ls
+cd custom_functions/
+ls
+clear
+python visualizations_pose.py 
+cleear
+clear
+ls
+clear
+ls
+python -m pdb visualizations_pose.py 
+clear
+python visualizations_pose.py 
+cd ..
+ls
+clear
+ls
+cd experiments_code/
+ls
+clear
+ls
+python -m pdb main.py 
+python  main.py 
+clear
+ls
+cd ..
+ls
+cd x
+cd custom_functions/
+python visualizations_pose.py 
+clear
+ls
+clear
+ls
+python visualizations_pose.py 
+cd '/mnt/roahm/users/akanu/dataset/Anomaly/Avenue_Dataset/frames_of_vid/test
+cd /mnt/roahm/users/akanu/dataset/Anomaly/Avenue_Dataset/frames_of_vid/test
+ls
+cd 01
+ls
+exit
+clear
+ls
+cd custom_functions/
+ls
+python -m pdb visualizations
+python -m pdb visualizations_pose.py 
+clear
+python visualizations_pose.py 
+clear
+python visualizations_pose.py 
+python visualizations_pose.py 
+exit
+nvidia-smi
+clea
+clear
+ls
+ls
+clear
+ls
+ls
+cd docker/
+cd ..
+ls
+cd custom_functions/
+ls
+ckear
+clear
+python visualizations_pose.py 
+exit
+clear
+ls
+cd custom_functions/
+ls
+python frames_to_videos_n_back.py 
+clear
+python frames_to_videos_n_back.py 
+clear
+clear
+ls
+cd ..
+l
+ls'ls
+clear
+ls
+exit
+clear
+ls
+cd custom_functions/
+ls
+cd //
+cd ~
+ls
+cd output_bitrap/
+ls
+cd avenue_unimodal_pose/
+ls
+mkdir 01_26_22_does_not_include_kp_confidence
+mv gaussian_avenue_in_* 01_26_22_does_not_include_kp_confidence/
+ls
+clear
+ls
+clear
+ls
+cd ~
+ls
+cd custom_functions/
+ls
+python -m pdb load_data.py 
+python -m pdb load_data.py 
+clear
+ls
+python -m pdb load_data.py 
+ls
+clear
+ls
+python -m pdb load_data.py 
+exit
+clear
+ls
+nvidia-smi
+exit
+clear
+ls
+cd custom_functions/
+ls
+python -m pdb anomaly_detection.py 
+cler
+ls
+exit
+clear
+ls
+cd experiments_code/
+ls
+ls
+cd ..
+ks
+ls
+cd custom_functions/
+ls
+cd ..
+ls
+cd output_bitrap/
+;s
+ls
+cd avenue_unimodal_pose/
+ls
+clear
+cd ~
+ls
+cd custom_functions/
+ls
+python -m pdb anomaly_detection.py 
+python  anomaly_detection.py 
+clear
+python -m pdb anomaly_detection.py 
+clear
+ls
+clear
+ls
+python -m pdb anomaly_detection.py 
+python -m pdb anomaly_detection.py 
+clear
+python -m pdb anomaly_detection.py 
+clear
+ls
+python -m pdb anomaly_detection.py 
+clear
+s
+clear
+python -m pdb anomaly_detection.py 
+python -m pdb anomaly_detection.py 
+clear
+clear
+ls
+clear
+ls
+ls
+clear
+ls
+cd experiments_code/
+;s
+ls
+clear
+ls
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+ls
+clear
+exit
+clear
+ls
+clear
+ls
+clear
+ls
+clear
+ls
+cd output_bitrap/
+ls
+cd avenue_unimodal_pose/
+ls
+python
+nvidia-smi
+clear
+exit
+nvidia-sm
+nvidia-smi
+exit
+nvidia-smi
+clear
+ls
+cd experiments_code/
+ls
+python generate_time_plots.py 
+clear
+python generate_time_plots.py 
+python -m pdb generate_time_plots.py 
+python -m pdb generate_time_plots.py 
+clear
+python generate_time_plots.py 
+python -m pdb generate_time_plots.py 
+clear
+ls
+exit
+clear
+ls
+exit
+clear
+ls
+cd c
+cd custom_functions/
+ls
+python -m pdb anomaly_detection.py 
+clear
+ls
+cd experiments_code/
+ls
+python generate_time_plots.py 
+python generate_time_plots.py 
+clear
+exit
+clear
+ls
+cd experiments_code/
+clear
+ls
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+clear
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+clear
+python
+clear
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+clear
+ls
+ls
+cd custom_functions/
+ls
+clear
+ls
+python -m pdb visualizations_pose.py 
+clear
+python visualizations_pose.py 
+clear
+python visualizations_pose.py 
+python visualizations_pose.py 
+python visualizations_pose.py 
+python visualizations_pose.py 
+python visualizations_pose.py 
+python visualizations_pose.py 
+clear
+ls
+clear
+ls
+cd custom_functions/
+ls
+cd ..
+ls
+cd experiments_code/
+ls
+python -m generate_time_plots.py 
+clear
+python -m pdb generate_time_plots.py 
+clear
+ls
+python -m pdb generate_time_plots.py 
+clear
+python generate_time_plots.py 
+clear
+ls
+cd experiments_code/
+python generate_time_plots.py 
+clear
+ls
+clear
+ls
+cd experiments_code/
+ls
+ls
+python -m pdb generate_time_plots.py 
+python -m pdb generate_time_plots.py 
+clear
+clear
+python -m pdb generate_time_plots.py 
+c;ear
+clear
+ls
+cd experiments_code/
+ls
+python -m pdb generate_time_plots.py 
+python -m pdb generate_time_plots.py 
+python -m pdb generate_time_plots.py 
+clear
+ls
+cd experiments_code/
+ls
+cd ..
+ls
+cd experiments_code/
+clear
+ls
+clear
+python main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+clear
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+clear
+clear
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+clear
+clear
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+clear
+ls
+clear
+ls
+cd config/
+ls
+clear
+cd ..
+ls
+cd cis
+cd cis
+cd custom_functions/
+;s
+ls
+clear
+ls
+python -m pdb visualizations
+python -m pdb visualizations.py 
+clear
+python -m pdb visualizations.py 
+python -m pdb visualizations.py 
+clear
+python -m pdb visualizations.py 
+python -m pdb visualizations.py 
+clear
+python -m pdb visualizations
+python -m pdb visualizations.py 
+python -m pdb visualizations.py 
+clear
+ls
+cd custom_functions/
+ls
+python -m pdb visualizations.py 
+clear
+ls
+python -m pdb visualizations.py 
+python -m pdb visualizations.py
+python  visualizations.py
+python  -m pdb visualizations.py
+clear
+python  -m pdb visualizations.py
+clear
+python  -m pdb visualizations.py
+clear
+python  -m pdb visualizations.py
+python  -m pdb visualizations.py
+python  -m pdb visualizations.py
+python  -m pdb visualizations.py
+python  -m pdb visualizations.py
+python  -m pdb visualizations.py
+python   visualizations.py
+python   visualizations.py
+python  -m pdb visualizations.py
+clear
+clear
+ls
+clear
+ls
+clear
+python -m pdb visualizations.py 
+python -m pdb visualizations.py 
+clear
+python -m pdb visualizations.py 
+python -m pdb visualizations.py 
+python -m pdb visualizations.py 
+clear
+ls
+python -m pdb visualizations.py 
+python -m pdb visualizations.py 
+python -m pdb visualizations.py 
+clear
+python -m pdb visualizations.py 
+python -m pdb visualizations.py 
+clear
+python -m pdb visualizations.py 
+python -m pdb visualizations.py 
+python -m pdb visualizations.py 
+clear
+python visualizations.py 
+python -m pdb visualizations.py 
+python visualizations.py 
+clear
+python -m pdb visualizations.py 
+python visualizations.py 
+clear
+python visualizations.py 
+exit
+clear
+ls
+cd custom_functions/
+ls
+cd ..
+ls
+cd experiments_code/
+python -m pdb main.py 
+clear
+ls
+cd ..
+ls
+cd results_all_datasets/
+ls
+cd experiment_
+cd experiment_traj_model/
+ls
+cd visual_trajectory_consecutive_bitrap/
+ls
+cd 02_17_22_in_5_out_5/
+ls
+rm 01
+rm -r 01
+ls
+mv 01 01_temp
+ls
+cd ..
+ls
+cd 02_17_22_in_5_out_5/
+rm -r *
+clear
+ls
+clear
+ls
+clear
+ls
+clear
+ls
+clear
+exit
+cd custom_functions/
+python visualizations.py 
+cd ..
+cd experiments_code/
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+clear
+ls
+cd custom_functions/
+clear
+ls
+cd experiments_code/
+ls
+python main.py 
+clear
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+clear
+ls
+cd experiments_code/
+clear
+ls
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+clear
+ls
+python -m pdb main.py 
+python -m pdb main.py 
+clear
+python  main.py 
+python  main.py 
+python  main.py 
+python  main.py 
+clear
+clear
+clear
+python run_quick.py 
+python run_quick.py 
+python run_quick.py 
+python run_quick.py 
+clear
+python run_quick.py 
+python run_quick.py 
+clear
+exit
+clear
+ls
+cd experiments_code/
+ls
+python -m pdb main.py 
+clear
+ls
+python main.py 
+clear
+ls
+ls
+cd experiments_code/
+ls
+python run_quick.py 
+clear
+python run_quick.py 
+clear
+python run_quick.py 
+clear
+nvidia-smi
+exit
+clear
+ls
+cd experiments_code/
+python run_quick.py 
+clear
+ls
+cd custom_functions/
+ls
+python visualizations_pose.py 
+clear
+ls
+cd docker/
+cd ..
+ls
+cd custom_functions/
+ls
+cler
+clear
+ls
+python visualizations_pose.py 
+clear
+ls
+clear
+ls
+cd custom_functions/
+ls
+cler
+clear
+python visualizations_pose.py 
+clear
+clear
+ls
+clear
+clear
+ls
+python visualizations_pose.py 
+clear
+python visualizations_pose.py 
+clear
+python visualizations_pose.py 
+clear
+nvidia-smi
+clear
+clear
+ls
+cd custom_functions/
+ls
+python coordinate_change.py 
+clear
+ls
+python visualizations_pose.py 
+clear
+ls
+nvidia-si
+nvidia-smi
+exit
+clear
+ls
+cd experiments_code/
+clear
+ls
+python main.py 
+clear
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+clear
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+clear
+python main.py 
+python main.py 
+python -m pdb main.py 
+python main.py cd ..
+ls
+python -m pdb main.py 
+python -m pdb main.py 
+ls
+ls
+exit
+nvidia-smo
+nvidia-smi
+clear
+cd experiments_code/
+python main.py 
+python main.py 
+clear
+ls
+cd custom_functions/
+clear
+ls
+python visualizations_pose.py 
+clear
+python visualizations_pose.py 
+python visualizations_pose.py 
+python -m pdb visualizations_pose.py 
+clear
+ls
+python figure_out_locations.py 
+python figure_out_locations.py 
+python figure_out_locations.py 
+clear
+python figure_out_locations.py 
+python figure_out_locations.py 
+python figure_out_locations.py 
+python figure_out_locations.py 
+python figure_out_locations.py 
+python figure_out_locations.py 
+python figure_out_locations.py 
+python figure_out_locations.py 
+python figure_out_locations.py 
+python figure_out_locations.py 
+python figure_out_locations.py 
+python figure_out_locations.py 
+python figure_out_locations.py 
+python figure_out_locations.py 
+python figure_out_locations.py 
+python figure_out_locations.py 
+python figure_out_locations.py 
+python figure_out_locations.py 
+python figure_out_locations.py 
+python figure_out_locations.py 
+python figure_out_locations.py 
+c;ear
+c;ear
+clear
+ls
+cd output_bitrap/
+ls
+cd avenue_unimodal_pose/
+ls
+cd ..
+ls
+mkdir avenue_unimodal_pos_human_constraint
+ls
+mv avenue_unimodal_pos_human_constraint/ avenue_unimodal_pose_hc
+ls
+ls
+cd _
+ls
+cd avenue_unimodal_pose_hc
+ls
+clear
+ls
+cd ..
+ls
+cd !
+cd ~
+ls
+cd experiments_code/
+ls
+python -m pdb main.py 
+python ain.py 
+python main.py 
+python main.py 
+python -m pdbmain.py 
+python -m pdb main.py 
+clear
+ls
+python main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python -m pdb main.py 
+python pdb main.py 
+python main.py 
+python main.py 
+exit
+clear
+ls
+clear
+ls
+cd custom_functions/
+ls
+python -m pdb visualizations_pose.py 
+clear
+python -m pdb visualizations_pose.py 
+exit
+nvidia-smi
+exit
+ls
+exit
+exit
+nvidia-smi
+clear
+cd ak
+exit
+cd experiments_code/
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+nvidia-smi
+clear
+cd custom_functions/
+ls
+python visualizations_pose.py 
+exit
+cldear
+clear
+ls
+cd experiments_code/
+ls
+cd ..
+ls
+cd custom_functions/
+ls
+clear
+ls
+python -m pdb visualizations_pose.py 
+clear
+ls
+python -m pdb visualizations_pose.py 
+python -m pdb visualizations_pose.py 
+python -m pdb visualizations_pose.py 
+clear
+python  visualizations_pose.py 
+python  visualizations_pose.py 
+exit
+nvidia-smi
+exit
+clear
+ls
+cd custom_functions/
+ls
+python visualizations_pose.py 
+clear
+ls
+cd ..
+ls
+cd experiments_code/
+ls
+cd ~
+ls
+cd output_bitrap/
+ls
+cd ~
+ls
+cd results_all_datasets/
+clear
+ls
+cd pose_hc/
+ls
+cd 04_21_avenue_in_3_out_3_pose_hc/
+ls
+cd videos/
+clear
+ls
+cd video_05/
+ls
+mkdir abnorm_vid_05
+mv *abnorm.avi abnorm_vid_05/
+clear
+ls
+cd ~
+ls
+cd custom_functions/
+clear
+python visualizations_pose.py 
+clear
+exit
+clear
+clear
+ls
+nvidia-smi
+cler
+clear
+cd experiments_code/
+python main.py 
+python main.py 
+python main.py 
+clear
+python main.py 
+python main.py 
+python main.py 
+clea
+clear
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+clear
+ls
+cd custom_functions/
+ls
+clear
+exit
+exit
+clear
+exit
+cler
+clear
+ls
+who
+cd custom_functions/
+ls
+python visualizations_pose.py 
+exit
+clear
+ls
+ls
+cd e
+ls
+cd custom_functions/
+ls
+python visualizations_pose.py 
+exit
+c;ear
+cd custom_functions/
+lls
+ls
+python visualizations_pose.py 
+exit
+clear
+ls
+nvidia-SMI
+nvidia-smi
+cd custom_functions/
+ls
+python visualizations_pose.py 
+exit
+ls
+nvidia-smi
+ls
+cd custom_functions/
+ls
+ls
+python visualizations_pose.py 
+exit
+nvidia-smi
+cd custom_functions/
+clear
+python visualizations_pose.py 
+exit
+nvidia-smi
+ls
+cd custom_functions/
+ls
+python visualizations_pose.py 
+exit
+clear
+ls
+cd experiments_code/
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+clear
+l
+ls
+cd experiments_code/
+ls
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+exit
+nvidia-smi
+cd experiments_code/
+python main.py 
+python main.py 
+clear
+python main.py 
+python main.py 
+clear
+ls
+python main.py 
+python main.py 
+ls
+python run_quick.py 
+python run_quick.py 
+python run_quick.py 
+python -m pdb run_quick.py 
+clear
+python -m pdb run_quick.py 
+python run_quick.py 
+exit
+nvidia-smi
+clear
+ls
+cd custom_functions/
+ls
+python -m pdb frames_to_videos_n_back.py 
+clear
+cd ..
+exit
+nvidia-smi
+clear
+ls
+cd custom_functions/
+ls
+python frames_to_videos_n_back.py 
+clear
+python -m pdb frames_to_videos_n_back.py 
+clear
+python frames_to_videos_n_back.py 
+clear
+python frames_to_videos_n_back.py 
+ls
+python -m pdb frames_to_videos_n_back.py 
+clear
+python frames_to_videos_n_back.py 
+exit
+clear
+ls
+nvidia-smi
+cd analysis/
+ls
+python -m pdb mpjpe.py 
+clear
+ls
+python -m pdb mpjpe.py 
+nvidia-smi
+cler
+clear
+cd analysis/
+ls
+python mpjpe.py 
+python -m pdb mpjpe.py 
+clear
+ls
+clear
+ls
+cd experiments_code/
+ls
+ls
+clear
+ls
+clear
+ls
+cd ..
+ls
+cd analysis/
+ls
+python -m pdb mpjpe.py 
+clear
+ls
+cd experiments_code/
+ls
+python run_quick.py 
+python run_quick.py 
+python run_quick.py 
+clear
+ls
+clear
+ls
+cd experiments_code/
+ls
+python run_quick.py 
+python run_quick.py 
+clear
+clear
+python run_quick.py 
+cd ,,
+cd ..
+ls
+cd analysis/
+ls
+python mpjpe.py 
+python mpjpe.py 
+clear
+ls
+python mpjpe.py 
+python mpjpe.py 
+python mpjpe.py 
+python mpjpe.py 
+clear
+python mpjpe.py 
+python mpjpe.py 
+clear
+ls
+clear
+python mpjpe.py 
+python mpjpe.py 
+python mpjpe.py 
+python mpjpe.py 
+clear
+python mpjpe.py 
+python mpjpe.py 
+python mpjpe.py 
+python mpjpe.py 
+python mpjpe.py 
+clear
+cd ..
+ls
+cd experiments_code/
+ls
+python run_quick.py 
+clear
+exit
+nvidia-smi
+clear
+cd analysis/
+ls
+python mpjpe.py 
+python mpjpe.py 
+python mpjpe.py 
+python mpjpe.py 
+python mpjpe.py 
+python mpjpe.py 
+nvidia-smi
+clear
+cd experiments_code/
+LS
+ls
+python run_quick.py 
+exit
+clerar
+clear
+cd experiments_code/
+ls
+python run_quick.py 
+clear
+python main.py 
+clear
+python run_quick.py 
+exit
+nvidia-smi
+clear
+ls
+cd experiments_code/
+ls
+python run_quick.py 
+clear
+python main.py 
+clear
+python run_quick.py 
+exit
+nvidia-smi
+ls
+clear
+ls
+clear
+ls
+cd experiments_code/
+ls
+python main.py 
+python main.py 
+python main.py 
+python main.py 
+nvidia-smi
+exit
+clear
+ls
+cd experiments_code/
+ls
+cd ..
+ls
+cd custom_functions/
+ls
+python -m pdb auc_metrics.py 
+cler
+clear
+python -m pdb auc_metrics.py 
+clear
+clear
+python -m pdb auc_metrics.py 
+clear
+python -m pdb auc_metrics.py 
+clear
+python -m pdb auc_metrics.py 
+clear
+python -m pdb auc_metrics.py 
+clear
+ls
+clear
+l
+exit
+clear
+ls
+exit
+nvidia-smi
+cler
+clear
+ls
+clear
+ls
+clear
+ls
+cd custom_functions/
+ls
+python -m pdb auc_metrics.py 
+python -m pdb auc_metrics.py 
+clear
+exit
+nvidia-msi
+nvidia-smi 
+clear
+cd experiments_code/
+ls
+python run_quick.py 
+clear
+exit
+nvidia-smi
+exit
+nvidia-smi
+clear
+ls
+cd analysis/
+ls
+clear
+python mpjpe.py 
+clear
+ls
+clear
+ls
+clear
+python mpjpe.py 
+clear
+clear
+python mpjpe.py 
+clear
+python mpjpe.py 
+python mpjpe.py 
+python mpjpe.py 
+python mpjpe.py 
+cd ~
+clear
+ls
+cd results_all_datasets/
+ls
+cd pose_hc
+clear
+ls
+cd ~
+ls
+cd output_bitrap/
+ls
+cd avenue_pose_hc
+cd avenue_unimodal_pose_hc/
+ls
+cd using_gt_pred_endpoint_incorrectly/
+pwd
+clear
+cd ~
+ls
+cd custom_functions/
+ls
+python visualizations_pose.py 
+exit
+nvidia-smi
+clear
+cd output_bitrap/
+ls
+cd avenue_unimodal_pose_hc
+ls
+cd /home/akanu/results_all_datasets/pose_hc
+ls
+ls
+clear
+ls
+cd ~
+clear
+ls
+clear
+cd custom_functions/
+ls
+python visualizations_pose.py 
+exit
+nvidia-smi
+clear
+ls
+cd custom_functions/
+ls
+python -m pdb auc_metrics.py 
+clear
+ls
+clear
+python -m pdb auc_metrics.py 
+clear
+ls
+python -m pdb auc_metrics.py 
+python -m pdb auc_metrics.py 
+python -m pdb auc_metrics.py 
+clear
+python -m pdb auc_metrics.py 
+clear
+python -m pdb auc_metrics.py 
+clear
+python -m pdb auc_metrics.py 
+clear
+ls
+python -m pdb auc_metrics.py 
+clear
+python -m pdb auc_metrics.py 
+python -m pdb auc_metrics.py 
+cler
+clear
+exit
+clear
+ls
+cd c
+cd custom_functions/
+python -m pdb add_to_json_file.py 
+clear
+python -m pdb add_to_json_file.py 
+python -m pdb add_to_json_file.py 
+python add_to_json_file.py 
+clear
+exit
+clear
+cd custom_functions/
+python -m pdb add_to_json_file.py 
+python add_to_json_file.py 
+cd mnt/roahm/users/akanu/projects/AlphaPose/st_alphapose_out/test/
+cd /mnt/roahm/users/akanu/projects/AlphaPose/st_alphapose_out/test/
+ls
+cd 01_0014.avi
+ls
+ls
+pwd
+cd ~
+ls
+cd custom_functions/
+ls
+python -m pdb add_to_json_file.py 
+python -m pdb add_to_json_file.py 
+python -m pdb add_to_json_file.py 
+exit
+cd custom_functions/
+python add_to_json_file.py 
+exit
+nvidia-smi
+cler
+clear
+clear
+cd experiments_code/
+python main.py 
+clear
+python main.py 
+clear
+exit
+nvidia-smi
+clear
+clear
+ls
+cd experiments_code/
+;s
+ls
+python run_quick.py 
+python main.py 
+python main.py 
+clear
+python main.py 
+python main.py 
+clear
+ls
+cd ~
+ls
+cd docker/
+;s
+cd //
+cd ~
+ls
+cd output_bitrap/
+l
+ls
+cd avenue_unimodal_pose_hc/
+ls
+mv *bone.pkl using_gt_pred_endpoint_incorrectly/
+mv *joint.pkl using_gt_pred_endpoint_incorrectly/
+mv *bone_joint.pkl using_gt_pred_endpoint_incorrectly/
+ls
+mkdir using_new_endpoint
+mv *.pkl using_new_endpoint/
+ls
+cd using_gt_pred_endpoint_incorrectly/
+mkdir which_joint_endpoint
+ls
+mv *endpoint_joint.pkl which_joint_endpoint/
+cd which_joint_endpoint/
+ls
+pwd
+cd ~
+ls
+cd experiments_code/
+python run_quick.py 
+python run_quick.py 
+ls
+cd  ~
+ls
+cd output_bitrap/
+ls
+cd avenue_unimodal_pose_hc
+cler
+clear
+ls
+cd using_gt_pred_endpoint_incorrectly/
+ls
+mv which_joint_endpoint/ ../avenue_unimodal_pose_hx
+ls
+cd ..
+ls
+cd avenue_unimodal_pose_hx/ using_new_endpoint/
+mv avenue_unimodal_pose_hx/ using_new_endpoint/
+ls
+cd using_new_endpoint/
+ls
+cd avenue_unimodal_pose_hx/
+clear
+cd ..
+ls
+cd ~
+ls
+cd experiments_code/
+ls
+clear
+ls
+clear
+ls
+python run_quick.py 
+clear
+clear
+python run_quick.py 
+clear
+python run_quick.py 
+cd ~
+clear
+cd analysis/
+ls
+python mpjpe.py 
+python mpjpe.py 
+python mpjpe.py 
+clear
+cd ..
+ls
+cd /mnt/roahm/users/akanu/
+ls
+cd projects/
+ls
+cd ..
+ls
+cd dataset/
+ls
+cd Anomaly/
+ls
+cd ShangaiuTech/
+ls
+cd testing/
+ls
+cd frames/
+ls
+cd 01_0014/
+ls
+clear
+pwd
+ls
+clear
+cd 
+clear
+ls
+cd custom_functions/
+python add_to_json_file.py 
+clear
+python add_to_json_file.py 
+clear
+python add_to_json_file.py 
+python add_to_json_file.py 
+clear
+python add_to_json_file.py 
+python add_to_json_file.py 
+python add_to_json_file.py 
+clear
+ls
+python add_to_json_file.py 
+clear
+python add_to_json_file.py 
+exit
+clear
+cd custom_functions/
+clear
+ls
+python
+cler
+clear
+ls
+cd custom_functions/
+clear
+ls
+clear
+ls
+clear
+clear
+ls
+clear
+ls
+cd ..
+ls
+cd output_bitrap/
+ls
+cd avenue_unimodal_pose_hc/
+cler
+clear
+ls
+cd using_gt_pred_endpoint_incorrectly/
+clear
+ls
+pwd
+cd ~
+clear
+ls
+cd c
+cd custom_functions/
+clar
+clear
+ls
+python -m pdb load_data.py 
+clear
+python -m pdb load_data.py 
+clear
+python -m pdb load_data.py 
+python -m pdb load_data.py 
+python -m pdb load_data.py 
+clea
+python -m pdb load_data.py 
+python -m pdb load_data.py 
+python -m pdb load_data.py 
+clear
+ls
+clear
+ls
+cd docker/
+cd ..
+ls
+clear
+ls
+clear
+ls
+clear
+pwd
+ls
+cd results_all_datasets/
+ls
+cd pwd
+pwd
+cd pose_hc
+ls
+mkdir hr-avenue_results
+cd hr-avenue_results/
+pwd
+cd ~
+;s
+ls
+cd custom_functions/
+ls
+cd ..
+cd experiments_code/
+ls
+python -m pdb run_quick.py 
+clear
+python -m pdb run_quick.py 
+ls
+clear
+ls
+cd 
+ls
+cd output_bitrap/avenue_unimodal_pose_hc/
+cd using_gt_pred_endpoint_incorrectly/
+ls
+ls
+cler
+clear
+cd ..
+ls
+cd ~
+ls
+cd  experiments_code/
+ls
+python run_quick.py 
+exit
+nvidia-smi'
+nvidia-smi
+exit
+xit
+exit
+nvidia-smi
+exit
+exit
+exot
+exit
+cd analysis/
+python joint_error.py 
+exit
+nvidia-smi
+clear
+cd experiments_code/
+ls
+python run_quick.py 
+clear
+python run_quick.py 
+clear
+pwd
+ls
+cd ..
+ls
+cd output_bitrap/
+ls
+cd avenue_unimodal_pose_hc/
+ls
+cd using_new_endpoint/
+;s
+ls
+ls
+pwd
+clear
+cd ~
+cd analysis/
+ls
+python joint_error.py 
+python joint_error.py 
+clear
+python joint_error.py 
+exit
+clear
+cd ls
+ls
+cd analysis/
+ls
+python joint_error.py 
+python joint_error.py 
+cd ..
+l
+ls
+cd output_bitrap/
+ls
+cd avenue_unimodal_pose_hc/
+ls
+cd ~
+cd analysis/
+python joint_error.py 
+exit
+cd analysis/
+ls
+clear
+ls
+clear
+python -m pdb joint_error.py 
+clear
+python  joint_error.py 
+cd ~
+ls
+cd experiments_code/
+python run_q.py 
+python run_q.py 
+clear
+python run_q.py 
+exit
+cd experiments_code/
+ls
+python run_quick.py 
+python run_q.py 
+clear
+python run_q.py 
+exit
+cd experiments_code/
+python run_q.py 
+exit
+cd analysis/
+python joint_error.py 
+exit
+cd experiments_code/
+python run_q.py 
+exit
+exit
+clear
+ls
+cd docker/
+ls
+cd ex
+cd ..
+ls
+cd output_bitrap/
+ls
+ clear
+ls
+clear
+ls
+cd ..
+ls
+cd custom_functions/
+python -m pdb load_data.py 
+python -m pdb load_data.py 
+clear
+python -m pdb load_data.py 
+python -m pdb load_data.py 
+clear
+python load_data
+python load_data.py 
+python load_data.py 
+clear
+python -m pdb load_data.py 
+clear
+ls
+python -m pdb load_data.py 
+python load_data.py 
+clar
+clea
+rls
+clear
+la
+ls
+cd ak
+ls
+clear
+lw
+cd custom_functions/
+ls
+ls
+clear
+ls
+clear
+ls
+python -m pdb load_data.py 
+pwd
+clear
+python -m pdb load_data.py 
+lear
+clear
+ls
+python -m pdb load_data.py 
+python -m pdb load_data.py 
+python -m pdb load_data.py 
+clear
+python -m pdb load_data.py 
+python -m pdb load_data.py 
+clear
+ls
+clear
+python -m pdb load_data.py 
+python -m pdb load_data.py 
+python -m pdb load_data.py 
+python -m pdb load_data.py 
+clear
+ls
+clear
+ls
+python -m pdb load_data.py 
+python -m pdb load_data.py 
+python -m pdb load_data.py 
+clear
+ls
+python -m pdb load_data.py 
+python -m pdb load_data.py 
+python -m pdb load_data.py 
+python -m pdb load_data.py 
+python -m pdb load_data.py 
+python -m pdb load_data.py 
+python -m pdb load_data.py 
+clear
+ls
+cd ~
+cd experiments_code/
+python main.py 
+python main.py 
+python main.py 
+python
+clear
+cd ..
+ls
+cd cu
+cd custom_functions/
+ls
+python -m pdb load_data
+python -m pdb load_data.py 
+clear
+python -m pdb load_data.py 
+clear
+nvidia-smi
+cd /home/akanu/output_bitrap/st_unimodal_pose_hc/using_incorrect_endpoint
+ls
+cd ~
+clear
+cd custom_functions/
+ls
+cd ..
+ls
+cd experiments_code/
+python run_q.py 
+clear
+python run_q.py 
+exit
+clear
+ls
+cd analysis/
+clar
+clear
+python joint_error.py 
+exit
+clar
+cd experiments_code/
+clear
+python run_q.py 
+exit
+nvidia-smi
+cd /home/akanu/output_bitrap/st_unimodal_pose_hc/using_incorrect_endpoint
+ls
+cd ~
+cd custom_functions/
+cd ..
+cd analysis/
+python joint_error.py 
+exit
+exit
+exit
+clear
+ls
+cd output_bitrap/
+ls
+cd avenue_unimodal_pose_hc/
+ls
+cd ~
+ls
+cd results_all_datasets/
+ls
+cd pose_hc/
+ls
+exit
+cd custom_functions/
+ls
+python visualizations_pose.py 
+python visualizations_pose.py 
+python visualizations_pose.py 
+exut
+exit
+exit
+cler
+clear
+clear
+ls
+cd analysis/
+clear
+clear
+python joint_error.py 
+clear
+python joint_error.py 
+python joint_error.py 
+python joint_error.py 
+exit
+cd experiments_code/
+python run_q.py 
+clear
+cd ~
+clear
+ls
+clear
+ls
+cd custom_functions/
+ls
+python visualizations_pose.py 
+python visualizations_pose.py 
+python -m pdb visualizations_pose.py 
+python visualizations_pose.py 
+CLEAR
+clear
+python -m pdbvisualizations_pose.py 
+python -m pdb visualizations_pose.py 
+clear
+python visualizations_pose.py 
+clear
+python visualizations_pose.py 
+exit
+clear
+cd experiments_code/
+ls
+clear
+cd /home/akanu/output_bitrap/avenue_unimodal_pose_hc
+ls
+cd /home/akanu/results_all_datasets/pose_hc/results_no_bone_endpoint_joint/
+cd /home/akanu/results_all_datasets/pose_hc
+ls
+results_no_bone_endpoint_joint_not_norm
+mkdir results_no_bone_endpoint_joint_not_norm
+clear
+cd /home/akanu/results_all_datasets/pose_hc/results_no_bone_endpoint_joint_not_norm
+cd /home/akanu/results_all_datasets/pose_hc/results_no_bone_endpoint_joint_not_norm
+mkdir avenue
+mkdir hr-avenue
+ls
+mkdir st
+mkdir hr-st
+cd ~
+clear
+cd experiments_code/
+python run_q.py 
+python run_q.py 
+exit
+cd custom_functions/
+ls
+python visualizations_pose.py 
+clear
+python visualizations_pose.py 
+clear
+python visualizations_pose.py 
+exit
+exit
+clear
+cd /home/akanu/output_bitrap/avenue_unimodal_pose_hc
+ls
+cd ..
+ls
+cd st_unimodal_pose_hc/
+ls
+cd using_incorrect_endpoint/
+ls
+pwd
+cd ~
+;s
+clear
+cd experiments_code/
+python run_q.py 
+clear
+python run_q.py 
+python run_q.py 
+nvidia-smi
+clea
+cd results_all_datasets/
+ls
+cd pose_hc/
+ls
+results_with_frame_norm_confidence_not_norm/
+cd results_with_frame_norm_confidence_not_norm/
+pwd
+pwd
+ls
+cd ~
+cd experiments_code/
+python run_q.py 
+cd ~
+ls
+cd experiments_code/
+python main.py 
+python main.py 
+python main.py 
+python run_q.py 
+clear
+python run_q.py 
+python run_q.py 
+ls
+cd ~
+sl
+ls
+cd results_all_datasets/
+ls
+cd pose_hc/
+ls
+cd 04_28_avenue_in_13_out_13_pose_hc_endpoint/
+ls
+cd images/
+ls
+cd video_05/
+ls
+mkdir abnormal
+mv *abnorm abnormal/
+cd ~
+ls
+cd c
+cd custom_functions/
+ls
+python visualizations_pose.py 
+clear
+nvidia-si
+nvidia-smi
+cd analysis/
+python joint_error.py 
+clear
+cd ..
+cd~
+cd ~
+ls
+cd analysis/
+ls
+python joint_error.py 
+python joint_error.py 
+python joint_error.py 
+clear
+cd analysis/
+python joint_error.py 
+python joint_error.py 
+cd ~
+ls
+cd custom_functions/
+ls
+clear
+python visualizations_pose.py 
+python visualizations_pose.py 
+clear
+cd ..
+ls
+cd analysis/
+ls
+python joint_error.py 
+clear
+python joint_error.py 
+python joint_error.py 
+cd experiments_code/
+ls
+python run_q.py 
+nvidia-smi
+exit
+clear
+exit
+exit

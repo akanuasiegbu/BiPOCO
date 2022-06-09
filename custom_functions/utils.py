@@ -82,25 +82,37 @@ class SaveAucTxt(object):
             with_as_write.write('{} {:.4f} {:.4f}\n'.format(metric, auc[0], auc[1]))
 
 class SaveAucTxtTogether(object):
-    def __init__(self, save_path):
+    def __init__(self, save_path, joint_error=False):
         nc = [  loc['nc']['date'],
             loc['nc']['model_name'],
             loc['nc']['data_coordinate_out'],
             loc['nc']['dataset_name'],
             hyparams['input_seq'],
             hyparams['pred_seq'],
-            hyparams['errortype']
+            hyparams['metric']
             ]
-        self._directory =  join(save_path, '{}_{}_{}_{}_{}_{}_{}_together.txt'.format(*nc) )
+        
+        self._directory =  join(save_path, '{}_{}_{}_in_{}_out_{}_{}_{}.txt'.format(*nc) )
+        
+        if joint_error:
+            nc.append('joint_error')
+            self._directory =  join(save_path, '{}_{}_{}_in_{}_out_{}_{}_{}_{}.txt'.format(*nc) )
+        # self._directory =  join(save_path, '{}_{}_{}_{}_{}_{}_{}_together.txt'.format(*nc) )
 
-    def save(self, auc):
+
+    def save(self, ablation, auc):
 
         with open(self._directory, 'a') as with_as_write:
-            # with_as_write.write('{:.4f}/{:.4f}/{:.4f}\n'.format(*auc[:,0])) # Human
-            # with_as_write.write('{:.4f}/{:.4f}/{:.4f}\n'.format(*auc[:,1]))
-            with_as_write.write('&{:.3f} &{:.3f} &{:.3f}\n'.format(*auc[:,0])) # Human
-            with_as_write.write('&{:.3f} &{:.3f} &{:.3f}\n'.format(*auc[:,1]))
+            # with_as_write.write('&{:.3f} &{:.3f} &{:.3f}\n'.format(*auc[:,0])) # Human
+            # with_as_write.write('&{:.3f} &{:.3f} &{:.3f}\n'.format(*auc[:,1]))
 
+            with_as_write.write('{} {:.5f} {:.5f} \n'.format(ablation, auc[0,0], auc[0,1]))
+    
+    def save_joint_error(self, ablation, fn_mean, fab_mean, hn_mean, hab_mean):
+        with open(self._directory, 'a') as with_as_write:
+            with_as_write.write('{} {:.5f} {:.5f} {:.5f} {:.5f}\n'.format(ablation, fn_mean, fab_mean, hn_mean, hab_mean))
+
+        
 
 
 

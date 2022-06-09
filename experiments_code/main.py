@@ -207,7 +207,7 @@ def main():
         if exp['load_lstm_model']:        
             
             
-            if exp['data']=='avenue':
+            if 'avenue' in exp['data']:
                 if hyparams['input_seq'] in [3,13,25]:
                     modelpath = '/home/akanu/results_all_datasets/experiment_traj_model/saved_model_consecutive/07_05_2021_lstm_network_xywh_avenue_{}_{}.h5'.format(hyparams['input_seq'], hyparams['pred_seq'])
                 else:
@@ -229,22 +229,25 @@ def main():
     else:    
         # testdict = [ load_pkl('/home/akanu/output_bitrap/corridor_unimodal/gaussian_corridor_in_3_out_3_K_1_skip_3.pkl', exp['data']) ]
         # testdict = [ load_pkl(loc['pkl_file'][exp['data']], exp['data']) ]
-        testdict = [ load_pkl('/home/akanu/output_bitrap/avenue_unimodal_pose/gaussian_avenue_in_{}_out_{}_K_1_pose.pkl'.format(hyparams['input_seq'],
-                                                                                                                                hyparams['pred_seq']),
-                                                                                                                                exp['data']) ]
+        # file_to_load = '/home/akanu/output_bitrap/avenue_unimodal_pose_hc/gaussian_avenue_in_{}_out_{}_K_1_pose_hc_endpoint_joint.pkl'.format(hyparams['input_seq'],
+        #                                                                                                                         hyparams['pred_seq'] )
+        file_to_load = '/home/akanu/output_bitrap/st_unimodal_pose_hc/using_incorrect_endpoint/gaussian_st_in_5_out_5_K_1_pose_hc_endpoint.pkl'
+        testdict = [ load_pkl(file_to_load, exp['data'], False) ]
     
-
+    print( file_to_load)
     
     if exp['model_name']=='lstm_network':
         plot_traj_gen_traj_vid(testdict, exp['model_name'], vid = '01_0014', frame = 176, ped_id = 6, norm_max_min = norm_max_min, model=lstm_model)
         frame_traj_model_auc([lstm_model], [testdict], hyparams['metric'], hyparams['avg_or_max'], exp['model_name'])
     else:
         # plot_traj_gen_traj_vid(testdict[0], exp['model_name'], vid = '01_0014', frame = 176, ped_id = 6, norm_max_min) # plots iped trajactory
-        frame_traj_model_auc( 'bitrap', testdict, hyparams['metric'], hyparams['avg_or_max'], exp['model_name'], norm_max_min)
+        auc_human_frame = frame_traj_model_auc( 'bitrap', testdict, hyparams['metric'], hyparams['avg_or_max'], exp['model_name'], norm_max_min)
 
     
     print('Input Seq: {}, Output Seq: {}'.format(hyparams['input_seq'], hyparams['pred_seq']))
     print('Metric: {}, avg_or_max: {}'.format(hyparams['metric'], hyparams['avg_or_max']))
+    print('Use kp confidence: {}'.format(exp['use_kp_confidence']))
+    print('auc_human_frame human:{} frame:{}'.format(auc_human_frame[0], auc_human_frame[1]))
     # # Note would need to change mode inside frame_traj
     return 
 

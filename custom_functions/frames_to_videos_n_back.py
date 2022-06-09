@@ -65,8 +65,8 @@ def conver_data_vid(loc, save_vid_loc):
     """
 
     # loc = '/home/akanu/Dataset/Anomaly/UCSD_Anomaly_Dataset.v1p2/UCSDped2/Test'
-    loc = None
-    save_vid_loc = None # make
+    # loc = None
+    # save_vid_loc = None # make
     for f in sorted(listdir(loc)):
         # if f[0] != 'T' or f[-2:] == 'gt':
             # continue
@@ -83,15 +83,14 @@ def conver_data_vid(loc, save_vid_loc):
                 size = (width, height)
                 all_frames.append(img)
 
-            out = cv2.VideoWriter( join(save_vid_loc, '{}.avi'.format(f)), cv2.VideoWriter_fourcc(*'DIVX'), 24, size)
+            out = cv2.VideoWriter( join(save_vid_loc, '{}.avi'.format(f)), cv2.VideoWriter_fourcc(*'XVID'), 24, size)
 
             for i in range(0,len(all_frames)):
                 out.write(all_frames[i])
             out.release()
 
-def make_dir(dir_list):
-    folder = join( '/mnt/roahm/users/akanu/dataset/Anomaly/Avenue_Dataset/',
-                                *dir_list )
+def make_dir(dir_list, path):
+    folder = join( path, *dir_list )
 
     if not os.path.exists(folder):
         os.makedirs(folder)
@@ -102,26 +101,27 @@ def make_dir(dir_list):
 
 
 if __name__ =='__main__':
-    train_file = loc['data_load'][exp['data']]['train_vid']
-    test_file = loc['data_load'][exp['data']]['test_vid']    
-    test = True
+    path = '/mnt/roahm/users/akanu/dataset/Anomaly/ShangaiuTech/train_known_codec/frames_of_vid/train'
+    save_vid = '/mnt/roahm/users/akanu/dataset/Anomaly/ShangaiuTech/train_known_codec/videos'
+    conver_data_vid(loc=path, save_vid_loc=save_vid)
+    # file = '/mnt/workspace/datasets/shanghaitech/training/videos'
+    # test = False
 
-    if test:
-        file = test_file
-    else:
-        file = train_file
 
-    for vid in sorted(listdir(file)):
-        print(vid)
+    # for vid in sorted(listdir(file)):
+    #     print(vid)
 
-        if test:
-            dir_list = ['frames_of_vid', 'test', '{:02d}'.format(int(vid[:-4]))]
-        else:
-            dir_list = ['frames_of_vid', 'train', '{:02d}'.format(int(vid[:-4]))]
+    #     if test:
+    #         # dir_list = ['frames_of_vid', 'test', '{:02d}'.format(int(vid[:-4]))]
+    #         dir_list = ['frames_of_vid', 'test', '{}'.format(vid[:-4])]
+    #     else:
+    #         # dir_list = ['frames_of_vid', 'train', '{:02d}'.format(int(vid[:-4]))]
+    #         dir_list = ['frames_of_vid', 'train', '{}'.format(vid[:-4])]
 
-        vid_loc = test_file + '/' + vid
+    #     vid_loc = file + '/' + vid
 
-        make_dir(dir_list)
-        pic_loc = join( '/mnt/roahm/users/akanu/dataset/Anomaly/Avenue_Dataset/', *dir_list )
+    #     path = '/mnt/roahm/users/akanu/dataset/Anomaly/ShangaiuTech/train_known_codec/'
+    #     make_dir(dir_list, path)
+    #     pic_loc = join( path, *dir_list )
 
-        vid_to_frames(vid_loc, pic_loc)    
+    #     vid_to_frames(vid_loc, pic_loc)    
