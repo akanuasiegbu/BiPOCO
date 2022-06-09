@@ -1,4 +1,4 @@
-# Leveraging Trajectory Prediction for Pedestrian Video Anomaly Detection
+# BiPOCO: Bi-directional Trajectory Prediction with Pose Constraints for Pedestrian Anomaly Detection
 
 ## Description
 
