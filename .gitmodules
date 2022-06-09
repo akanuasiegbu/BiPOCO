@@ -1,0 +1,3 @@
+[submodule "bitrap"]
+	path = bitrap
+	url = git@github.com:akanuasiegbu/bitrap.git
