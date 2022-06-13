@@ -5,8 +5,10 @@ git clone --recurse-submodules https://github.com/akanuasiegbu/BiPOCO.git
 
 
 
-## Usage
-
+## Docker Usage
+1) cd into docker
+2) run ./build.sh
+3) use ./run.sh to enter docker file
 
 
 ## Requirements
