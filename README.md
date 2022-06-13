@@ -15,27 +15,15 @@ git clone --recurse-submodules https://github.com/akanuasiegbu/BiPOCO.git
 
 
 
+## To obtain AUC score
+In ```config/config.py``` change ```input_seq``` and ```pred_seq``` to match input and output sequence length.
+
+###### To run one file at a time
+In ```experiments_code/main.py``` change variable ```file_to_load``` to point to pkl file of interest.
+
+##### To run multiple pkl files at time
+Look at ```experiments_code/run_q.py```
 
 
 
 
-
-
-
-
-Credits
-
-Naming convention of saved models
-
-model: lstm
-type: xywh, tlbr
-dataset: ped1,ped2,st, avenue
-seq: size of sequence, 20, 5 etc int of sequence
-
-model_type_dataset_seq.h5
-example: lstm_xywh_ped1_20.h5
-
-1) Generate trajactery data 
-2) Run BiTrap and LSTM
-3) Run the Main file
-4) Change the parameters of config.py 
