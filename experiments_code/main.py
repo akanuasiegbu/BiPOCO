@@ -179,107 +179,30 @@ def main():
     norm_max_min = Global_Max_Min()
 
     
-    # nc = [  #loc['nc']['date'],
-    #         '07_05_2021',
-    #         loc['nc']['model_name'],
-    #         loc['nc']['data_coordinate_out'],
-    #         loc['nc']['dataset_name'],
-    #         hyparams['input_seq'],
-    #         hyparams['pred_seq'],
-    #         ] # Note that frames is the sequence input
 
 
-
-    if exp['model_name']=='lstm_network':
-        # For skip frames for  ablation study window paramter in data_lstm
-        traindict, testdict = data_lstm(    loc['data_load'][exp['data']]['train_file'],
-                                            loc['data_load'][exp['data']]['test_file'],
-                                            hyparams['input_seq'], hyparams['pred_seq'], 
-                                            )
-
-
-        norm_max_min = Global_Max_Min(use_None=False, traindict=traindict, testdict=testdict)
-
-        # max1 = traindict['x_ppl_box'].max() if traindict['y_ppl_box'].max() <= traindict['x_ppl_box'].max() else traindict['y_ppl_box'].max()
-        # min1 = traindict['x_ppl_box'].min() if traindict['y_ppl_box'].min() >= traindict['x_ppl_box'].min() else traindict['y_ppl_box'].min()
-
-
-        if exp['load_lstm_model']:        
-            
-            
-            if 'avenue' in exp['data']:
-                if hyparams['input_seq'] in [3,13,25]:
-                    modelpath = '/home/akanu/results_all_datasets/experiment_traj_model/saved_model_consecutive/07_05_2021_lstm_network_xywh_avenue_{}_{}.h5'.format(hyparams['input_seq'], hyparams['pred_seq'])
-                else:
-                    modelpath = '/home/akanu/results_all_datasets/experiment_traj_model/saved_model_consecutive/05_18_2021_lstm_network_xywh_avenue_{}_{}.h5'.format(hyparams['input_seq'], hyparams['pred_seq'])
-            
-            else:
-                modelpath = '/home/akanu/results_all_datasets/experiment_traj_model/saved_model_consecutive/07_05_2021_lstm_network_xywh_st_{}_{}.h5'.format(hyparams['input_seq'], hyparams['pred_seq'])
-
-            # model_path = os.path.join(  model_loc,
-            #                 '{}_{}_{}_{}_{}_{}.h5'.format(*nc))
-            lstm_model = tf.keras.models.load_model(    modelpath,  
-                                                        custom_objects = {'loss':'mse'} , 
-                                                        compile=True
-                                                        )
-        else:
-            # returning model right now but might change that in future and load instead
-            lstm_model = lstm_train(traindict, norm_max_min.max, norm_max_min.max)
-
-    else:    
-        # testdict = [ load_pkl('/home/akanu/output_bitrap/corridor_unimodal/gaussian_corridor_in_3_out_3_K_1_skip_3.pkl', exp['data']) ]
-        # testdict = [ load_pkl(loc['pkl_file'][exp['data']], exp['data']) ]
-        # file_to_load = '/home/akanu/output_bitrap/avenue_unimodal_pose_hc/gaussian_avenue_in_{}_out_{}_K_1_pose_hc_endpoint_joint.pkl'.format(hyparams['input_seq'],
-        #                                                                                                                         hyparams['pred_seq'] )
-        file_to_load = '/home/akanu/output_bitrap/st_unimodal_pose_hc/using_incorrect_endpoint/gaussian_st_in_5_out_5_K_1_pose_hc_endpoint.pkl'
-        testdict = [ load_pkl(file_to_load, exp['data'], False) ]
+    file_to_load = '/home/akanu/output_bitrap/st_unimodal_pose_hc/using_incorrect_endpoint/gaussian_st_in_5_out_5_K_1_pose_hc_endpoint.pkl'
+    testdict = [ load_pkl(file_to_load, exp['data'], False) ]
     
     print( file_to_load)
     
-    if exp['model_name']=='lstm_network':
-        plot_traj_gen_traj_vid(testdict, exp['model_name'], vid = '01_0014', frame = 176, ped_id = 6, norm_max_min = norm_max_min, model=lstm_model)
-        frame_traj_model_auc([lstm_model], [testdict], hyparams['metric'], hyparams['avg_or_max'], exp['model_name'])
-    else:
-        # plot_traj_gen_traj_vid(testdict[0], exp['model_name'], vid = '01_0014', frame = 176, ped_id = 6, norm_max_min) # plots iped trajactory
-        auc_human_frame = frame_traj_model_auc( 'bitrap', testdict, hyparams['metric'], hyparams['avg_or_max'], exp['model_name'], norm_max_min)
+
+    # plot_traj_gen_traj_vid(testdict[0], exp['model_name'], vid = '01_0014', frame = 176, ped_id = 6, norm_max_min) # plots iped trajactory
+    auc_human_frame = frame_traj_model_auc( 'bitrap', testdict, hyparams['metric'], hyparams['avg_or_max'], exp['model_name'], norm_max_min)
 
     
     print('Input Seq: {}, Output Seq: {}'.format(hyparams['input_seq'], hyparams['pred_seq']))
     print('Metric: {}, avg_or_max: {}'.format(hyparams['metric'], hyparams['avg_or_max']))
     print('Use kp confidence: {}'.format(exp['use_kp_confidence']))
     print('auc_human_frame human:{} frame:{}'.format(auc_human_frame[0], auc_human_frame[1]))
-    # # Note would need to change mode inside frame_traj
     return 
 
 
-    #Load Data
-    # pkldicts_temp = load_pkl('/home/akanu/output_bitrap/avenue_unimodal/gaussian_avenue_in_5_out_1_K_1.pkl')
     
-    
-
-    # pkldicts = []
-    # pkldicts.append(load_pkl(loc['pkl_file']['avenue_template'].format(5,5)))
-
-    # modelpath = '/home/akanu/results_all_datasets/experiment_traj_model/saved_model_consecutive/07_05_2021_lstm_network_xywh_avenue_{}_{}.h5'.format(hyparams['input_seq'], hyparams['pred_seq'])
-
-        
-
-
-
-    # classifer_train(traindict, testdict, lstm_model)
-     
-
-    # plot_traj_gen_traj_vid(pkldict,lstm_model)
 
     
 
 if __name__ == '__main__':
-    # print('GPU is on: {}'.format(gpu_check() ) )
-    start = time.time()
     main()
-    # run_quick(window_not_one=False)
-    end = time.time()
-    # print(end - start)
-
 
     print('Done') 
