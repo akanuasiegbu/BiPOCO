@@ -10,11 +10,8 @@ from os.path import join
 
 from config.config import hyparams, loc, exp
 
-from custom_metrics import bb_intersection_over_union, bb_intersection_over_union_np
 from coordinate_change import xywh_tlbr, tlbr_xywh
-from TP_TN_FP_FN import *
-from load_data import norm_train_max_min, load_pkl
-from load_data_binary import compute_iou
+from load_data import  load_pkl
 from custom_functions.iou_utils import giou, diou, ciou
 
 

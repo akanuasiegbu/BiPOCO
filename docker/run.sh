@@ -4,19 +4,6 @@ else
     GPU=$1
 fi
 
-# docker run -it --rm \
-#   --gpus '"device='$GPU'"' \
-#   --name anomalous_ser \ # This is the container name
-#   --hostname $(hostname) \
-#   -e HOME \
-#   -p 8888:8888 \
-#   -u $(id -u):$(id -g) \
-#   -v $HOME:$HOME \
-#   -v /mnt/roahm:/mnt/roahm \
-#   #  -v $HOME/git/anomalous_pred:/tf/notebooks \
-#   #-v $HOME/project/anomalous_pred:/tf/notebooks \
-#   anomalous_pred_ser:latest
-
 docker run -it \
   -u $(id -u):$(id -g) \
   --rm \
@@ -28,5 +15,5 @@ docker run -it \
   -v /mnt/workspace/datasets:/mnt/workspace/datasets:ro \
   -w /home/akanu \
   -v $HOME/akanu/projects/Projects_to_make_public/BiPOCO:/home/akanu \
-  abnormal_ped:latest
+  bipoco:latest
 

@@ -18,7 +18,7 @@ from custom_functions.load_data import  load_pkl
 
 from custom_functions.ped_sequence_plot import ind_seq_dict 
 
-from custom_functions.frames_to_videos_n_back import convert_spec_frames_to_vid
+# from custom_functions.frames_to_videos_n_back import convert_spec_frames_to_vid
 
 from custom_functions.anomaly_detection import frame_traj_model_auc
 
@@ -131,20 +131,6 @@ def plot_traj_gen_traj_vid(testdict, modeltype, vid, frame, ped_id, norm_max_min
 
 
    
-
-def gen_vid(vid_name, visual_plot_loc, frame_rate=1):
-    # vid_name = '04_670_61'
-    # image_loc = '/home/akanu/results_all_datasets/experiment_traj_model/visual_trajectory_consecutive/{}'.format(vid_name)
-    save_vid_loc = loc['visual_trajectory_list']
-    save_vid_loc[-1] = 'short_generated_videos'
-
-    make_dir(save_vid_loc)
-    save_vid_loc = join(    os.path.dirname(os.getcwd()),
-                            *save_vid_loc
-                            )
-    convert_spec_frames_to_vid( visual_plot_loc = visual_plot_loc, 
-                                save_vid_loc = save_vid_loc, 
-                                vid_name = vid_name, frame_rate = frame_rate )
 
     
 
