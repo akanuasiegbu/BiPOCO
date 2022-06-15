@@ -8,10 +8,12 @@ git clone --recurse-submodules https://github.com/akanuasiegbu/BiPOCO.git
 ## Docker Usage
 1) ```cd docker```
 2) run ```./build.sh```
-3) use ```./run.sh``` to enter docker file
+3) use ```./run.sh``` to enter docker image
 
 
 ## Requirements
+* torch==1.4.0
+* torchvision==0.5.0
 * matplotlib==3.4.1 
 * tqdm==4.36.1 
 * yacs==0.1.8 
