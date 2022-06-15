@@ -32,12 +32,14 @@ Users can train the BiTraP models on Avenue and ShanghaiTech dataset easily by r
 
 Train on Avenue Dataset
 ```
-python bitrap/tools/train.py --config_file bitrap/configs/avenue_pose_hc.yml
+cd bitrap
+python tools/train.py --config_file configs/avenue_pose_hc.yml
 ```
 
 Train on ShanghaiTech Dataset
 ```
-python  bitrap/tools/train.py --config_file bitrap/configs/st_pose_hc.yml
+cd bitrap
+python  tools/train.py --config_file configs/st_pose_hc.yml
 ```
 
 To train/inferece on CPU or GPU, simply add `DEVICE='cpu'` or  `DEVICE='cuda'`. By default we use GPU for both training and inferencing.
@@ -58,13 +60,15 @@ TO obtain the rest of the pkl files for the pose trajectory for first-person (eg
 
 Test on Avenue dataset:
 ```
-python bitrap/tools/test.py --config_file bitrap/configs/avenue_pose_hc.yml CKPT_DIR **DIR_TO_CKPT**
+cd bitrap
+python tools/test.py --config_file configs/avenue_pose_hc.yml CKPT_DIR **DIR_TO_CKPT**
 
 ```
 
 Test on ShanghaiTech dataset:
 ```
-python bitrap/tools/test.py --config_file bitrap/configs/st_pose_hc.yml CKPT_DIR **DIR_TO_CKPT**
+cd bitrap
+python tools/test.py --config_file configs/st_pose_hc.yml CKPT_DIR **DIR_TO_CKPT**
 ```
 
 Note that you must set the input and output lengths to be the same in YML file used (```INPUT_LEN``` and ```PRED_LEN```) and ```bitrap/datasets/config_for_my_data.py``` (```input_seq``` and ```pred_seq```)
