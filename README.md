@@ -6,8 +6,8 @@ git clone --recurse-submodules https://github.com/akanuasiegbu/BiPOCO.git
 
 
 ## Docker Usage
-1) cd into docker
-2) run ./build.sh
+1) ```cd docker```
+2) ```run ./build.sh```
 3) use ./run.sh to enter docker file
 
 
@@ -17,7 +17,8 @@ git clone --recurse-submodules https://github.com/akanuasiegbu/BiPOCO.git
 * The inputted data into BiTrap for train and test poses can be found in this [folder](https://drive.google.com/drive/folders/1oNKUXdYlNP1g7M9T3E1UWERh0lFobKAl?usp=sharing).
   * Next download the json files and put them in a folder. Then in ```bitrap/datasets/config_for_my_data.py``` set ```loc['data_load']['avenue']['train_poses']```.   ```loc['data_load']['avenue']['test_poses']```,  ```loc['data_load']['st']['train_poses']```, and  ```loc['data_load']['st']['test_poses']``` to the correct directory.
 * To recreate the pose input data
-  * Run [AlphaPose](https://github.com/MVIG-SJTU/AlphaPose/tree/ddaf4b99327132f7617a768a75f7cb94870ed57c) (commit number ddaf4b9)
+  * Download [Avenue](http://www.cse.cuhk.edu.hk/leojia/projects/detectabnormal/dataset.html) and [ShanghaiTech](https://svip-lab.github.io/dataset/campus_dataset.html) dataset
+  * Run [AlphaPose](https://github.com/MVIG-SJTU/AlphaPose/tree/ddaf4b99327132f7617a768a75f7cb94870ed57c) (commit number ddaf4b9) on the Avenue and ShanghaiTech video frames to obtain pose trajectory
     * Config file used was ```configs/coco/resnet/256x192_res50_lr1e-3_1x.yaml```
     * Pretrained model used was ```pretrained_models/fast_res50_256x192.pth```
     * Tracker used was Human-ReID based tracking (```--pose_track```)
@@ -31,12 +32,12 @@ Users can train the BiTraP models on Avenue and ShanghaiTech dataset easily by r
 
 Train on Avenue Dataset
 ```
-python bitrap/tools/train.py --config_file configs/avenue_pose_hc.yml
+python bitrap/tools/train.py --config_file bitrap/configs/avenue_pose_hc.yml
 ```
 
 Train on ShanghaiTech Dataset
 ```
-python  bitrap/tools/train.py --config_file configs/st_pose_hc.yml
+python  bitrap/tools/train.py --config_file bitrap/configs/st_pose_hc.yml
 ```
 
 To train/inferece on CPU or GPU, simply add `DEVICE='cpu'` or  `DEVICE='cuda'`. By default we use GPU for both training and inferencing.
@@ -57,13 +58,13 @@ TO obtain the rest of the pkl files for the pose trajectory for first-person (eg
 
 Test on Avenue dataset:
 ```
-python tools/test.py --config_file bitrap/configs/avenue_pose_hc.yml CKPT_DIR **DIR_TO_CKPT**
+python bitrap/tools/test.py --config_file bitrap/configs/avenue_pose_hc.yml CKPT_DIR **DIR_TO_CKPT**
 
 ```
 
 Test on ShanghaiTech dataset:
 ```
-python tools/test.py --config_file bitrap/configs/st_pose_hc.yml CKPT_DIR **DIR_TO_CKPT**
+python bitrap/tools/test.py --config_file bitrap/configs/st_pose_hc.yml CKPT_DIR **DIR_TO_CKPT**
 ```
 
 Note that you must set the input and output lengths to be the same in YML file used (```INPUT_LEN``` and ```PRED_LEN```) and ```bitrap/datasets/config_for_my_data.py``` (```input_seq``` and ```pred_seq```)
