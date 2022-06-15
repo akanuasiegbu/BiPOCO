@@ -12,7 +12,23 @@ git clone --recurse-submodules https://github.com/akanuasiegbu/BiPOCO.git
 
 
 ## Requirements
-
+* matplotlib==3.4.1 
+* tqdm==4.36.1 
+* yacs==0.1.8 
+* Pillow==7.0.0 
+* tensorboardx==2.2 
+* wandb==0.10.25 
+* scikit-learn==0.24.1 
+* opencv-python==4.5.1.48  
+* coloredlogs==15.0 
+* termcolor==1.1.0 
+* dill==0.3.3
+* six==1.13.0 
+* scipy==1.6.2 
+* seaborn==0.11.0
+* pandas==1.1.2 
+* more_itertools==8.8.0
+* protobuf==3.15.8
 ## Step 1: Pose Data Input into BiTRAP
 * The inputted data into BiTrap for train and test poses can be found in this [folder](https://drive.google.com/drive/folders/1oNKUXdYlNP1g7M9T3E1UWERh0lFobKAl?usp=sharing).
   * Next download the json files and put them in a folder. Then in ```bitrap/datasets/config_for_my_data.py``` set ```loc['data_load']['avenue']['train_poses']```.   ```loc['data_load']['avenue']['test_poses']```,  ```loc['data_load']['st']['train_poses']```, and  ```loc['data_load']['st']['test_poses']``` to the correct directory.
