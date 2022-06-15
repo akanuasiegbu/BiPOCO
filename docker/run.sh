@@ -27,6 +27,6 @@ docker run -it \
   -v /mnt/roahm:/mnt/roahm \
   -v /mnt/workspace/datasets:/mnt/workspace/datasets:ro \
   -w /home/akanu \
-  -v $HOME/akanu/projects/anomalous_pred:/home/akanu \
+  -v $HOME/akanu/projects/Projects_to_make_public/BiPOCO:/home/akanu \
   abnormal_ped:latest
 

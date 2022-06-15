@@ -1,38 +1,26 @@
 import numpy as np
 
-import tensorflow as tf
 import os, time
 from os.path import join
-from custom_functions.utils import make_dir, SaveTextFile, write_to_txt, SaveAucTxt, SaveAucTxtTogether
+from custom_functions.utils import make_dir
 
 # Is hyperparameters and saving files config file
 from config.config import hyparams, loc, exp
 from config.max_min_class_global import Global_Max_Min
-from custom_functions.custom_metrics import bb_intersection_over_union, bb_intersection_over_union_np
 
 
 
 # Plots
 from matplotlib import pyplot as plt
-import more_itertools as mit
 
-# Models i qm here
-
-import wandb
 # Data Info
-from custom_functions.load_data import norm_train_max_min, load_pkl
-from custom_functions.data import data_lstm
+from custom_functions.load_data import  load_pkl
 
-from custom_functions.lstm_models import lstm_train
 from custom_functions.ped_sequence_plot import ind_seq_dict 
 
 from custom_functions.frames_to_videos_n_back import convert_spec_frames_to_vid
 
-from custom_functions.visualizations import plot_sequence
-# from custom_functions.search import pkl_seq_ind
-from custom_functions.pedsort  import incorrect_frame_represent
 from custom_functions.anomaly_detection import frame_traj_model_auc
-from verify import order_abnormal
 
 
 
@@ -116,15 +104,6 @@ def plot_traj_gen_traj_vid(testdict, modeltype, vid, frame, ped_id, norm_max_min
 
     """
 
-    # Need to add lstm and add it to pred_traj            
-    if modeltype=='lstm_network':
-        x,_ = norm_train_max_min( testdict,  max1 = norm_max_min.max, min1= norm_max_min.min)
-        shape =  x.shape
-        pred = model.predict(x) #in xywh
-        pred = norm_train_max_min(pred, norm_max_min.max, norm_max_min.min, True)
-        testdict['pred_trajs'] = pred.reshape(shape[0] ,-1,4)
-    
-
 
     ped_loc = loc['visual_trajectory_list'].copy()
     
@@ -181,13 +160,11 @@ def main():
     
 
 
-    file_to_load = '/home/akanu/output_bitrap/st_unimodal_pose_hc/using_incorrect_endpoint/gaussian_st_in_5_out_5_K_1_pose_hc_endpoint.pkl'
+    file_to_load = '/home/akanu/output_bitrap/gaussian_avenue_in_3_out_3_K_1_pose_hc_endpoint.pkl'
     testdict = [ load_pkl(file_to_load, exp['data'], False) ]
     
     print( file_to_load)
     
-
-    # plot_traj_gen_traj_vid(testdict[0], exp['model_name'], vid = '01_0014', frame = 176, ped_id = 6, norm_max_min) # plots iped trajactory
     auc_human_frame = frame_traj_model_auc( 'bitrap', testdict, hyparams['metric'], hyparams['avg_or_max'], exp['model_name'], norm_max_min)
 
     

@@ -12,7 +12,7 @@ from custom_functions.metrics_plot import generate_metric_plots
 from custom_functions.utils import make_dir, SaveTextFile, SaveAucTxt, SaveAucTxtTogether
 # from custom_functions.visualizations import plot_frame_from_image, plot_vid, generate_images_with_bbox
 # from custom_functions.visualizations import plot_sequence
-from custom_functions.auc_metrics import iou_as_probability, l2_norm_or_l2_error_weighted, giou_ciou_diou_as_metric, oks_similarity
+from custom_functions.auc_metrics import l2_norm_or_l2_error_weighted,  oks_similarity
 # From different folders
 from config.config import hyparams, loc, exp
 
@@ -50,35 +50,6 @@ def frame_traj_model_auc(model, testdicts, metric, avg_or_max, modeltype, norm_m
     if test_auc_frame == 'not possible':
         quit()
     
-    # path_list = loc['metrics_path_list'].copy()
-    # visual_path = loc['visual_trajectory_list'].copy()
-    # for path in [path_list, visual_path]:
-    #     path.append('{}_{}_in_{}_out_{}_K_{}'.format(loc['nc']['date'], exp['data'], hyparams['input_seq'],
-    #                                                         hyparams['pred_seq'],exp['K'] ))
-    #     path.append('{}_{}_{}_in_{}_out_{}_{}'.format(  loc['nc']['date'],
-    #                                                     metric,
-    #                                                     avg_or_max, 
-    #                                                     hyparams['input_seq'], 
-    #                                                     hyparams['pred_seq'],
-    #                                                     hyparams['errortype'] ) )
-
-    # make_dir(path_list)
-    # plot_loc = join( os.path.dirname(os.getcwd()), *path_list )
-    # joint_txt_file_loc = join( os.path.dirname(os.getcwd()), *path_list[:-1] )
-
-    # This plots the result of bbox in the images 
-    # if exp['plot_images']:
-    #     generate_images_with_bbox(testdicts,out_frame, visual_path)
-
-    # generate_metric_plots(test_auc_frame, metric, nc, plot_loc)   
-    # else:
-    #     file_avg_metrics = SaveTextFile(plot_loc, metric)
-    #     file_avg_metrics.save(output_with_metric, auc_frame_human)
-    #     file_with_auc = SaveAucTxt(joint_txt_file_loc, metric)
-    #     file_with_auc.save(auc_frame_human)
-
-    #     print(joint_txt_file_loc)
-
     y_true = test_auc_frame['y']
     y_pred = test_auc_frame['x']
     y_true_per_human = test_auc_frame['y_pred_per_human']
@@ -113,7 +84,7 @@ def ped_auc_to_frame_auc_data(model, testdicts, metric, avg_or_max, modeltype, n
     removes select points to reduce to frame AUC
     input:
         testdict: From orginal data test dict
-        model: lstm model
+        model: 
         metric: l2, giou,l2
         modeltype: type of model
     
@@ -122,16 +93,10 @@ def ped_auc_to_frame_auc_data(model, testdicts, metric, avg_or_max, modeltype, n
         remove_list: indices of pedestrain removed
     """
     # used i-iou, 1-giou, 1-ciou, 1-diou etc 
-    if metric == 'iou':
-        prob, prob_along_time = iou_as_probability(testdicts, model, errortype = hyparams['errortype'], max1 = norm_max_min.max, min1= norm_max_min.min)
 
-    elif metric == 'l2':
-        
+    if metric == 'l2':        
         prob, prob_along_time = l2_norm_or_l2_error_weighted(testdicts = testdicts, models = model, errortype =hyparams['errortype'], max1=norm_max_min.max , min1= norm_max_min.min,
                                                             use_kp_confidence = exp['use_kp_confidence'])
-
-    elif metric == 'giou' or metric =='ciou' or metric =='diou':
-        prob, prob_along_time = giou_ciou_diou_as_metric(testdicts = testdicts, models = model, metric=metric,errortype = hyparams['errortype'], max1 = norm_max_min.max,min1 = norm_max_min.min)
 
     elif metric == 'oks':
         prob, prob_along_time = oks_similarity(testdicts=testdicts, models=model, metric=metric, errortype=hyparams['errortype'], max1 = norm_max_min.max, min1 = norm_max_min.min)

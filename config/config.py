@@ -1,15 +1,10 @@
 import datetime
 
-exp = { '1': False,
-        '2': False,
-        '3_1': False,
-        '3_2': False,
-        # want an adaptive model saved based on arch size for model_loc
-        'data': 'hr-st', #st, avenue, corridor, hr-avenue, hr-st
+exp = {
+        'data': 'avenue', #st, avenue, hr-avenue, hr-st
         'data_consecutive': True,
-        'model_name': 'bitrap', #lstm_network, bitrap
+        'model_name': 'bitrap', 
         'pose':True,
-        'load_lstm_model': False,
         'use_kp_confidence': True,
         'K': 1,
         'plot_images':False, # Plot images
@@ -17,64 +12,19 @@ exp = { '1': False,
 
 
 hyparams = {
-    'epochs': 350,
-    'batch_size': 32,
-    'buffer_size': 10000,
- 
-    'frames': 5,
+    
     'input_seq': 5,
     'pred_seq': 5,
-    'metric': 'l2', #giou,l2, ciou diou,iou
-    'avg_or_max': 'avg', #avg or max
-    'errortype': 'error_flattened', #'error_diff' or 'error_summed' or 'error_flattened'
+    'metric': 'l2',
+    'avg_or_max': 'avg', #avg
+    'errortype': 'error_flattened', #'error_summed' or 'error_flattened'
 
     'to_xywh': True, # This is assuming file is in tlbr format
 
-    'networks': {
-        'lstm':{
-            'loss':'mse',
-            'lr': 8.726e-06,
-            'early_stopping': True,
-            'mointor':'loss',
-            'min_delta': 0.00005,
-            'patience': 15,
-            'val_ratio': 0.3,
-        },
-
-
-        # 'binary_classifier':{
-        #     'neurons': 30,
-        #     'dropout':0.3,
-        #     'lr': 0.0001, #0.00001
-        #     'save_model': False,
-        #     'early_stopping':False,
-        #     'mointor': 'loss',
-        #     'min_delta':0.0000005,
-        #     'batch_size': 128,
-        #     'patience':30,
-        #     'wandb': False, # want to move this out of here and create a seperate wandb file
-        #     'seed':40,
-        #     'abnormal_split':0.5, # Split for the data into normal and abnormal
-        #     'val_ratio':0.3, #guarantee the ratio of normal and abnormal frames
-        #                     # are the same for validatin set and training set.
-        #                     # so val_ratio. Think val_ratio(normal) + val_ratio(abnormal ) = val_ratio(normal + abnormal)
-
-        # }
-    }
 
 }
 
-# name_exp = None
-if exp['1']:
-    name_exp = '1'
-elif exp['2']:
-    name_exp = '2'
-elif exp['3_1']:
-    name_exp ='3_1'
-elif exp['3_2']:
-    name_exp = '3_2'
-else:
-    name_exp = 'traj_model'
+name_exp = 'traj_model'
 
 now = datetime.datetime.now()
 date = now.strftime("%m_%d_%Y")
@@ -97,8 +47,6 @@ else:
 
 
 loc =  {
-    # if I'm running a test where don't want to save anything
-    # how do I do that. Maybe move them to tmp
     
     'model_path_list': model_path_list,
     'metrics_path_list': metrics_path_list, 
