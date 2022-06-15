@@ -17,8 +17,8 @@ git clone --recurse-submodules https://github.com/akanuasiegbu/BiPOCO.git
 
 
 
-## To ealutate AUC score
-There is no training done with the part, we only evalute the given pkl file outputs. Training and inference is done with the [predictor model](https://github.com/akanuasiegbu/bitrap)
+## To evaluate AUC score
+Training and inference is done with the [predictor model](https://github.com/akanuasiegbu/bitrap). Given the PKL output files from inference we can obtain AUC score by following the instructions below. 
 
 * In ```config/config.py``` change ```input_seq``` and ```pred_seq``` to match input and output sequence length.
 * Also in ```config/config.py``` make sure to change ```exp['data']``` to match ```hr-st```, ```st```, ```avenue``` or ```hr-avenue```
