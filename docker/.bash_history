@@ -115,3 +115,18 @@ python main.py
 python main.py 
 python main.py 
 exit
+ls
+python bitrap/tools/train.py --config_file bitrap/configs/avenue_pose_hc.yml
+cd bitrap/
+python bitrap/tools/train.py --config_file bitrap/configs/avenue_pose_hc.yml
+python tools/train.py --config_file configs/avenue_pose_hc.yml
+clear
+python  tools/train.py --config_file configs/st_pose_hc.yml
+exit
+clear
+cd p
+cd experiments_code/
+python main.py 
+exit
+pip list
+exit
