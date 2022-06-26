@@ -3,12 +3,13 @@ import cv2
 import numpy as np
 import os
 import math
+from matplotlib import pyplot as plt
 
 from custom_functions.load_data import load_pkl
 from custom_functions.utils import make_dir
 from custom_functions.ped_sequence_plot import ind_seq_dict  
 from config.config import hyparams, loc, exp
-
+from utils import find_ranges
 
 RED = (0, 0, 255)
 GREEN = (0, 255, 0)
@@ -339,6 +340,56 @@ def  save_pose_trajs_imgs_to_vids(imgs_path, save_vid_path, frame_rate=1):
                 out.write(frame)
             out.release()
             
+
+def anomaly_score_frame_with_abnormal_regions_highlighted(out_frame,save_dir):
+    vid_to_split = np.unique(out_frame['vid'])
+
+    out = {}
+    for vid in vid_to_split:
+        vid_index = np.where(out_frame['vid'] == vid)[0]
+        # frames = np.array(out_frame['frame'], dtype=int)
+        frames = out_frame['frame']
+        framesort = np.argsort(frames[vid_index].reshape(-1))
+        out[vid] = {}
+        for key in out_frame.keys():
+            out[vid][key] = out_frame[key][vid_index][framesort]
+
+    
+    # for key in out.keys():
+    for key in out.keys():
+        fig,ax = plt.subplots(nrows=1, ncols=1, figsize=(10,5))
+        # abnorm = np.where(out[key]['abnormal_gt_frame_metric'] == 1)[0]
+        # norm = np.where(out[key]['abnormal_gt_frame_metric'] == 0)[0]
+        # ax.scatter(out[key]['frame'][abnorm], out[key]['prob'][abnorm], marker='.', color ='r')
+        # ax.scatter(out[key]['frame'][norm], out[key]['prob'][norm], marker='.', color ='b')
+        ax.plot(out[key]['frame'],out[key]['prob'])
+
+        index = np.where(out[key]['abnormal_gt_frame_metric'] ==1)[0]
+        index_range =list(find_ranges(index))
+        start = []
+        end = []
+
+        for i in index_range:
+            if len(i) == 2:
+                start.append(out[key]['frame'][i[0]])
+                end.append(out[key]['frame'][i[1]])
+            else:
+                temp = out[key]['frame'][i[0]]
+                start.append(temp)
+                end.append(temp)
+        
+        start = np.array(start, dtype=object)
+        end = np.array(end,dtype=object)
+
+        for s,e in zip(start,end):
+            ax.axvspan(s,e, facecolor='r', alpha=0.5)
+        
+        ax.set_xlabel('Frames')
+        ax.set_ylabel('Anomaly Score' )
+        if os.path.exists(save_dir) is False:
+            os.makedirs(save_dir)
+        fig.savefig(os.path.join(save_dir,'testing_{}.jpg'.format(key[:-4])))  
+
 
 if __name__ == '__main__':
 

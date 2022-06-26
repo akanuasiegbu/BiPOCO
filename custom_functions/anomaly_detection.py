@@ -75,7 +75,7 @@ def frame_traj_model_auc(model, testdicts, metric, avg_or_max, modeltype, norm_m
     AUC_human = auc(fpr,tpr)
     auc_human_frame = np.array([AUC_human, AUC_frame])
     
-    return auc_human_frame
+    return auc_human_frame, out_frame
 
 
 

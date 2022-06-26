@@ -21,76 +21,7 @@ from custom_functions.ped_sequence_plot import ind_seq_dict
 # from custom_functions.frames_to_videos_n_back import convert_spec_frames_to_vid
 
 from custom_functions.anomaly_detection import frame_traj_model_auc
-
-
-
-def gpu_check():
-    """
-    return: True if gpu amount is greater than 1
-    """
-    return len(tf.config.experimental.list_physical_devices('GPU')) > 0
-
-
-
-
-def find_ranges(iterable):
-    """Yield range of consecutive numbers."""
-    for group in mit.consecutive_groups(iterable):
-        group = list(group)
-        if len(group) == 1:
-            yield group[0]
-        else:
-            yield group[0], group[-1]
-
-
-
-def plot_frame_wise_scores(out_frame):
-    vid_to_split = np.unique(out_frame['vid'])
-
-    out = {}
-    for vid in vid_to_split:
-        vid_index = np.where(out_frame['vid'] == vid)[0]
-        # frames = np.array(out_frame['frame'], dtype=int)
-        frames = out_frame['frame']
-        framesort = np.argsort(frames[vid_index].reshape(-1))
-        out[vid] = {}
-        for key in out_frame.keys():
-            out[vid][key] = out_frame[key][vid_index][framesort]
-
-    
-    # for key in out.keys():
-    for key in out.keys():
-        fig,ax = plt.subplots(nrows=1, ncols=1, figsize=(10,5))
-        # abnorm = np.where(out[key]['abnormal_gt_frame_metric'] == 1)[0]
-        # norm = np.where(out[key]['abnormal_gt_frame_metric'] == 0)[0]
-        # ax.scatter(out[key]['frame'][abnorm], out[key]['prob'][abnorm], marker='.', color ='r')
-        # ax.scatter(out[key]['frame'][norm], out[key]['prob'][norm], marker='.', color ='b')
-        ax.plot(out[key]['frame'],out[key]['prob'])
-
-        index = np.where(out[key]['abnormal_gt_frame_metric'] ==1)[0]
-        index_range =list(find_ranges(index))
-        start = []
-        end = []
-
-        for i in index_range:
-            if len(i) == 2:
-                start.append(out[key]['frame'][i[0]])
-                end.append(out[key]['frame'][i[1]])
-            else:
-                temp = out[key]['frame'][i[0]]
-                start.append(temp)
-                end.append(temp)
-        
-
-        for s,e in zip(start,end):
-            ax.axvspan(s,e, facecolor='r', alpha=0.5)
-        # ax.axvspan(299, 306, facecolor='b', alpha=0.5)
-        # ax.axvspan(422, 493, facecolor='b', alpha=0.5)
-        # ax.axvspan(562, 604, facecolor='b', alpha=0.5)
-
-        ax.set_xlabel('Frames')
-        ax.set_ylabel('Anomaly Score' )
-        fig.savefig('testing_{}.jpg'.format(key[:-4]))  
+from custom_functions.visualizations_pose import anomaly_score_frame_with_abnormal_regions_highlighted
 
 
 def plot_traj_gen_traj_vid(testdict, modeltype, vid, frame, ped_id, norm_max_min, model=None):
@@ -151,16 +82,17 @@ def main():
     
     print( file_to_load)
     
-    auc_human_frame = frame_traj_model_auc( 'bitrap', testdict, hyparams['metric'], hyparams['avg_or_max'], exp['model_name'], norm_max_min)
+    auc_human_frame, out_frame  = frame_traj_model_auc( 'bitrap', testdict, hyparams['metric'], hyparams['avg_or_max'], exp['model_name'], norm_max_min)
 
     
+
+    anomaly_score_figure = '../experiments_code/anomaly_score_plots'
+    anomaly_score_frame_with_abnormal_regions_highlighted(out_frame, anomaly_score_figure)
+
     print('Input Seq: {}, Output Seq: {}'.format(hyparams['input_seq'], hyparams['pred_seq']))
     print('Metric: {}, avg_or_max: {}'.format(hyparams['metric'], hyparams['avg_or_max']))
     print('Use kp confidence: {}'.format(exp['use_kp_confidence']))
-    print('auc_human_frame human:{} frame:{}'.format(auc_human_frame[0], auc_human_frame[1]))
-    return 
-
-
+    print('auc_frame:{}'.format(auc_human_frame[1]))
     
 
     
