@@ -109,4 +109,6 @@ Look at ```experiments_code/run_q.py```
 
 
 
-
+## To-Do
+* Add pose data input for training for avenue and shanghaitech dataset
+* Add citation 
