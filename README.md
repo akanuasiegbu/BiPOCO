@@ -107,8 +107,16 @@ In ```experiments_code/main.py``` change variable ```file_to_load``` to point to
 ##### To run multiple pkl files at time
 Look at ```experiments_code/run_q.py```
 
-
+## Citation
+If you found repo useful, feel free to cite.
+```
+@article{kanu2022bipoco,
+  title={BiPOCO: Bi-Directional Trajectory Prediction with Pose Constraints for Pedestrian Anomaly Detection},
+  author={Kanu-Asiegbu, Asiegbu Miracle and Vasudevan, Ram and Du, Xiaoxiao},
+  journal={arXiv preprint arXiv:2207.02281},
+  year={2022}
+}
+```
 
 ## To-Do
 * Add pose data input for training for avenue and shanghaitech dataset
-* Add citation 
