@@ -1,6 +1,10 @@
 # BiPOCO: Bi-directional Trajectory Prediction with Pose Constraints for Pedestrian Anomaly Detection
 Asiegbu Miracle Kanu-Asiegbu, Ram Vasudevan, and Xiaoxiao Du
 
+[ICML 2022 Workshop on Safe Learning for Autonomous Driving Video](https://icml.cc/virtual/2022/20909)
+
+[ICML 2022 Workshop on Safe Learning for Autonomous Driving Paper](https://learn-to-race.org/workshop-sl4ad-icml2022/assets/papers/paper_9.pdf), same as [Arxiv version](https://arxiv.org/pdf/2207.02281)
+
 ## Clone Repo
 git clone --recurse-submodules https://github.com/akanuasiegbu/BiPOCO.git
 
@@ -118,5 +122,3 @@ If you found repo useful, feel free to cite.
 }
 ```
 
-## To-Do
-* Add pose data input for training for avenue and shanghaitech dataset
