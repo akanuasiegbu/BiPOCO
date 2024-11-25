@@ -67,7 +67,7 @@ python  tools/train.py --config_file configs/st_pose_hc.yml
 
 To train/inferece on CPU or GPU, simply add `DEVICE='cpu'` or  `DEVICE='cuda'`. By default we use GPU for both training and inferencing.
 
-Note that you must set the input and output lengths to be the same in YML file used (```INPUT_LEN``` and ```PRED_LEN```) and ```bitrap/datasets/config_for_my_data.py``` (```input_seq``` and ```pred_seq```)
+Note that you must set the input and output lengths to be the same in YML file used (```INPUT_LEN``` and ```PRED_LEN```) and ```bitrap/datasets/config_for_my_data.py``` (```input_seq``` and ```pred_seq```). In `avenue_pose_hc.yml` or `st_pose_hc.yml`, need to update the ` BONE: False, ENDPOINT: False, JOINT: False` settings to use correct loss. 
 
 ## Step 3: Inference 
 
